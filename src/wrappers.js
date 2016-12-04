@@ -1,6 +1,6 @@
 // @flow
 
-import { isPromise, checkIfResults, normalizeReducer } from './util';
+import { isAsync, checkIfResults, normalizeReducer } from './util';
 import { 
 	PROMISE_NOT_PERCOLATED_ERROR, 
 	EXTRA_KEY_TEXT, 
@@ -29,15 +29,16 @@ const wrapAsync: WrapAsyncType = wrapper => toBeWrapped => {
 };
 
 const throwIfAsync = validator => {
-	const { validate } = normalizeReducer(validator);
-	if (isPromise(validate(undefined)))
-		throw new Error(PROMISE_NOT_PERCOLATED_ERROR);
+	const reducer = normalizeReducer(validator);
+	for (const key in reducer)
+		if (isAsync(reducer[key]))
+			throw new Error(PROMISE_NOT_PERCOLATED_ERROR);
 };
 
 export const NonNull: WrapperType = 
 validator => {
 	const reducer = normalizeReducer(validator);
-	throwIfAsync(reducer.validate);
+	throwIfAsync(reducer);
 
 	const validate = value => value !== undefined && value !== null
 		? reducer.validate(value)
@@ -51,7 +52,7 @@ export const NonNullAsync = wrapAsync(NonNull, 'validate');
 
 export const Permissive: WrapperType = validator => {
 	const reducer = normalizeReducer(validator);
-	throwIfAsync(reducer.validate);
+	throwIfAsync(reducer);
 
 	const validate = value => {
 		const out = {};
