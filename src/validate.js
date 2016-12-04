@@ -38,42 +38,70 @@ export const Permissive = (value: *) => new Wrap(value, allOptions.PERMISSIVE);
 /* Reducer section */
 export const EXTRA_KEY_TEXT = 'unexpected property';
 export const MISSING_KEY_TEXT = 'missing property';
+export const PROMISE_NOT_PERCOLATED_ERROR = 
+	'Asynchronous validators must be used with CombineReducersAsyncType'
+;
 
 type CombineReducersType = 
-	(props: {[key: string]: ReducerType}) => 
-		(data: *) => ReturnType;
+	(isAsync: boolean) =>
+		(props: {[key: string]: ReducerType}) => 
+			(data: *) => ReturnType
+;
 
-export const combineReducers: CombineReducersType = _props => data => {
+const isPromise = value => value == Promise.resolve(value);
+const checkIfErrors = output => Object.keys(output).length ? output : null;
+
+const combineReducersBuilder: CombineReducersType = isAsync => _props => {
 	const { options: propsOptions, value: props } = Wrap.ensureWrapped(_props);
 
-	const errors = {};
-	const missing = {};
-	const extra = {};
-
-	for (const key in props) {
-		const { options: reducerOptions, value: reducer } = Wrap.ensureWrapped(props[key]);
-
-		if (reducerOptions[allOptions.NON_NULL] && !data[key])
-			missing[key] = MISSING_KEY_TEXT;
-		else if (data[key]) {
-			const error = reducer(data[key]);
-			if (error)
-				errors[key] = error;
+	if (!isAsync)
+		for (const key in props) {
+			const { value: reduce } = Wrap.ensureWrapped(props[key]);
+			const initialValue = reduce(undefined);
+			if (isPromise(initialValue))
+				throw new Error(PROMISE_NOT_PERCOLATED_ERROR);
 		}
-	}
 
-	if (!propsOptions[allOptions.PERMISSIVE])
-		for (const key in data)
-			if (!props[key])
-				extra[key] = EXTRA_KEY_TEXT;
+	return data => {
+		if (!data)
+			return null;
 
-	const output = { ...errors, ...missing, ...extra };
-	return Object.keys(output).length ? output : null;
+		const errors = {};
+		const missing = {};
+		const extra = {};
+
+		for (const key in props) {
+			const { options: reducerOptions, value: reduce } = Wrap.ensureWrapped(props[key]);
+			if (reducerOptions[allOptions.NON_NULL] && !data[key])
+				missing[key] = MISSING_KEY_TEXT;
+			else if (key in data) {
+				const error = reduce(data[key]);
+				if (error !== null) 
+					errors[key] = error;
+			}
+		}
+
+		if (!propsOptions[allOptions.PERMISSIVE])
+			for (const key in data)
+				if (!props[key])
+					extra[key] = EXTRA_KEY_TEXT;
+
+		const output = { ...errors, ...missing, ...extra };
+
+		if (isAsync)
+			return (async () => {
+				const asyncOutput = {};
+				for (const key in output) {
+					const error = await output[key];
+					if (error !== null)
+						asyncOutput[key] = error;
+				}
+				return checkIfErrors(asyncOutput);
+			})();
+
+		return checkIfErrors(output);
+	};
 };
 
-type AsyncReducerType = (data: *) => ReturnType | Promise<ReturnType>;
-type CombineReducersAsyncType = 
-	(props: {[key: string]: AsyncReducerType}) => 
-		(data: *) => Promise<ReturnType>;
-
-export const combineReducersAsync: CombineReducersAsyncType = () => async () => null;
+export const combineReducers = combineReducersBuilder(false);
+export const combineReducersAsync = combineReducersBuilder(true);

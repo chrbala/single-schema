@@ -10,18 +10,21 @@ import {
 	MISSING_KEY_TEXT,
 } from './validate';
 
+const IS_STRING_ERROR = 'Must be string';
 const isString = value => typeof value == 'string'
 	? null
-	: 'Must be string';
+	: IS_STRING_ERROR;
 
 (() => {
 	const validate = combineReducers({
 		key: isString,
+		key2: isString,
 	});
 
 	test('Basic passing validation', t => {
 		const actual = validate({
 			key: 'value',
+			key2: 'value',
 		});
 		const expected = null;
 		t.deepEqual(actual, expected);
@@ -30,6 +33,16 @@ const isString = value => typeof value == 'string'
 	test('Basic failing validation', t => {
 		const actual = validate({
 			key: 'value',
+			key2: 'value',
+		});
+		const expected = null;
+		t.deepEqual(actual, expected);
+	});
+
+	test('Basic failing validation with multiple keys', t => {
+		const actual = validate({
+			key: 'value',
+			key2: 'value',
 		});
 		const expected = null;
 		t.deepEqual(actual, expected);
@@ -63,7 +76,7 @@ const isString = value => typeof value == 'string'
 			},
 		});
 		const expected = {
-			key: 'Must be string',
+			key: IS_STRING_ERROR,
 		};
 		t.deepEqual(actual, expected);
 	});
@@ -77,7 +90,6 @@ const isString = value => typeof value == 'string'
 
 	test('Missing normal property', t => {
 		const actual = validate({
-			key: null,
 			key2: 'value',
 		});
 		const expected = null;
@@ -169,56 +181,85 @@ test('Unexpected property on permissive type', t => {
 	const emails = {
 		'emailAlreadyExists@gmail.com': true,
 	};
-	const emailAccountExistsAsync = async email => !!emails[email];
+	const EMAIL_EXISTS_ERROR = 'Email account is already registered.';
+	const emailAccountExistsAsync = async email => emails[email]
+		? EMAIL_EXISTS_ERROR
+		: null
+	;
 
-	const validateAsync = combineReducersAsync({
-		key: combineReducers({
-			deep1: isString,
-			deep2: isString,
-		}),
-		key2: combineReducersAsync({
-			name: isString,
-			email: email => emailAccountExistsAsync(email)
-				.then(accountExists => accountExists
-					? 'Email account is already registered.'
-					: null
-				),
-		}),
-	});
+	(() => {
+		const validateAsync = combineReducersAsync({
+			key: combineReducersAsync({
+				name: isString,
+				email: emailAccountExistsAsync,
+			}),
+		});
 
-	test('Async passing validation', async t => {
-		const actual = await validateAsync({
-			key: {
-				deep1: 'value',
-				deep2: 'value',
-			},
-			key2: {
-				name: 'bob',
+		test('Async passing validation with depth 2', async t => {
+			const actual = await validateAsync({
+				key: {
+					name: 'bob',
+					email: 'emailDoesNotExist@gmail.com',
+				},
+			});
+			const expected = null;
+			t.deepEqual(actual, expected);
+		});
+
+		test('Async failing validation with depth 2', async t => {
+			const actual = await validateAsync({
+				key: {
+					name: 'bob',
+					email: 'emailAlreadyExists@gmail.com',
+				},
+			});
+			const expected = {
+				key: {
+					email: EMAIL_EXISTS_ERROR,
+				},
+			};
+			t.deepEqual(actual, expected);
+		});
+	})();
+
+	(() => {
+		const validateAsync = combineReducersAsync({
+			email: emailAccountExistsAsync,
+			secondaryEmail: emailAccountExistsAsync,
+		});
+
+		test('Async passing validation with multiple keys', async t => {
+			const actual = await validateAsync({
 				email: 'emailDoesNotExist@gmail.com',
-			},
+				secondaryEmail: 'emailDoesNotExist@gmail.com',
+			});
+			const expected = null;
+			t.deepEqual(actual, expected);
 		});
-		const expected = null;
-		t.deepEqual(actual, expected);
-	});
 
-	test('Async failing validation', async t => {
-		const actual = await validateAsync({
-			key: {
-				deep1: 'value',
-				deep2: 'value',
-			},
-			key2: {
-				name: 'bob',
+		test('Async single failure on validation with multiple keys', async t => {
+			const actual = await validateAsync({
 				email: 'emailAlreadyExists@gmail.com',
-			},
+				secondaryEmail: 'emailDoesNotExist@gmail.com',
+			});
+			const expected = {
+				email: EMAIL_EXISTS_ERROR,
+			};
+			t.deepEqual(actual, expected);
 		});
-		const expected = {
-			key2: {
-				email: 'Email account is already registered.',
-			},
-		};
-		t.deepEqual(actual, expected);
-	});
+
+		test('Async multiple failure on validation with multiple keys', async t => {
+			const actual = await validateAsync({
+				email: 'emailAlreadyExists@gmail.com',
+				secondaryEmail: 'emailAlreadyExists@gmail.com',
+			});
+			const expected = {
+				email: EMAIL_EXISTS_ERROR,
+				secondaryEmail: EMAIL_EXISTS_ERROR,
+			};
+			t.deepEqual(actual, expected);
+		});
+	})();
 })();
 
 test('combineReducersAsync must percolate up', t => {
