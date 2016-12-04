@@ -12,7 +12,7 @@ const isString = value => typeof value == 'string'
 	: IS_STRING_ERROR;
 
 test('Top level undefined NonNull does not pass', t => {
-	const validate = NonNull(combineReducers({
+	const { validate } = NonNull(combineReducers({
 		key: isString,
 	}));
 	const actual = validate(undefined);
@@ -21,7 +21,7 @@ test('Top level undefined NonNull does not pass', t => {
 });
 
 (() => {
-	const validate = combineReducers({
+	const { validate } = combineReducers({
 		key: isString,
 		key2: NonNull(isString),
 	});
@@ -47,7 +47,7 @@ test('Top level undefined NonNull does not pass', t => {
 })();
 
 test('Unexpected property on permissive type', t => {
-	const validate = Permissive(combineReducers({
+	const { validate } = Permissive(combineReducers({
 		key: isString,
 		key2: isString,
 	}));
@@ -62,12 +62,12 @@ test('Unexpected property on permissive type', t => {
 });
 
 test('Unexpected property on async permissive type', async t => {
-	const validateAsync = PermissiveAsync(combineReducersAsync({
+	const { validate } = PermissiveAsync(combineReducersAsync({
 		key: isString,
 		key2: isString,
 	}));
 
-	const actual = await validateAsync({
+	const actual = await validate({
 		key: 'value',
 		key2: 'value',
 		key3: 'value',

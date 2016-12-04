@@ -1,14 +1,17 @@
 // @flow
 
-import type { ReducerType } from './types';
+import type { 
+	ReducerType, 
+	NormalizedReducerType,
+} from './types';
 
 export const isPromise = (value: *) => value instanceof Promise;
 export const checkIfErrors = (output: *) => 
 	Object.keys(output).length ? output : null;
 
-const coerce = (f: *) => f;
-export const normalizeReducer = (reduce: ReducerType) =>
-	typeof reduce == 'function'
-		? { reduce, coerce }
-		: reduce
+type NormalizeType = (reducer: ReducerType) => NormalizedReducerType;
+export const normalizeReducer: NormalizeType = reducer =>
+	typeof reducer == 'function'
+		? { validate: reducer }
+		: reducer
 ;

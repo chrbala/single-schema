@@ -11,7 +11,7 @@ const isString = value => typeof value == 'string'
 	: IS_STRING_ERROR;
 
 (() => {
-	const validate = combineReducers({
+	const { validate } = combineReducers({
 		key: isString,
 		key2: isString,
 	});
@@ -45,7 +45,7 @@ const isString = value => typeof value == 'string'
 })();
 
 test('Top level undefined passes', t => {
-	const validate = combineReducers({
+	const { validate } = combineReducers({
 		key: isString,
 	});
 	const actual = validate(undefined);
@@ -56,7 +56,7 @@ test('Top level undefined passes', t => {
 test('Caches simple results when called with identical data', t => {
 	let count = 0;
 	const keyValidator = () => (count++, null);
-	const validate = combineReducers({
+	const { validate } = combineReducers({
 		key: keyValidator,
 	});
 	t.is(count, 1);
@@ -72,7 +72,7 @@ test('Caches simple results when called with identical data', t => {
 test('Invalidate cache when data changes', t => {
 	let count = 0;
 	const keyValidator = () => (count++, null);
-	const validate = combineReducers({
+	const { validate } = combineReducers({
 		key: keyValidator,
 	});
 	t.is(count, 1);
@@ -91,7 +91,7 @@ test('Reruns fragments of complex data types when data changes', t => {
 	let deepCount = 0;
 	const deepValidator = () => (deepCount++, null);
 
-	const validate = combineReducers({
+	const { validate } = combineReducers({
 		shallow: shallowValidator,
 		key: combineReducers({
 			deep: deepValidator,
@@ -117,7 +117,7 @@ test('Reruns fragments of complex data types when data changes', t => {
 });
 
 (() => {
-	const validate = combineReducers({
+	const { validate } = combineReducers({
 		key: isString,
 		key2: combineReducers({
 			deep: isString,
@@ -150,7 +150,7 @@ test('Reruns fragments of complex data types when data changes', t => {
 })();
 
 test('Unexpected property', t => {
-	const validate = combineReducers({
+	const { validate } = combineReducers({
 		key: isString,
 		key2: isString,
 	});
@@ -167,7 +167,7 @@ test('Unexpected property', t => {
 });
 
 (() => {
-	const validate = combineReducers({
+	const { validate } = combineReducers({
 		key: isString,
 		key2: value => !value 
 			? 'Expected object type'
@@ -215,7 +215,7 @@ test('Unexpected property', t => {
 	;
 
 	(() => {
-		const validateAsync = combineReducersAsync({
+		const { validate } = combineReducersAsync({
 			key: combineReducersAsync({
 				name: isString,
 				email: emailAccountExistsAsync,
@@ -223,7 +223,7 @@ test('Unexpected property', t => {
 		});
 
 		test('Async passing validation with depth 2', async t => {
-			const actual = await validateAsync({
+			const actual = await validate({
 				key: {
 					name: 'bob',
 					email: 'emailDoesNotExist@gmail.com',
@@ -234,7 +234,7 @@ test('Unexpected property', t => {
 		});
 
 		test('Async failing validation with depth 2', async t => {
-			const actual = await validateAsync({
+			const actual = await validate({
 				key: {
 					name: 'bob',
 					email: Object.keys(emails)[0],
@@ -250,13 +250,13 @@ test('Unexpected property', t => {
 	})();
 
 	(() => {
-		const validateAsync = combineReducersAsync({
+		const { validate } = combineReducersAsync({
 			email: emailAccountExistsAsync,
 			secondaryEmail: emailAccountExistsAsync,
 		});
 
 		test('Async passing validation with multiple keys', async t => {
-			const actual = await validateAsync({
+			const actual = await validate({
 				email: 'emailDoesNotExist@gmail.com',
 				secondaryEmail: 'emailDoesNotExist@gmail.com',
 			});
@@ -265,18 +265,7 @@ test('Unexpected property', t => {
 		});
 
 		test('Async single failure on validation with multiple keys', async t => {
-			const actual = await validateAsync({
-				email: Object.keys(emails)[0],
-				secondaryEmail: 'emailDoesNotExist@gmail.com',
-			});
-			const expected = {
-				email: EMAIL_EXISTS_ERROR,
-			};
-			t.deepEqual(actual, expected);
-		});
-
-		test('Async single failure on validation with multiple keys', async t => {
-			const actual = await validateAsync({
+			const actual = await validate({
 				email: Object.keys(emails)[0],
 				secondaryEmail: 'emailDoesNotExist@gmail.com',
 			});
@@ -287,7 +276,7 @@ test('Unexpected property', t => {
 		});
 
 		test('Async multiple failure on validation with multiple keys', async t => {
-			const actual = await validateAsync({
+			const actual = await validate({
 				email: Object.keys(emails)[0],
 				secondaryEmail: Object.keys(emails)[1],
 			});

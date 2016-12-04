@@ -4,32 +4,39 @@ import { isPromise, checkIfErrors, normalizeReducer } from './util';
 import type { CombineReducersType } from './types';
 import { PROMISE_NOT_PERCOLATED_ERROR, EXTRA_KEY_TEXT } from './strings';
 
+const passthroughFn = f => f;
+
 const combineReducersBuilder: CombineReducersType = isAsync => props => {
 	let lastInput;
-	let lastOutput = {};
-
+	let allLastOutput: {[key: $Keys<typeof props>]: *} = {};
+	const types = {};
+ 
 	for (const key in props) {
-		const reducer = props[key];
-		const { reduce } = normalizeReducer(reducer);
-		lastOutput = reduce(lastInput);
-		if (!isAsync && isPromise(lastOutput))
-			throw new Error(PROMISE_NOT_PERCOLATED_ERROR);
+		const reducer = normalizeReducer(props[key]); 
+		for (const reducerType in reducer) {
+			types[reducerType] = true;
+			const output = allLastOutput[reducerType] = reducer[reducerType](lastInput);
+			if (!isAsync && isPromise(output))
+				throw new Error(PROMISE_NOT_PERCOLATED_ERROR);
+		}
 	}
 
-	return data => {
+	const createReducer = reducerType => data => {
+		const lastOutput = allLastOutput[reducerType];
+
 		if (!data)
 			return isAsync ? Promise.resolve(null) : null;
 
 		const errors = {};
 
 		for (const key in props)
-			if (lastOutput && lastInput && (key in lastInput) && (data[key] === lastInput[key])) {
+			if (lastOutput && typeof lastOutput == 'object' && lastInput && (key in lastInput) && (data[key] === lastInput[key])) {
 				if (key in lastOutput)
 					errors[key] = lastOutput[key];
 			} else if (key in data) {
 				const reducer = props[key];
-				const { reduce } = normalizeReducer(reducer);
-				const error = reduce(data[key]);
+				const { validate } = normalizeReducer(reducer);
+				const error = validate(data[key]);
 				if (error !== null) 
 					errors[key] = error;
 			}
@@ -39,7 +46,7 @@ const combineReducersBuilder: CombineReducersType = isAsync => props => {
 				errors[key] = EXTRA_KEY_TEXT;
 
 		lastInput = data;
-		lastOutput = errors;
+		allLastOutput = { ...allLastOutput, [reducerType]: errors };
 
 		if (isAsync) 
 			return (async () => {
@@ -55,6 +62,13 @@ const combineReducersBuilder: CombineReducersType = isAsync => props => {
 
 		return checkIfErrors(errors);
 	};
+
+	const out = {
+		validate: passthroughFn,
+	};
+	for (const key in types)
+		out[key] = createReducer(key);
+	return out;
 };
 
 export const combineReducers = combineReducersBuilder(false);

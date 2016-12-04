@@ -6,51 +6,54 @@ import {
 	EXTRA_KEY_TEXT, 
 	MISSING_KEY_TEXT,
 } from './strings';
-import type { WrapperType, AsyncWrapperType } from './types';
+import type { WrapperType } from './types';
 
-const throwIfAsync = reducer => {
-	const { reduce } = normalizeReducer(reducer);
-	if (isPromise(reduce(undefined)))
+const throwIfAsync = validator => {
+	const { validate } = normalizeReducer(validator);
+	if (isPromise(validate(undefined)))
 		throw new Error(PROMISE_NOT_PERCOLATED_ERROR);
 };
 
 export const NonNull: WrapperType = 
-	reducer => {
-		const { reduce } = normalizeReducer(reducer);
-		throwIfAsync(reduce);
+validator => {
+	const reducer = normalizeReducer(validator);
+	throwIfAsync(reducer.validate);
 
-		return value => value !== undefined && value !== null
-			? reduce(value)
-			: MISSING_KEY_TEXT
-		;
-	};
+	const validate = value => value !== undefined && value !== null
+		? reducer.validate(value)
+		: MISSING_KEY_TEXT
+	;
 
-export const Permissive: WrapperType = reducer => {
-	const { reduce } = normalizeReducer(reducer);
-	throwIfAsync(reduce);
+	return { ...reducer, validate };
+};
 
-	return value => {
+export const Permissive: WrapperType = validator => {
+	const reducer = normalizeReducer(validator);
+	throwIfAsync(reducer.validate);
+
+	const validate = value => {
 		const out = {};
-		const result = reduce(value);
-		if (!result)
+		const result = reducer.validate(value);
+		if (!result || typeof result !== 'object')
 			return result;
 
-		if (typeof result === 'string') {
-			if (result == EXTRA_KEY_TEXT)
-				return null;
-			return result;
-		}
-		
 		for (const key in result)
 			if (result[key] !== EXTRA_KEY_TEXT)
 				out[key] = result[key];
 		return checkIfErrors(out);
 	};
+
+	return { ...reducer, validate };
 };
 
-export const PermissiveAsync: AsyncWrapperType = reducer => {
-	const { reduce } = normalizeReducer(reducer);
-	return value => Promise.resolve(reduce(value))
-		.then(syncValue => Permissive(f => f)(syncValue))
+export const PermissiveAsync: WrapperType = validator => {
+	const reducer = normalizeReducer(validator);
+	const validate = value => Promise.resolve(reducer.validate(value))
+		.then(syncValue => {
+			const childReducer = Permissive(f => f);
+			return childReducer.validate(syncValue);
+		});
 	;
+	return { ...reducer, validate };
 };
+
