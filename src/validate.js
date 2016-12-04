@@ -1,6 +1,6 @@
 // @flow
 
-import { isPromise, checkIfErrors } from './util';
+import { isPromise, checkIfErrors, normalizeReducer } from './util';
 import type { CombineReducersType } from './types';
 import { PROMISE_NOT_PERCOLATED_ERROR, EXTRA_KEY_TEXT } from './strings';
 
@@ -9,7 +9,8 @@ const combineReducersBuilder: CombineReducersType = isAsync => props => {
 	let lastOutput = {};
 
 	for (const key in props) {
-		const reduce = props[key];
+		const reducer = props[key];
+		const { reduce } = normalizeReducer(reducer);
 		lastOutput = reduce(lastInput);
 		if (!isAsync && isPromise(lastOutput))
 			throw new Error(PROMISE_NOT_PERCOLATED_ERROR);
@@ -26,7 +27,8 @@ const combineReducersBuilder: CombineReducersType = isAsync => props => {
 				if (key in lastOutput)
 					errors[key] = lastOutput[key];
 			} else if (key in data) {
-				const reduce = props[key];
+				const reducer = props[key];
+				const { reduce } = normalizeReducer(reducer);
 				const error = reduce(data[key]);
 				if (error !== null) 
 					errors[key] = error;

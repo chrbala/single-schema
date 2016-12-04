@@ -1,6 +1,6 @@
 // @flow
 
-import { isPromise, checkIfErrors } from './util';
+import { isPromise, checkIfErrors, normalizeReducer } from './util';
 import { 
 	PROMISE_NOT_PERCOLATED_ERROR, 
 	EXTRA_KEY_TEXT, 
@@ -8,13 +8,15 @@ import {
 } from './strings';
 import type { WrapperType, AsyncWrapperType } from './types';
 
-const throwIfAsync = fn => {
-	if (isPromise(fn(undefined)))
+const throwIfAsync = reducer => {
+	const { reduce } = normalizeReducer(reducer);
+	if (isPromise(reduce(undefined)))
 		throw new Error(PROMISE_NOT_PERCOLATED_ERROR);
 };
 
 export const NonNull: WrapperType = 
-	reduce => {
+	reducer => {
+		const { reduce } = normalizeReducer(reducer);
 		throwIfAsync(reduce);
 
 		return value => value !== undefined && value !== null
@@ -23,7 +25,8 @@ export const NonNull: WrapperType =
 		;
 	};
 
-export const Permissive: WrapperType = reduce => {
+export const Permissive: WrapperType = reducer => {
+	const { reduce } = normalizeReducer(reducer);
 	throwIfAsync(reduce);
 
 	return value => {
@@ -45,7 +48,9 @@ export const Permissive: WrapperType = reduce => {
 	};
 };
 
-export const PermissiveAsync: AsyncWrapperType = reduce => 
-	value => Promise.resolve(reduce(value))
+export const PermissiveAsync: AsyncWrapperType = reducer => {
+	const { reduce } = normalizeReducer(reducer);
+	return value => Promise.resolve(reduce(value))
 		.then(syncValue => Permissive(f => f)(syncValue))
-;
+	;
+};
