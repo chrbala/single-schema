@@ -2,11 +2,7 @@
 
 import test from 'ava';
 
-import { 
-	combineReducers, 
-	combineReducersAsync, 
-} from './validate';
-
+import { combineReducers, combineReducersAsync } from './validate';
 import { EXTRA_KEY_TEXT } from './strings';
 
 const IS_STRING_ERROR = 'Must be string';

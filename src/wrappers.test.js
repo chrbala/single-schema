@@ -2,17 +2,8 @@
 
 import test from 'ava';
 
-import { 
-	combineReducers, 
-	combineReducersAsync, 
-} from './validate';
-
-import {
-	NonNull, 
-	Permissive,
-	PermissiveAsync,
-} from './wrappers';
-
+import { combineReducers, combineReducersAsync } from './validate';
+import { NonNull, Permissive, PermissiveAsync } from './wrappers';
 import { MISSING_KEY_TEXT } from './strings';
 
 const IS_STRING_ERROR = 'Must be string';
