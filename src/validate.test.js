@@ -4,12 +4,18 @@ import test from 'ava';
 import { 
 	combineReducers, 
 	combineReducersAsync, 
+} from './validate';
+
+import {
 	NonNull, 
 	Permissive,
 	PermissiveAsync,
+} from './wrappers';
+
+import {
 	EXTRA_KEY_TEXT,
 	MISSING_KEY_TEXT,
-} from './validate';
+} from './strings';
 
 const IS_STRING_ERROR = 'Must be string';
 const isString = value => typeof value == 'string'
