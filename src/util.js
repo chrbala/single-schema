@@ -13,7 +13,7 @@ export const isAsync = (fn: () => mixed) => {
 		return false;
 	}
 };
-export const checkIfErrors = (output: *) => 
+export const checkIfResults = (output: *) => 
 	Object.keys(output).length ? output : null;
 
 type NormalizeType = (reducer: ReducerType) => NormalizedReducerType;

@@ -1,6 +1,6 @@
 // @flow
 
-import { isPromise, checkIfErrors, normalizeReducer } from './util';
+import { isPromise, checkIfResults, normalizeReducer } from './util';
 import { 
 	PROMISE_NOT_PERCOLATED_ERROR, 
 	EXTRA_KEY_TEXT, 
@@ -62,7 +62,7 @@ export const Permissive: WrapperType = validator => {
 		for (const key in result)
 			if (result[key] !== EXTRA_KEY_TEXT)
 				out[key] = result[key];
-		return checkIfErrors(out);
+		return checkIfResults(out);
 	};
 
 	return { ...reducer, validate };

@@ -1,6 +1,6 @@
 // @flow
 
-import { isPromise, checkIfErrors, normalizeReducer } from './util';
+import { isPromise, checkIfResults, normalizeReducer } from './util';
 import type { CombineReducersType } from './types';
 import { PROMISE_NOT_PERCOLATED_ERROR, EXTRA_KEY_TEXT } from './strings';
 
@@ -27,39 +27,39 @@ const combineReducersBuilder: CombineReducersType = isAsync => props => {
 		if (!data)
 			return isAsync ? Promise.resolve(null) : null;
 
-		const errors = {};
+		const results = {};
 
 		for (const key in props)
 			if (lastOutput && typeof lastOutput == 'object' && lastInput && (key in lastInput) && (data[key] === lastInput[key])) {
 				if (key in lastOutput)
-					errors[key] = lastOutput[key];
+					results[key] = lastOutput[key];
 			} else if (key in data) {
 				const execute = normalizeReducer(props[key])[executorType];
 				const error = execute(data[key]);
 				if (error !== null) 
-					errors[key] = error;
+					results[key] = error;
 			}
 
 		for (const key in data)
 			if (!props[key])
-				errors[key] = EXTRA_KEY_TEXT;
+				results[key] = EXTRA_KEY_TEXT;
 
 		lastInput = data;
-		allLastOutput = { ...allLastOutput, [executorType]: errors };
+		allLastOutput = { ...allLastOutput, [executorType]: results };
 
 		if (isAsync) 
 			return (async () => {
 				const asyncOutput = {};
-				for (const key in errors) {
-					const error = await errors[key];
+				for (const key in results) {
+					const error = await results[key];
 					if (error !== null)
 						asyncOutput[key] = error;
 				}
 
-				return checkIfErrors(asyncOutput);
+				return checkIfResults(asyncOutput);
 			})();
 
-		return checkIfErrors(errors);
+		return checkIfResults(results);
 	};
 
 	const out = {
