@@ -6,6 +6,7 @@ import {
 	combineReducersAsync, 
 	NonNull, 
 	Permissive,
+	PermissiveAsync,
 	EXTRA_KEY_TEXT,
 	MISSING_KEY_TEXT,
 } from './validate';
@@ -221,6 +222,21 @@ test('Unexpected property on permissive type', t => {
 	t.deepEqual(actual, expected);
 });
 
+test('Unexpected property on async permissive type', async t => {
+	const validateAsync = PermissiveAsync(combineReducersAsync({
+		key: isString,
+		key2: isString,
+	}));
+
+	const actual = await validateAsync({
+		key: 'value',
+		key2: 'value',
+		key3: 'value',
+	});
+	const expected = null;
+	t.deepEqual(actual, expected);
+});
+
 (() => {
 	const validate = combineReducers({
 		key: isString,
@@ -368,5 +384,17 @@ test('Promises on keys should percolate up to combineReducersAsync', t => {
 		combineReducers({
 			key: async () => null,
 		});
+	});
+});
+
+test('NonNull must be used on a sync reducer', t => {
+	t.throws(() => {
+		NonNull(async () => null);
+	});
+});
+
+test('Permissive must be used on a sync reducer', t => {
+	t.throws(() => {
+		Permissive(async () => null);
 	});
 });
