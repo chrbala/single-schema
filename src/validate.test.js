@@ -49,6 +49,87 @@ const isString = value => typeof value == 'string'
 	});
 })();
 
+test('Top level undefined passes', t => {
+	const validate = combineReducers({
+		key: isString,
+	});
+	const actual = validate(undefined);
+	const expected = null;
+	t.deepEqual(actual, expected);
+});
+
+test('Top level undefined NonNull does not pass', t => {
+	const validate = NonNull(combineReducers({
+		key: isString,
+	}));
+	const actual = validate(undefined);
+	const expected = MISSING_KEY_TEXT;
+	t.deepEqual(actual, expected);
+});
+
+test('Caches simple results when called with identical data', t => {
+	let count = 0;
+	const keyValidator = () => (count++, null);
+	const validate = combineReducers({
+		key: keyValidator,
+	});
+	t.is(count, 1);
+
+	const data = {key: 'value'};
+	validate(data);
+	t.is(count, 2);
+
+	validate(data);
+	t.is(count, 2);
+});
+
+test('Invalidate cache when data changes', t => {
+	let count = 0;
+	const keyValidator = () => (count++, null);
+	const validate = combineReducers({
+		key: keyValidator,
+	});
+	t.is(count, 1);
+
+	validate({key: 'value'});
+	t.is(count, 2);
+
+	validate({key: 'hello'});
+	t.is(count, 3);
+});
+
+test('Reruns fragments of complex data types when data changes', t => {
+	let shallowCount = 0;
+	const shallowValidator = () => (shallowCount++, null);
+
+	let deepCount = 0;
+	const deepValidator = () => (deepCount++, null);
+
+	const validate = combineReducers({
+		shallow: shallowValidator,
+		key: combineReducers({
+			deep: deepValidator,
+		}),
+	});
+	t.is(shallowCount, 1);
+	t.is(deepCount, 1);
+
+	let data = {
+		shallow: 'value',
+		key: {
+			deep: 'value',
+		},
+	};
+	validate(data);
+	t.is(shallowCount, 2);
+	t.is(deepCount, 2);
+
+	data = { ...data, key: { deep: 'hello' }};
+	validate(data);
+	t.is(shallowCount, 2);
+	t.is(deepCount, 3);
+});
+
 (() => {
 	const validate = combineReducers({
 		key: isString,
@@ -126,7 +207,7 @@ test('Unexpected property', t => {
 });
 
 test('Unexpected property on permissive type', t => {
-	const validate = combineReducers(Permissive({
+	const validate = Permissive(combineReducers({
 		key: isString,
 		key2: isString,
 	}));
@@ -145,7 +226,7 @@ test('Unexpected property on permissive type', t => {
 		key: isString,
 		key2: value => !value 
 			? 'Expected object type'
-			: value.match1 == value.match2
+			: value.match1 === value.match2
 				? null
 				: 'Expected match1 and match2 to match',
 	});
@@ -180,6 +261,7 @@ test('Unexpected property on permissive type', t => {
 (() => {
 	const emails = {
 		'emailAlreadyExists@gmail.com': true,
+		'anotherEmailAlreadyExists@gmail.com': true,
 	};
 	const EMAIL_EXISTS_ERROR = 'Email account is already registered.';
 	const emailAccountExistsAsync = async email => email && emails[email]
@@ -210,7 +292,7 @@ test('Unexpected property on permissive type', t => {
 			const actual = await validateAsync({
 				key: {
 					name: 'bob',
-					email: 'emailAlreadyExists@gmail.com',
+					email: Object.keys(emails)[0],
 				},
 			});
 			const expected = {
@@ -239,7 +321,18 @@ test('Unexpected property on permissive type', t => {
 
 		test('Async single failure on validation with multiple keys', async t => {
 			const actual = await validateAsync({
-				email: 'emailAlreadyExists@gmail.com',
+				email: Object.keys(emails)[0],
+				secondaryEmail: 'emailDoesNotExist@gmail.com',
+			});
+			const expected = {
+				email: EMAIL_EXISTS_ERROR,
+			};
+			t.deepEqual(actual, expected);
+		});
+
+		test('Async single failure on validation with multiple keys', async t => {
+			const actual = await validateAsync({
+				email: Object.keys(emails)[0],
 				secondaryEmail: 'emailDoesNotExist@gmail.com',
 			});
 			const expected = {
@@ -250,8 +343,8 @@ test('Unexpected property on permissive type', t => {
 
 		test('Async multiple failure on validation with multiple keys', async t => {
 			const actual = await validateAsync({
-				email: 'emailAlreadyExists@gmail.com',
-				secondaryEmail: 'emailAlreadyExists@gmail.com',
+				email: Object.keys(emails)[0],
+				secondaryEmail: Object.keys(emails)[1],
 			});
 			const expected = {
 				email: EMAIL_EXISTS_ERROR,

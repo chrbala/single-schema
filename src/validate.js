@@ -1,48 +1,45 @@
 // @flow
 
-type ErrorType = string | {[key: string]: ErrorType};
-type SuccessType = null;
-type ReturnType = ErrorType | SuccessType;
-
-/* Wrap section */ 
-const allOptions = {
-	NON_NULL: 'NON_NULL',
-	PERMISSIVE: 'PERMISSIVE',
-};
-type OptionType = $Keys<typeof allOptions>;
-type SelectedOptionsType = {[key: OptionType]: boolean};
-
-class Wrap<T> {
-	options: SelectedOptionsType;
-	value: T;
-
-	constructor(_value: T, newOption: ?OptionType) {
-		const { options, value } = Wrap.unwrap(_value);
-		this.value = value;
-		this.options = newOption ? {...options, [newOption]: true} : options;
-	}
-
-	static unwrap(value: * | Wrap<*>): { value: *, options: SelectedOptionsType} {
-		if (value instanceof Wrap)
-			return {value: value.value, options: value.options};
-		return { value, options: {} };
-	}
-}
-
-type ReducerType = Wrap<*> | (data: *) => ReturnType;
-
-export const NonNull: ReducerType => Wrap<ReducerType> = 
-	value => new Wrap(value, allOptions.NON_NULL);
-
-export const Permissive: * => Wrap<*> = 
-	(value: *) => new Wrap(value, allOptions.PERMISSIVE);
-
-/* Reducer section */
 export const EXTRA_KEY_TEXT = 'unexpected property';
 export const MISSING_KEY_TEXT = 'missing property';
 export const PROMISE_NOT_PERCOLATED_ERROR = 
 	'Asynchronous validators must be used with CombineReducersAsyncType'
 ;
+
+type ErrorType = *;
+type SuccessType = null;
+type ReturnType = ErrorType | SuccessType;
+
+type ReducerType = (data: *) => ReturnType;
+
+type WrapperType = (reduce: ReducerType) => (errors: ReturnType) => ReturnType;
+
+const isPromise = value => value === Promise.resolve(value);
+const checkIfErrors = output => Object.keys(output).length ? output : null;
+
+export const NonNull: WrapperType = 
+	reduce => value => value !== undefined && value !== null
+		? reduce(value)
+		: MISSING_KEY_TEXT
+;
+
+export const Permissive: WrapperType = reduce => value => {
+	const out = {};
+	const result = reduce(value);
+	if (!result)
+		return result;
+
+	if (typeof result === 'string') {
+		if (result == EXTRA_KEY_TEXT)
+			return null;
+		return result;
+	}
+	
+	for (const key in result)
+		if (result[key] !== EXTRA_KEY_TEXT)
+			out[key] = result[key];
+	return checkIfErrors(out);
+};
 
 type CombineReducersType = 
 	(isAsync: boolean) =>
@@ -50,58 +47,54 @@ type CombineReducersType =
 			(data: *) => ReturnType
 ;
 
-const isPromise = value => value === Promise.resolve(value);
-const checkIfErrors = output => Object.keys(output).length ? output : null;
+const combineReducersBuilder: CombineReducersType = isAsync => props => {
+	let lastInput;
+	let lastOutput = {};
 
-const combineReducersBuilder: CombineReducersType = isAsync => _props => {
-	const { options: propsOptions, value: props } = Wrap.unwrap(_props);
-
-	if (!isAsync)
-		for (const key in props) {
-			const { value: reduce } = Wrap.unwrap(props[key]);
-			const initialValue = reduce(undefined);
-			if (isPromise(initialValue))
-				throw new Error(PROMISE_NOT_PERCOLATED_ERROR);
-		}
+	for (const key in props) {
+		const reduce = props[key];
+		lastOutput = reduce(lastInput);
+		if (!isAsync && isPromise(lastOutput))
+			throw new Error(PROMISE_NOT_PERCOLATED_ERROR);
+	}
 
 	return data => {
 		if (!data)
 			return isAsync ? Promise.resolve(null) : null;
 
 		const errors = {};
-		const missing = {};
-		const extra = {};
 
-		for (const key in props) {
-			const { options: reducerOptions, value: reduce } = Wrap.unwrap(props[key]);
-			if (reducerOptions[allOptions.NON_NULL] && !data[key])
-				missing[key] = MISSING_KEY_TEXT;
-			else if (key in data) {
+		for (const key in props)
+			if (lastOutput && lastInput && (key in lastInput) && (data[key] === lastInput[key])) {
+				if (key in lastOutput)
+					errors[key] = lastOutput[key];
+			} else if (key in data) {
+				const reduce = props[key];
 				const error = reduce(data[key]);
 				if (error !== null) 
 					errors[key] = error;
 			}
-		}
 
-		if (!propsOptions[allOptions.PERMISSIVE])
-			for (const key in data)
-				if (!props[key])
-					extra[key] = EXTRA_KEY_TEXT;
+		for (const key in data)
+			if (!props[key])
+				errors[key] = EXTRA_KEY_TEXT;
 
-		const output = { ...errors, ...missing, ...extra };
+		lastInput = data;
+		lastOutput = errors;
 
-		if (isAsync)
+		if (isAsync) 
 			return (async () => {
 				const asyncOutput = {};
-				for (const key in output) {
-					const error = await output[key];
+				for (const key in errors) {
+					const error = await errors[key];
 					if (error !== null)
 						asyncOutput[key] = error;
 				}
+
 				return checkIfErrors(asyncOutput);
 			})();
 
-		return checkIfErrors(output);
+		return checkIfErrors(errors);
 	};
 };
 
