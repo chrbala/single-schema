@@ -64,7 +64,7 @@ const combineReducersBuilder: CombineReducersType = isAsync => _props => {
 
 	return data => {
 		if (!data)
-			return null;
+			return isAsync ? Promise.resolve(null) : null;
 
 		const errors = {};
 		const missing = {};
