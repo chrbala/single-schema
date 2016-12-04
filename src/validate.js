@@ -4,9 +4,9 @@ import { isPromise, checkIfErrors, normalizeReducer } from './util';
 import type { CombineReducersType } from './types';
 import { PROMISE_NOT_PERCOLATED_ERROR, EXTRA_KEY_TEXT } from './strings';
 
-const passthroughFn = f => f;
-
 const combineReducersBuilder: CombineReducersType = isAsync => props => {
+	const passthroughFn = isAsync ? f => Promise.resolve(f) : f => f;
+
 	let lastInput;
 	let allLastOutput: {[key: $Keys<typeof props>]: *} = {};
 	const types = {};
