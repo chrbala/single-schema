@@ -8,6 +8,18 @@ import {
 } from './strings';
 import type { WrapperType } from './types';
 
+type WrapAsyncType = (w: WrapperType, k: string) => WrapperType;
+const wrapAsync: WrapAsyncType = (wrapper, kind) => toBeWrapped => {
+	const reducer = normalizeReducer(toBeWrapped);
+	const wrapped = value => Promise.resolve(reducer[kind](value))
+		.then(syncValue => {
+			const childReducer = wrapper(f => f);
+			return childReducer[kind](syncValue);
+		});
+	;
+	return { ...reducer, [kind]: wrapped };
+};
+
 const throwIfAsync = validator => {
 	const { validate } = normalizeReducer(validator);
 	if (isPromise(validate(undefined)))
@@ -26,6 +38,8 @@ validator => {
 
 	return { ...reducer, validate };
 };
+
+export const NonNullAsync = wrapAsync(NonNull, 'validate');
 
 export const Permissive: WrapperType = validator => {
 	const reducer = normalizeReducer(validator);
@@ -46,13 +60,4 @@ export const Permissive: WrapperType = validator => {
 	return { ...reducer, validate };
 };
 
-export const PermissiveAsync: WrapperType = validator => {
-	const reducer = normalizeReducer(validator);
-	const validate = value => Promise.resolve(reducer.validate(value))
-		.then(syncValue => {
-			const childReducer = Permissive(f => f);
-			return childReducer.validate(syncValue);
-		});
-	;
-	return { ...reducer, validate };
-};
+export const PermissiveAsync = wrapAsync(Permissive, 'validate');

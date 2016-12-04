@@ -3,6 +3,7 @@
 import test from 'ava';
 
 import { combineReducers, combineReducersAsync } from './validate';
+import { isAsync } from './util';
 import { EXTRA_KEY_TEXT } from './strings';
 
 const IS_STRING_ERROR = 'Must be string';
@@ -202,6 +203,11 @@ test('Unexpected property', t => {
 		t.deepEqual(actual, expected);
 	});
 })();
+
+test('Async reducers create async validator', t => {
+	const { validate } = combineReducersAsync({});
+	t.true(isAsync(validate));
+});
 
 (() => {
 	const emails = {

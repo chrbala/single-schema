@@ -5,3 +5,4 @@
 * Watch out:
 	* Data must be Immutable POJOs
 	* Instanceof check
+	* Caching

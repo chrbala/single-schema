@@ -13,16 +13,16 @@ const combineReducersBuilder: CombineReducersType = isAsync => props => {
  
 	for (const key in props) {
 		const reducer = normalizeReducer(props[key]); 
-		for (const reducerType in reducer) {
-			types[reducerType] = true;
-			const output = allLastOutput[reducerType] = reducer[reducerType](lastInput);
+		for (const executorType in reducer) {
+			types[executorType] = true;
+			const output = allLastOutput[executorType] = reducer[executorType](lastInput);
 			if (!isAsync && isPromise(output))
 				throw new Error(PROMISE_NOT_PERCOLATED_ERROR);
 		}
 	}
 
-	const createReducer = reducerType => data => {
-		const lastOutput = allLastOutput[reducerType];
+	const createReducer = executorType => data => {
+		const lastOutput = allLastOutput[executorType];
 
 		if (!data)
 			return isAsync ? Promise.resolve(null) : null;
@@ -34,9 +34,8 @@ const combineReducersBuilder: CombineReducersType = isAsync => props => {
 				if (key in lastOutput)
 					errors[key] = lastOutput[key];
 			} else if (key in data) {
-				const reducer = props[key];
-				const { validate } = normalizeReducer(reducer);
-				const error = validate(data[key]);
+				const execute = normalizeReducer(props[key])[executorType];
+				const error = execute(data[key]);
 				if (error !== null) 
 					errors[key] = error;
 			}
@@ -46,7 +45,7 @@ const combineReducersBuilder: CombineReducersType = isAsync => props => {
 				errors[key] = EXTRA_KEY_TEXT;
 
 		lastInput = data;
-		allLastOutput = { ...allLastOutput, [reducerType]: errors };
+		allLastOutput = { ...allLastOutput, [executorType]: errors };
 
 		if (isAsync) 
 			return (async () => {
