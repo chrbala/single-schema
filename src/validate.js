@@ -10,30 +10,32 @@ const allOptions = {
 	PERMISSIVE: 'PERMISSIVE',
 };
 type OptionType = $Keys<typeof allOptions>;
+type SelectedOptionsType = {[key: OptionType]: boolean};
 
-class Wrap {
-	options: {[key: OptionType]: boolean};
-	value: *;
+class Wrap<T> {
+	options: SelectedOptionsType;
+	value: T;
 
-	constructor(_value: *, newOption: ?OptionType) {
-		const { options, value } = Wrap.ensureWrapped(_value);
+	constructor(_value: T, newOption: ?OptionType) {
+		const { options, value } = Wrap.unwrap(_value);
 		this.value = value;
 		this.options = newOption ? {...options, [newOption]: true} : options;
 	}
 
-	static ensureWrapped(value: *) {
+	static unwrap(value: * | Wrap<*>): { value: *, options: SelectedOptionsType} {
 		if (value instanceof Wrap)
-			return value;
+			return {value: value.value, options: value.options};
 		return { value, options: {} };
 	}
 }
 
-type ReducerType = Wrap | (data: *) => ReturnType;
+type ReducerType = Wrap<*> | (data: *) => ReturnType;
 
-export const NonNull = (value: ReducerType) => 
-	new Wrap(value, allOptions.NON_NULL);
+export const NonNull: ReducerType => Wrap<ReducerType> = 
+	value => new Wrap(value, allOptions.NON_NULL);
 
-export const Permissive = (value: *) => new Wrap(value, allOptions.PERMISSIVE);
+export const Permissive: * => Wrap<*> = 
+	(value: *) => new Wrap(value, allOptions.PERMISSIVE);
 
 /* Reducer section */
 export const EXTRA_KEY_TEXT = 'unexpected property';
@@ -48,15 +50,15 @@ type CombineReducersType =
 			(data: *) => ReturnType
 ;
 
-const isPromise = value => value == Promise.resolve(value);
+const isPromise = value => value === Promise.resolve(value);
 const checkIfErrors = output => Object.keys(output).length ? output : null;
 
 const combineReducersBuilder: CombineReducersType = isAsync => _props => {
-	const { options: propsOptions, value: props } = Wrap.ensureWrapped(_props);
+	const { options: propsOptions, value: props } = Wrap.unwrap(_props);
 
 	if (!isAsync)
 		for (const key in props) {
-			const { value: reduce } = Wrap.ensureWrapped(props[key]);
+			const { value: reduce } = Wrap.unwrap(props[key]);
 			const initialValue = reduce(undefined);
 			if (isPromise(initialValue))
 				throw new Error(PROMISE_NOT_PERCOLATED_ERROR);
@@ -71,7 +73,7 @@ const combineReducersBuilder: CombineReducersType = isAsync => _props => {
 		const extra = {};
 
 		for (const key in props) {
-			const { options: reducerOptions, value: reduce } = Wrap.ensureWrapped(props[key]);
+			const { options: reducerOptions, value: reduce } = Wrap.unwrap(props[key]);
 			if (reducerOptions[allOptions.NON_NULL] && !data[key])
 				missing[key] = MISSING_KEY_TEXT;
 			else if (key in data) {

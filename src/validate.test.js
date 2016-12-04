@@ -182,7 +182,7 @@ test('Unexpected property on permissive type', t => {
 		'emailAlreadyExists@gmail.com': true,
 	};
 	const EMAIL_EXISTS_ERROR = 'Email account is already registered.';
-	const emailAccountExistsAsync = async email => emails[email]
+	const emailAccountExistsAsync = async email => email && emails[email]
 		? EMAIL_EXISTS_ERROR
 		: null
 	;
