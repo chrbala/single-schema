@@ -8,16 +8,24 @@ import {
 } from './strings';
 import type { WrapperType } from './types';
 
-type WrapAsyncType = (w: WrapperType, k: string) => WrapperType;
-const wrapAsync: WrapAsyncType = (wrapper, kind) => toBeWrapped => {
+const passthroughAsyncFn = f => Promise.resolve(f);
+type WrapAsyncType = (w: WrapperType) => WrapperType;
+const wrapAsync: WrapAsyncType = wrapper => toBeWrapped => {
 	const reducer = normalizeReducer(toBeWrapped);
-	const wrapped = value => Promise.resolve(reducer[kind](value))
+	const out = {
+		validate: passthroughAsyncFn,
+	};
+
+	const wrap = kind => value => Promise.resolve(reducer[kind](value))
 		.then(syncValue => {
 			const childReducer = wrapper(f => f);
 			return childReducer[kind](syncValue);
 		});
 	;
-	return { ...reducer, [kind]: wrapped };
+
+	for (const kind in reducer)
+		out[kind] = wrap(kind);
+	return out;
 };
 
 const throwIfAsync = validator => {
