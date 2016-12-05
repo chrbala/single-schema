@@ -35,8 +35,7 @@ const throwIfAsync = validator => {
 			throw new Error(PROMISE_NOT_PERCOLATED_ERROR);
 };
 
-export const NonNull: WrapperType = 
-validator => {
+export const NonNull: WrapperType = validator => {
 	const reducer = normalizeReducer(validator);
 	throwIfAsync(reducer);
 
