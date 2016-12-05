@@ -56,6 +56,27 @@ test('Complex sync reducers simple coercion', t => {
 });
 
 test('Complex sync reducers propogate upwards', t => {
+	const { coerce } = combineReducers({
+		key: combineReducers({
+			deep: stringReducer,
+		}),
+	});
+
+	const data = {
+		key: {
+			deep: 1234,
+		},
+	};
+	const actual = coerce(data);
+	const expected = {
+		key: {
+			deep: '1234',
+		},
+	};
+	t.deepEqual(actual, expected);
+});
+
+test('Complex sync reducer integration test', t => {
 	const reducer = combineReducers({
 		key: combineReducers({
 			deep: stringReducer,
