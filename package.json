@@ -6,11 +6,15 @@
   "scripts": {
     "lint": "eslint src --fix",
     "flow": "flow",
-    "test": "ava",
-    "validate": "npm run lint && npm run flow && npm run test"
+    "test": "ava src/**/*.test.js",
+    "validate": "npm run lint && npm run flow && npm run test",
+    "build-flow": "cp -r src lib && renamer --regex --find '.js$' --replace '.js.flow' 'lib/**/*'",
+    "build": "babel src --out-dir lib",
+    "prepublish": "rm -rf lib && npm run build-flow && npm run build"
   },
   "devDependencies": {
     "ava": "^0.17.0",
+    "babel-cli": "^6.18.0",
     "babel-core": "^6.18.2",
     "babel-plugin-syntax-flow": "^6.18.0",
     "babel-plugin-transform-flow-strip-types": "^6.18.0",
@@ -19,7 +23,8 @@
     "babel-preset-stage-0": "^6.16.0",
     "chrbala-linter": "^1.0.5",
     "eslint": "^3.11.1",
-    "flow-bin": "^0.36.0"
+    "flow-bin": "^0.36.0",
+    "renamer": "^0.6.1"
   },
   "ava": {
     "require": [
