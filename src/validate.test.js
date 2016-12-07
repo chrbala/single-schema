@@ -29,18 +29,23 @@ const isString = value => typeof value == 'string'
 	test('Basic failing validation', t => {
 		const actual = validate({
 			key: 'value',
-			key2: 'value',
+			key2: 123,
 		});
-		const expected = null;
+		const expected = {
+			key2: IS_STRING_ERROR,
+		};
 		t.deepEqual(actual, expected);
 	});
 
 	test('Basic failing validation with multiple keys', t => {
 		const actual = validate({
-			key: 'value',
-			key2: 'value',
+			key: 123,
+			key2: 456,
 		});
-		const expected = null;
+		const expected = {
+			key: IS_STRING_ERROR,
+			key2: IS_STRING_ERROR,
+		};
 		t.deepEqual(actual, expected);
 	});
 })();
@@ -138,13 +143,15 @@ test('Reruns fragments of complex data types when data changes', t => {
 
 	test('Nested failing validation', t => {
 		const actual = validate({
-			key: 123,
+			key: 'value',
 			key2: {
-				deep: 'value',
+				deep: 123,
 			},
 		});
 		const expected = {
-			key: IS_STRING_ERROR,
+			key2: {
+				deep: IS_STRING_ERROR,
+			},
 		};
 		t.deepEqual(actual, expected);
 	});

@@ -6,7 +6,7 @@ import {
 	EXTRA_KEY_TEXT, 
 	MISSING_KEY_TEXT,
 } from './strings';
-import type { WrapperType } from './types';
+import type { WrapperType, ReducerType, NormalizedReducerType } from './types';
 
 const passthroughAsyncFn = f => Promise.resolve(f);
 type WrapAsyncType = (w: WrapperType) => WrapperType;
@@ -69,3 +69,27 @@ export const Permissive: WrapperType = validator => {
 };
 
 export const PermissiveAsync = wrapAsync(Permissive, 'validate');
+
+export const And = 
+	(...validators: Array<ReducerType>) => {
+		const reducers = validators.map(normalizeReducer);
+		reducers.forEach(throwIfAsync);
+		const finalReducer: NormalizedReducerType = reducers.reduce(
+			(acc, next) => {
+				const out = { ...acc };
+				for (const key in next)
+					out[key] = 
+						key == 'validate'
+							? value => acc[key](value) || next[key](value)
+							: acc[key]
+								? value => next[key](acc[key](value))
+								: next[key]
+					;
+				return out;
+			}, {
+				validate: () => null,
+			})
+		;
+
+		return finalReducer;
+	};
