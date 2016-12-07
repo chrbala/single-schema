@@ -26,7 +26,7 @@ test('Top level undefined NonNull does not pass', t => {
 		key2: NonNull(isString),
 	});
 
-	test('Missing normal property', t => {
+	test.skip('Missing normal property', t => {
 		const actual = validate({
 			key2: 'value',
 		});
@@ -34,7 +34,7 @@ test('Top level undefined NonNull does not pass', t => {
 		t.deepEqual(actual, expected);
 	});
 
-	test('Missing NonNull property', t => {
+	test.skip('Missing NonNull property', t => {
 		const actual = validate({
 			key: 'value',
 			key2: null,

@@ -65,14 +65,14 @@ test('Caches simple results when called with identical data', t => {
 	const { validate } = combineReducers({
 		key: keyValidator,
 	});
-	t.is(count, 1);
+	t.is(count, 0);
 
 	const data = {key: 'value'};
 	validate(data);
-	t.is(count, 2);
+	t.is(count, 1);
 
 	validate(data);
-	t.is(count, 2);
+	t.is(count, 1);
 });
 
 test('Invalidate cache when data changes', t => {
@@ -81,13 +81,13 @@ test('Invalidate cache when data changes', t => {
 	const { validate } = combineReducers({
 		key: keyValidator,
 	});
-	t.is(count, 1);
+	t.is(count, 0);
 
 	validate({key: 'value'});
-	t.is(count, 2);
+	t.is(count, 1);
 
 	validate({key: 'hello'});
-	t.is(count, 3);
+	t.is(count, 2);
 });
 
 test('Reruns fragments of complex data types when data changes', t => {
@@ -103,8 +103,8 @@ test('Reruns fragments of complex data types when data changes', t => {
 			deep: deepValidator,
 		}),
 	});
-	t.is(shallowCount, 1);
-	t.is(deepCount, 1);
+	t.is(shallowCount, 0);
+	t.is(deepCount, 0);
 
 	let data = {
 		shallow: 'value',
@@ -113,13 +113,13 @@ test('Reruns fragments of complex data types when data changes', t => {
 		},
 	};
 	validate(data);
-	t.is(shallowCount, 2);
-	t.is(deepCount, 2);
+	t.is(shallowCount, 1);
+	t.is(deepCount, 1);
 
 	data = { ...data, key: { deep: 'hello' }};
 	validate(data);
-	t.is(shallowCount, 2);
-	t.is(deepCount, 3);
+	t.is(shallowCount, 1);
+	t.is(deepCount, 2);
 });
 
 (() => {
@@ -302,18 +302,65 @@ test('Async reducers create async validator', t => {
 	})();
 })();
 
-test('combineReducersAsync must percolate up', t => {
-	t.throws(() => {
-		combineReducers({
-			key: combineReducersAsync({}),
-		});
-	});
-});
+(() => {
+	const shapeReducer = {
+		validate: () => null,
+	};
 
-test('Promises on keys should percolate up to combineReducersAsync', t => {
-	t.throws(() => {
-		combineReducers({
-			key: async () => null,
+	test('Basic shape', t => {
+		const { shape } = combineReducers({
+			key: shapeReducer,
+			key2: shapeReducer,
 		});
+
+		const actual = shape();
+		const expected = {
+			key: true,
+			key2: true,
+		};
+
+		t.deepEqual(actual, expected);
 	});
-});
+
+	test('Deep shape', t => {
+		const { shape } = combineReducers({
+			key: shapeReducer,
+			key2: combineReducers({
+				deep: combineReducers({
+					deeper: combineReducers({
+						deepest: shapeReducer,
+					}),
+				}),
+			}),
+		});
+
+		const actual = shape();
+		const expected = {
+			key: true,
+			key2: {
+				deep: {
+					deeper: {
+						deepest: true,
+					},
+				},
+			},
+		};
+
+		t.deepEqual(actual, expected);
+	});
+
+	test.skip('Async shape', async t => {
+		const { shape } = combineReducersAsync({
+			key: shapeReducer,
+			key2: shapeReducer,
+		});
+
+		const actual = await shape();
+		const expected = {
+			key: true,
+			key2: true,
+		};
+
+		t.deepEqual(actual, expected);
+	});
+})();

@@ -4,6 +4,108 @@ import { isPromise, checkIfResults, normalizeReducer } from './util';
 import type { CombineReducersType } from './types';
 import { PROMISE_NOT_PERCOLATED_ERROR, EXTRA_KEY_TEXT } from './strings';
 
+const mapObj = (obj, cb) => {
+	const out = {};
+	for (const key in obj)
+		out[key] = cb(obj[key], key);
+	return out;
+};
+const createCombineReducers = (flatteners: {}, standard: ?string) => (children: *) => {
+	const out = {};
+	for (const name in flatteners) {
+		const childFlatteners = mapObj(children, 
+			(child) => standard && standard == name && typeof child == 'function'
+				? child
+				: child[name]
+		);
+		out[name] = flatteners[name](childFlatteners);
+	}
+	return out;
+};
+
+const Iterator = (caches: boolean) => {
+	let lastInput = {};
+	let lastOutput = null;
+	const cache = {};
+	let initial = true;
+
+	return (keyset, data, cb) => {
+		if (!initial && data === lastInput)
+			return lastOutput;
+
+		const out = {};
+		for (const key in keyset) 
+			if (!initial && data[key] === lastInput[key])
+				out[key] = cache[key];
+			else
+				cache[key] = out[key] = cb(keyset[key], data[key], key);
+
+		if (caches) {
+			lastInput = data;
+			lastOutput = out;
+			initial = false;
+		}
+		
+		return out;
+	};
+};
+
+const clean = obj => {
+	const out = {};
+	for (const key in obj)
+		if (obj[key] !== null)
+			out[key] = obj[key];
+	return out;
+};
+
+const Validator = ({cache} = {}) => children => {
+	const iterate = Iterator(cache);
+
+	return data => {
+		if (!data)
+			return null;
+
+		const out = clean(iterate(children, data, 
+			(child, datum) => child(datum)
+		));
+
+		for (const key in data)
+			if (!children[key])
+				out[key] = EXTRA_KEY_TEXT;
+
+		return Object.keys(out).length ? out : null;
+	};
+};
+
+const subset = (obj1, obj2) => {
+	const out = {};
+	for (const key in obj2) 
+		out[key] = obj1[key];
+	return out;
+};
+const Coercer = ({cache} = {}) => children => {
+	const iterate = Iterator(cache);
+
+	return data => iterate(subset(children, data), data, 
+		(child, datum) => child ? child(datum) : datum
+	);
+};
+
+const Shaper = () => children => () => {
+	const out = {};
+	for (const key in children) {
+		const child = children[key];
+		out[key] = child ? child() : true;
+	}
+	return out;
+};
+
+export const combineReducers = createCombineReducers({
+	validate: Validator({cache: true}),
+	coerce: Coercer({cache: true}),
+	shape: Shaper(),
+}, 'validate');
+
 const combineReducersBuilder: CombineReducersType = isAsync => props => {
 	let lastInput;
 	let allLastOutput: {[key: $Keys<typeof props>]: *} = {};
@@ -69,5 +171,5 @@ const combineReducersBuilder: CombineReducersType = isAsync => props => {
 	return out;
 };
 
-export const combineReducers = combineReducersBuilder(false);
+// export const combineReducers = combineReducersBuilder(false);
 export const combineReducersAsync = combineReducersBuilder(true);

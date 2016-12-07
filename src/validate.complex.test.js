@@ -16,13 +16,6 @@ const stringReducer = {
 	coerce: coerceString,
 };
 
-test('Complex reducer provides exactly the validate key', t => {
-	const reducer = combineReducers({});
-	const actual = Object.keys(reducer);
-	const expected = [ 'validate' ];
-	t.deepEqual(actual, expected);
-});
-
 test('Complex sync reducers base case', t => {
 	const { validate } = combineReducers({
 		key: { validate: isString },
@@ -83,10 +76,6 @@ test('Complex sync reducer integration test', t => {
 		}),
 	});
 
-	let actual = Object.keys(reducer);
-	let expected = [ 'validate', 'coerce' ];
-	t.deepEqual(actual, expected);
-
 	const { validate, coerce } = reducer;
 
 	const data = {
@@ -94,8 +83,8 @@ test('Complex sync reducer integration test', t => {
 			deep: 1234,
 		},
 	};
-	actual = validate(data);
-	expected = {
+	let actual = validate(data);
+	let expected = {
 		key: {
 			deep: IS_STRING_ERROR,
 		},
@@ -108,7 +97,7 @@ test('Complex sync reducer integration test', t => {
 	t.deepEqual(actual, expected);
 });
 
-test('Complex async reducers create async validator', t => {
+test.skip('Complex async reducers create async validator', t => {
 	const reducer = combineReducersAsync({
 		key: combineReducers({
 			deep: stringReducer,
@@ -118,7 +107,7 @@ test('Complex async reducers create async validator', t => {
 	t.true(isAsync(reducer.validate));
 });
 
-test('Complex async reducers create async arbitrary functions', t => {
+test.skip('Complex async reducers create async arbitrary functions', t => {
 	const reducer = combineReducersAsync({
 		key: combineReducers({
 			deep: stringReducer,
