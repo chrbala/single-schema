@@ -58,69 +58,6 @@ test('Top level undefined passes', t => {
 	t.deepEqual(actual, expected);
 });
 
-test('Caches simple results when called with identical data', t => {
-	let count = 0;
-	const keyValidator = () => (count++, null);
-	const { validate } = combineReducers({
-		key: keyValidator,
-	});
-	t.is(count, 0);
-
-	const data = {key: 'value'};
-	validate(data);
-	t.is(count, 1);
-
-	validate(data);
-	t.is(count, 1);
-});
-
-test('Invalidate cache when data changes', t => {
-	let count = 0;
-	const keyValidator = () => (count++, null);
-	const { validate } = combineReducers({
-		key: keyValidator,
-	});
-	t.is(count, 0);
-
-	validate({key: 'value'});
-	t.is(count, 1);
-
-	validate({key: 'hello'});
-	t.is(count, 2);
-});
-
-test('Reruns fragments of complex data types when data changes', t => {
-	let shallowCount = 0;
-	const shallowValidator = () => (shallowCount++, null);
-
-	let deepCount = 0;
-	const deepValidator = () => (deepCount++, null);
-
-	const { validate } = combineReducers({
-		shallow: shallowValidator,
-		key: combineReducers({
-			deep: deepValidator,
-		}),
-	});
-	t.is(shallowCount, 0);
-	t.is(deepCount, 0);
-
-	let data = {
-		shallow: 'value',
-		key: {
-			deep: 'value',
-		},
-	};
-	validate(data);
-	t.is(shallowCount, 1);
-	t.is(deepCount, 1);
-
-	data = { ...data, key: { deep: 'hello' }};
-	validate(data);
-	t.is(shallowCount, 1);
-	t.is(deepCount, 2);
-});
-
 (() => {
 	const { validate } = combineReducers({
 		key: isString,

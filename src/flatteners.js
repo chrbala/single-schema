@@ -1,6 +1,6 @@
 // @flow
 
-import { Iterator } from './iterator';
+import Iterator from './iterator';
 import { EXTRA_KEY_TEXT } from './strings';
 import type { ReducerType, GenericObjectType } from './types';
 
@@ -20,7 +20,7 @@ type OptionsType = {
 
 export const Validator = ({cache}: OptionsType = {}) => 
 	(children: ChildrenType) => {
-		const iterate = Iterator(cache);
+		const iterate = Iterator({cache});
 
 		return (data: GenericObjectType) => {
 			if (!data)
@@ -46,7 +46,7 @@ const subset = (obj1, obj2) => {
 };
 export const Coercer = ({cache}: OptionsType = {}) => 
 	(children: ChildrenType) => {
-		const iterate = Iterator(cache);
+		const iterate = Iterator({cache});
 
 		return (data: GenericObjectType) => iterate(subset(children, data), data, 
 			(child, datum) => child ? child(datum) : datum

@@ -2,7 +2,10 @@
 
 import type { GenericObjectType, ReducerType } from './types';
 
-export const Iterator = (caches: ?boolean) => {
+type OptionsType = {
+	cache: ?boolean,
+};
+export default ({cache: doesCache}: OptionsType) => {
 	let lastInput = {};
 	let lastOutput = null;
 	const cache = {};
@@ -19,7 +22,7 @@ export const Iterator = (caches: ?boolean) => {
 			else
 				cache[key] = out[key] = cb(keyset[key], data[key], key);
 
-		if (caches) {
+		if (doesCache) {
 			lastInput = data;
 			lastOutput = out;
 			initial = false;
