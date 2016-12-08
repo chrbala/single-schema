@@ -1,12 +1,14 @@
 // @flow
 
-export const Iterator = (caches: boolean) => {
+import type { GenericObjectType, ReducerType } from './types';
+
+export const Iterator = (caches: ?boolean) => {
 	let lastInput = {};
 	let lastOutput = null;
 	const cache = {};
 	let initial = true;
 
-	return (keyset, data, cb) => {
+	return (keyset: ReducerType<*>, data: GenericObjectType, cb: *) => {
 		if (!initial && data === lastInput)
 			return lastOutput;
 

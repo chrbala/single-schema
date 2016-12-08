@@ -2,4 +2,4 @@
 
 export { 
 	combineReducers, 
-} from './validate';
+} from './defaultCombineReducers';
