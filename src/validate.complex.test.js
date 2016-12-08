@@ -2,8 +2,7 @@
 
 import test from 'ava';
 
-import { combineReducers, combineReducersAsync } from './validate';
-import { isAsync } from './util';
+import { combineReducers } from './defaultCombineReducers';
 
 const IS_STRING_ERROR = 'Must be string';
 const isString = value => typeof value == 'string'
@@ -95,24 +94,4 @@ test('Complex sync reducer integration test', t => {
 	actual = validate(coercedData);
 	expected = null;
 	t.deepEqual(actual, expected);
-});
-
-test.skip('Complex async reducers create async validator', t => {
-	const reducer = combineReducersAsync({
-		key: combineReducers({
-			deep: stringReducer,
-		}),
-	});
-
-	t.true(isAsync(reducer.validate));
-});
-
-test.skip('Complex async reducers create async arbitrary functions', t => {
-	const reducer = combineReducersAsync({
-		key: combineReducers({
-			deep: stringReducer,
-		}),
-	});
-
-	t.true(isAsync(reducer.coerce));
 });

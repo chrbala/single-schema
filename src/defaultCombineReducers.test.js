@@ -2,8 +2,7 @@
 
 import test from 'ava';
 
-import { combineReducers, combineReducersAsync } from './validate';
-import { isAsync } from './util';
+import { combineReducers } from './defaultCombineReducers';
 import { EXTRA_KEY_TEXT } from './strings';
 
 const IS_STRING_ERROR = 'Must be string';
@@ -211,97 +210,6 @@ test('Unexpected property', t => {
 	});
 })();
 
-test('Async reducers create async validator', t => {
-	const { validate } = combineReducersAsync({});
-	t.true(isAsync(validate));
-});
-
-(() => {
-	const emails = {
-		'emailAlreadyExists@gmail.com': true,
-		'anotherEmailAlreadyExists@gmail.com': true,
-	};
-	const EMAIL_EXISTS_ERROR = 'Email account is already registered.';
-	const emailAccountExistsAsync = async email => email && emails[email]
-		? EMAIL_EXISTS_ERROR
-		: null
-	;
-
-	(() => {
-		const { validate } = combineReducersAsync({
-			key: combineReducersAsync({
-				name: isString,
-				email: emailAccountExistsAsync,
-			}),
-		});
-
-		test('Async passing validation with depth 2', async t => {
-			const actual = await validate({
-				key: {
-					name: 'bob',
-					email: 'emailDoesNotExist@gmail.com',
-				},
-			});
-			const expected = null;
-			t.deepEqual(actual, expected);
-		});
-
-		test('Async failing validation with depth 2', async t => {
-			const actual = await validate({
-				key: {
-					name: 'bob',
-					email: Object.keys(emails)[0],
-				},
-			});
-			const expected = {
-				key: {
-					email: EMAIL_EXISTS_ERROR,
-				},
-			};
-			t.deepEqual(actual, expected);
-		});
-	})();
-
-	(() => {
-		const { validate } = combineReducersAsync({
-			email: emailAccountExistsAsync,
-			secondaryEmail: emailAccountExistsAsync,
-		});
-
-		test('Async passing validation with multiple keys', async t => {
-			const actual = await validate({
-				email: 'emailDoesNotExist@gmail.com',
-				secondaryEmail: 'emailDoesNotExist@gmail.com',
-			});
-			const expected = null;
-			t.deepEqual(actual, expected);
-		});
-
-		test('Async single failure on validation with multiple keys', async t => {
-			const actual = await validate({
-				email: Object.keys(emails)[0],
-				secondaryEmail: 'emailDoesNotExist@gmail.com',
-			});
-			const expected = {
-				email: EMAIL_EXISTS_ERROR,
-			};
-			t.deepEqual(actual, expected);
-		});
-
-		test('Async multiple failure on validation with multiple keys', async t => {
-			const actual = await validate({
-				email: Object.keys(emails)[0],
-				secondaryEmail: Object.keys(emails)[1],
-			});
-			const expected = {
-				email: EMAIL_EXISTS_ERROR,
-				secondaryEmail: EMAIL_EXISTS_ERROR,
-			};
-			t.deepEqual(actual, expected);
-		});
-	})();
-})();
-
 (() => {
 	const shapeReducer = {
 		validate: () => null,
@@ -344,21 +252,6 @@ test('Async reducers create async validator', t => {
 					},
 				},
 			},
-		};
-
-		t.deepEqual(actual, expected);
-	});
-
-	test.skip('Async shape', async t => {
-		const { shape } = combineReducersAsync({
-			key: shapeReducer,
-			key2: shapeReducer,
-		});
-
-		const actual = await shape();
-		const expected = {
-			key: true,
-			key2: true,
 		};
 
 		t.deepEqual(actual, expected);
