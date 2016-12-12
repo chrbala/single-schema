@@ -9,7 +9,7 @@ type ScopeType = {
 	getState: () => {},
 };
 
-const Updator = () => 
+const Updater = () => 
 	(children: ReducerType<*>) => 
 		({subscribe: scopedSubscribe, getState: scopedGetstate}: ScopeType) => {
 			const update = (value: {}) => scopedSubscribe(value);
@@ -25,11 +25,11 @@ const Updator = () =>
 					scopedSubscribe({...scopedGetstate(), [child]: data});
 				const childStore = children[child] 
 					? children[child] 
-					: Updator()({})
+					: Updater()({})
 				;
 				update[child] = childStore({getState, subscribe});
 			}
 			return update;
 		};
 
-export default Updator;
+export default Updater;

@@ -3,10 +3,10 @@
 import test from 'ava';
 
 import createCombineReducers from '../createCombineReducers';
-import Updator from './updater';
+import Updater from './updater';
 
 const combineReducers = createCombineReducers({
-	createUpdate: Updator(),
+	createUpdate: Updater(),
 }, {
 	defaultFlattener: 'createUpdate',
 });
