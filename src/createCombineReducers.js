@@ -32,7 +32,7 @@ export default (
 		const out: ReducerType<typeof flatteners> = {};
 		for (const name in flatteners) {
 			const childFlatteners = mapObj(children,
-				(child) => defaultFlattener == name 
+				child => defaultFlattener == name 
 					&& typeof child == 'function'
 						? child
 						: child && child[name]
