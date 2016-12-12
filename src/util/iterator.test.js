@@ -1,17 +1,9 @@
 // @flow
 
 import test from 'ava';
+import Spy from '../helpers/spy';
 
 import Iterator from './iterator';
-
-test.todo('Iterator base case without cache');
-
-const Spy = () => {
-	let count = 0;
-	const execute = () => count++;
-	execute.getValue = () => count;
-	return execute;
-};
 
 test('Caches simple results when called with identical data', t => {
 	const spy = Spy();
@@ -23,13 +15,13 @@ test('Caches simple results when called with identical data', t => {
 		key: spy,
 	};
 	
-	t.is(spy.getValue(), 0);
+	t.is(spy.timesRun(), 0);
 
 	iterate(callbacks, data, child => child());
-	t.is(spy.getValue(), 1);
+	t.is(spy.timesRun(), 1);
 
 	iterate(callbacks, data, child => child());
-	t.is(spy.getValue(), 1);
+	t.is(spy.timesRun(), 1);
 });
 
 test('Invalidate cache when data changes', t => {
@@ -42,15 +34,15 @@ test('Invalidate cache when data changes', t => {
 		key: spy,
 	};
 	
-	t.is(spy.getValue(), 0);
+	t.is(spy.timesRun(), 0);
 
 	iterate(callbacks, data, child => child());
-	t.is(spy.getValue(), 1);
+	t.is(spy.timesRun(), 1);
 
 	data = { ...data, key: 'newValue' };
 
 	iterate(callbacks, data, child => child());
-	t.is(spy.getValue(), 2);
+	t.is(spy.timesRun(), 2);
 });
 
 test('Reruns fragments of data types when data changes', t => {
@@ -66,16 +58,16 @@ test('Reruns fragments of data types when data changes', t => {
 		key2: spy2,
 	};
 	
-	t.is(spy1.getValue(), 0);
-	t.is(spy2.getValue(), 0);
+	t.is(spy1.timesRun(), 0);
+	t.is(spy2.timesRun(), 0);
 
 	iterate(callbacks, data, child => child());
-	t.is(spy1.getValue(), 1);
-	t.is(spy2.getValue(), 1);
+	t.is(spy1.timesRun(), 1);
+	t.is(spy2.timesRun(), 1);
 
 	data = { ...data, key1: 'newValue' };
 
 	iterate(callbacks, data, child => child());
-	t.is(spy1.getValue(), 2);
-	t.is(spy2.getValue(), 1);
+	t.is(spy1.timesRun(), 2);
+	t.is(spy2.timesRun(), 1);
 });

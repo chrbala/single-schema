@@ -1,6 +1,6 @@
 // @flow
 
-import type { GenericObjectType, ReducerType } from './types';
+import type { GenericObjectType, ReducerType } from '../shared/types';
 
 type OptionsType = {
 	cache: ?boolean,
