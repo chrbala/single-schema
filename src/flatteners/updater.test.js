@@ -3,7 +3,7 @@
 import test from 'ava';
 
 import createCombineReducers from '../createCombineReducers';
-import Updator from './updator';
+import Updator from './updater';
 
 const combineReducers = createCombineReducers({
 	createUpdate: Updator(),
