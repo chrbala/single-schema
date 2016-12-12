@@ -22,6 +22,7 @@ test('Update is the correct shape', t => {
 	const update = createUpdate({getState, subscribe});
 	t.is(typeof update, 'function');
 	t.deepEqual(Object.keys(update), ['key']);
+	t.is(typeof update.key, 'function');
 });
 
 test('Can run a shallow update', t => {
@@ -40,7 +41,7 @@ test('Can run a shallow update', t => {
 	update(data);
 });
 
-test('Can run a deep update', t => {
+test('Can run an update on a key', t => {
 	t.plan(1);
 
 	const { createUpdate } = combineReducers({
@@ -58,7 +59,7 @@ test('Can run a deep update', t => {
 	update.key('hello');
 });
 
-test('Deep updates immutably update objects', t => {
+test('Key updates immutably update objects', t => {
 	t.plan(1);
 
 	const { createUpdate } = combineReducers({
@@ -72,4 +73,65 @@ test('Deep updates immutably update objects', t => {
 	};
 	const update = createUpdate({getState, subscribe});
 	update.key('hello');
+});
+
+test('Can run a deep update', t => {
+	t.plan(1);
+
+	const { createUpdate } = combineReducers({
+		key: combineReducers({
+			deep: null,
+		}),
+	});
+
+	const getState = () => ({});
+	const subscribe = actual => {
+		const expected = {
+			key: {
+				deep: 'hello',
+			},
+		};
+		t.deepEqual(actual, expected);
+	};
+	const update = createUpdate({getState, subscribe});
+	update.key.deep('hello');
+});
+
+test('Deep updates immutably update objects', t => {
+	t.plan(1);
+
+	const { createUpdate } = combineReducers({
+		key: combineReducers({
+			deep: null,
+		}),
+	});
+
+	const state = {};
+	const getState = () => state;
+	const subscribe = actual => t.not(actual, state);
+	const update = createUpdate({getState, subscribe});
+	update.key.deep('hello');
+});
+
+test('Deep updates can be performed on missing object fragments', t => {
+	t.plan(1);
+
+	const { createUpdate } = combineReducers({
+		key: combineReducers({
+			deep: null,
+		}),
+	});
+
+	const state = null;
+	const getState = () => state;
+	const subscribe = actual => {
+		const expected = {
+			key: {
+				deep: 'hello',
+			},
+		};
+		t.deepEqual(actual, expected);
+	};
+	const update = createUpdate({getState, subscribe});
+	update.key.deep('hello');
 });

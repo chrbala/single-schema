@@ -14,11 +14,15 @@ const Updator = () =>
 		({subscribe: scopedSubscribe, getState: scopedGetstate}: ScopeType) => {
 			const update = (value: {}) => scopedSubscribe(value);
 			for (const child in children) {
-				const getState = () => scopedGetstate()[child];
-				const subscribe = data => {
-					const newState = {...scopedGetstate(), [child]: data};
-					scopedSubscribe(newState);
+				const getState = () => {
+					const scopedState = scopedGetstate();
+					return scopedState === undefined || scopedState === null
+						? scopedState
+						: scopedState[child]
+					;
 				};
+				const subscribe = data => 
+					scopedSubscribe({...scopedGetstate(), [child]: data});
 				const childStore = children[child] 
 					? children[child] 
 					: Updator()({})
