@@ -11,14 +11,14 @@ import {
 
 const combineReducers = createCombineReducers({
 	validate: Validator(),
-}, {
-	defaultFlattener: 'validate',
 });
 
 const IS_STRING_ERROR = 'Must be string';
-const isString = value => typeof value == 'string'
+const isString = {
+	validate: value => typeof value == 'string'
 	? null
-	: IS_STRING_ERROR;
+	: IS_STRING_ERROR,
+};
 
 const { validate } = combineReducers({
 	key: isString,

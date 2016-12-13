@@ -10,8 +10,6 @@ test('createCombineReducers returns fn that creates the proper keys', t => {
 		doSomething: {
 			reduce: () => () => null,
 		},
-	}, {
-		defaultFlattener: 'doSomething',
 	});
 
 	const reducers = combineReducers();
@@ -33,8 +31,6 @@ test('Reducer is passed in all the data', t => {
 		doSomething: {
 			reduce: () => data => t.deepEqual(data, inputData),
 		},
-	}, {
-		defaultFlattener: 'doSomething',
 	});
 
 	const { doSomething } = combineReducers();
@@ -56,8 +52,6 @@ test('Only the relevant reducer is run', t => {
 		doSomethingElse: {
 			reduce: () => spy2,
 		},
-	}, {
-		defaultFlattener: 'doSomething',
 	});
 
 	t.is(spy1.timesRun(), 0);
@@ -79,8 +73,6 @@ test('Reducer is provided with its children when run', t => {
 		doSomething: {
 			reduce: ({key}) => () => t.is(key, child),
 		},
-	}, {
-		defaultFlattener: 'doSomething',
 	});
 
 	const { doSomething } = combineReducers({
@@ -100,12 +92,12 @@ test('defaultFlattener assigns a function child to a flattener', t => {
 		doSomething: {
 			reduce: ({key}) => () => t.is(key, child),
 		},
-	}, {
-		defaultFlattener: 'doSomething',
 	});
 
 	const { doSomething } = combineReducers({
-		key: child,
+		key: {
+			doSomething: child,
+		},
 	});
 	doSomething();
 });
@@ -117,8 +109,6 @@ test('Reducer is still run when child is missing a matching reducer', t => {
 		doSomething: {
 			reduce: ({key}) => () => t.is(key, undefined),
 		},
-	}, {
-		defaultFlattener: 'doSomething',
 	});
 
 	const { doSomething } = combineReducers({
@@ -136,8 +126,6 @@ test('Reducer is still run when child is null', t => {
 		doSomething: {
 			reduce: ({key}) => () => t.is(key, null),
 		},
-	}, {
-		defaultFlattener: 'doSomething',
 	});
 
 	const { doSomething } = combineReducers({
@@ -159,8 +147,6 @@ test('Reducer is provided the context of other reducers', t => {
 		doSomethingElse: {
 			reduce: () => () => 5,
 		},
-	}, {
-		defaultFlattener: 'doSomething',
 	});
 
 	const { doSomething } = combineReducers();

@@ -7,8 +7,6 @@ import Shaper from './shaper';
 
 const combineReducers = createCombineReducers({
 	shape: Shaper({leafNode: true}),
-}, {
-	defaultFlattener: 'shape',
 });
 
 const empty = null;

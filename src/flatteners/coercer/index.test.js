@@ -7,11 +7,11 @@ import Coercer from './';
 
 const combineReducers = createCombineReducers({
 	coerce: Coercer(),
-}, {
-	defaultFlattener: 'coerce',
 });
 
-const coerceString = data => String(data);
+const coerceString = {
+	coerce: data => String(data),
+};
 
 test('Basic coercion', t => {
 	const { coerce } = combineReducers({

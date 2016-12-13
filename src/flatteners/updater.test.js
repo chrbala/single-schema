@@ -7,8 +7,6 @@ import Updater from './updater';
 
 const combineReducers = createCombineReducers({
 	createUpdate: Updater(),
-}, {
-	defaultFlattener: 'createUpdate',
 });
 
 test('Update is the correct shape', t => {

@@ -1,10 +1,8 @@
 // @flow
 
-import { 
-	EXPECTED_ARRAY,
-} from './strings';
+import { EXPECTED_ARRAY } from './strings';
 
-export default (validate: *) => (data: *) => {
+export default (validate: (data: *) => mixed) => (data: *) => {
 	if (!Array.isArray(data))
 		return EXPECTED_ARRAY;
 

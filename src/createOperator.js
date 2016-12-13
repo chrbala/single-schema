@@ -1,9 +1,9 @@
 // @flow
 
 export default (operator: string) => 
-	flatteners => reducer => {
+	(flatteners: *) => (reducer: *) => {
 		const out = {};
-		for (const key in flatteners)
-			out[key] = flatteners[key][operator](reducer);
+		for (const flattenerName in flatteners)
+			out[flattenerName] = flatteners[flattenerName][operator](reducer[flattenerName]);
 		return out;
 	};

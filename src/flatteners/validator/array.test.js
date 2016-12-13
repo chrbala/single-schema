@@ -2,56 +2,37 @@
 
 import test from 'ava';
 
-import createCombineReducers from '../../createCombineReducers';
-import createOperator from '../../createOperator';
+import { createArray } from '../../operators';
 import { EXPECTED_ARRAY } from './strings';
 import Validator from './';
 
-const combineReducers = createCombineReducers({
+const array = createArray({
 	validate: Validator(),
-}, {
-	defaultFlattener: 'validate',
-});
-
-const array = createOperator('array')({
-	validate: Validator(),
-}, {
-	defaultFlattener: 'validate',
 });
 
 const IS_STRING_ERROR = 'Must be string';
-const isString = value => typeof value == 'string'
-	? null
-	: IS_STRING_ERROR;
+const isString = {
+	validate: value => typeof value == 'string'
+		? null
+		: IS_STRING_ERROR,
+};
 
-const { validate } = combineReducers({
-	key: array(isString),
-});
+const { validate } = array(isString);
 
 test('Array pass', t => {
-	const actual = validate({
-		key: ['hello', 'whatever'],
-	});
+	const actual = validate(['hello', 'whatever']);
 	const expected = null;
 	t.deepEqual(actual, expected);
 });
 
 test('Array type fail', t => {
-	const actual = validate({
-		key: 'something',
-	});
-	const expected = {
-		key: EXPECTED_ARRAY,
-	};
+	const actual = validate('something');
+	const expected = EXPECTED_ARRAY;
 	t.deepEqual(actual, expected);
 });
 
 test('Array datum fail', t => {
-	const actual = validate({
-		key: ['hello', 123],
-	});
-	const expected = {
-		key: [null, IS_STRING_ERROR],
-	};
+	const actual = validate(['hello', 123]);
+	const expected = [null, IS_STRING_ERROR];
 	t.deepEqual(actual, expected);
 });
