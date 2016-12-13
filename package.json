@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint src --fix",
     "flow": "flow",
-    "test": "ava src/**/*.test.js",
+    "test": "ava",
     "validate": "npm run lint && npm run flow && npm run test",
     "build-flow": "cp -r src lib && renamer --regex --find '.js$' --replace '.js.flow' 'lib/**/*'",
     "build": "babel src --out-dir lib",

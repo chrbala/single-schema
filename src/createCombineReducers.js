@@ -19,25 +19,29 @@ const showAll = all =>
 const flattenerError = (name, all) =>
 	`defaultFlattener ${name} selected, but not found in ${showAll(all)}!`;
 
+type ReducerFlattenerType = {[key: string]: AnyFnType};
 export default (
-	flatteners: {[key: string]: AnyFnType}, 
+	flatteners: {[key: string]: ReducerFlattenerType}, 
 	{defaultFlattener}: OptionsType = {}
 ) => {
+	const reducerFlatters: ReducerFlattenerType = 
+		mapObj(flatteners, flattener => flattener.reduce)
+	;
 	if (!defaultFlattener)
 		throw new Error('Default flattener must be provided.');
-	if (!flatteners[defaultFlattener])
-		throw new Error(flattenerError(defaultFlattener, flatteners));
+	if (!reducerFlatters[defaultFlattener])
+		throw new Error(flattenerError(defaultFlattener, reducerFlatters));
 
 	return (children: *) => {
-		const out: ReducerType<typeof flatteners> = {};
-		for (const name in flatteners) {
+		const out: ReducerType<typeof reducerFlatters> = {};
+		for (const name in reducerFlatters) {
 			const childFlatteners = mapObj(children,
 				child => defaultFlattener == name 
 					&& typeof child == 'function'
 						? child
 						: child && child[name]
 			);
-			out[name] = flatteners[name](childFlatteners, out);
+			out[name] = reducerFlatters[name](childFlatteners, out);
 		}
 		return out;
 	};

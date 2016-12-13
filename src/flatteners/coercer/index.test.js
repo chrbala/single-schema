@@ -2,8 +2,8 @@
 
 import test from 'ava';
 
-import createCombineReducers from '../createCombineReducers';
-import Coercer from './coercer';
+import createCombineReducers from '../../createCombineReducers';
+import Coercer from './';
 
 const combineReducers = createCombineReducers({
 	coerce: Coercer(),

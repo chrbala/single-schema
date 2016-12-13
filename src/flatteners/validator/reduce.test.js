@@ -2,9 +2,12 @@
 
 import test from 'ava';
 
-import createCombineReducers from '../createCombineReducers';
-import Validator from './validator';
-import { EXTRA_KEY_TEXT, EXPECTED_OBJECT } from '../shared/strings';
+import createCombineReducers from '../../createCombineReducers';
+import Validator from './';
+import { 
+	EXTRA_KEY_TEXT, 
+	EXPECTED_OBJECT, 
+} from './strings';
 
 const combineReducers = createCombineReducers({
 	validate: Validator(),

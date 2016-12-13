@@ -1,14 +1,14 @@
 // @flow
 
-import { isObject } from '../util/micro';
-import Iterator from '../util/iterator';
-import { EXTRA_KEY_TEXT, EXPECTED_OBJECT } from '../shared/strings';
+import type { ReducerType, GenericObjectType } from '../../shared/types';
 
-import type { 
-	OptionsType, 
-	ReducerType, 
-	GenericObjectType,
-} from '../shared/types';
+import { 
+	EXTRA_KEY_TEXT, 
+	EXPECTED_OBJECT, 
+} from './strings';
+
+import Iterator from '../../util/iterator';
+import { isObject } from '../../util/micro';
 
 const clean = obj => {
 	const out = {};
@@ -18,7 +18,7 @@ const clean = obj => {
 	return out;
 };
 
-export default ({cache}: OptionsType = {}) => 
+export default ({cache}: {cache: boolean} = {}) => 
 	(children: ReducerType<*>) => {
 		const iterate = Iterator({cache});
 

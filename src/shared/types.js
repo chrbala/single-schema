@@ -12,7 +12,3 @@ export type AnyFnType = (...args: Array<*>) => *;
 export type ReducerType<T> = {
 	[keys: $Keys<T>]: AnyFnType,
 };
-
-export type OptionsType = {
-	cache?: boolean,
-};

@@ -1,12 +1,8 @@
 // @flow
 
-import Iterator from '../util/iterator';
+import Iterator from '../../util/iterator';
 
-import type { 
-	ReducerType, 
-	OptionsType, 
-	GenericObjectType,
-} from '../shared/types';
+import type { ReducerType, GenericObjectType } from '../../shared/types';
 
 const subset = (obj1, obj2) => {
 	const out = {};
@@ -15,11 +11,12 @@ const subset = (obj1, obj2) => {
 	return out;
 };
 
-export default ({cache}: OptionsType = {}) => 
-	(children: ReducerType<*>) => {
+export default ({cache}: {cache: boolean} = {}) => ({
+	reduce: (children: ReducerType<*>) => {
 		const iterate = Iterator({cache});
 
 		return (data: GenericObjectType) => iterate(subset(children, data), data, 
 			(child, datum) => child ? child(datum) : datum
 		);
-	};
+	},
+});
