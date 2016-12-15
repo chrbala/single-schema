@@ -1,6 +1,10 @@
 // @flow
 
-import type { ReducerType, AnyFnType } from './shared/types';
+import type { 
+	ReducerType, 
+	FlattenerType, 
+	AllFlattenerType,
+} from './shared/types';
 
 const mapObj = (obj, cb) => {
 	const out = {};
@@ -9,13 +13,8 @@ const mapObj = (obj, cb) => {
 	return out;
 };
 
-type ReducerFlattenerType = {[key: string]: AnyFnType};
-
-export default (
-	flatteners: {[key: string]: ReducerFlattenerType}, 
-	next: void,
-) => {
-	const reducerFlatters: ReducerFlattenerType = 
+export default (flatteners: AllFlattenerType) => {
+	const reducerFlatters: FlattenerType = 
 		mapObj(flatteners, flattener => flattener.reduce)
 	;
 

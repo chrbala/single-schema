@@ -12,3 +12,6 @@ export type AnyFnType = (...args: Array<*>) => *;
 export type ReducerType<T> = {
 	[keys: $Keys<T>]: AnyFnType,
 };
+
+export type FlattenerType = {[key: string]: AnyFnType};
+export type AllFlattenerType = {[key: string]: FlattenerType};

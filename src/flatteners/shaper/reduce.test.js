@@ -2,8 +2,8 @@
 
 import test from 'ava';
 
-import createCombineReducers from '../createCombineReducers';
-import Shaper from './shaper';
+import createCombineReducers from '../../createCombineReducers';
+import Shaper from './';
 
 const combineReducers = createCombineReducers({
 	shape: Shaper({leafNode: true}),

@@ -2,8 +2,8 @@
 
 import test from 'ava';
 
-import createCombineReducers from '../createCombineReducers';
-import Updater from './updater';
+import createCombineReducers from '../../createCombineReducers';
+import Updater from './';
 
 const combineReducers = createCombineReducers({
 	createUpdate: Updater(),
