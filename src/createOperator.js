@@ -3,9 +3,17 @@
 import type { AllFlattenerType, ReducerType, AnyFnType} from './shared/types';
 
 export default (operator: string) => 
-	(flatteners: AllFlattenerType) => (reducer: ReducerType<*>) => {
+	(flatteners: AllFlattenerType) => (...reducers: Array<ReducerType<*>>) => {
 		const out: {[key: $Keys<typeof flatteners>]: AnyFnType} = {};
-		for (const flattenerName in flatteners)
-			out[flattenerName] = flatteners[flattenerName][operator](reducer[flattenerName]);
+		for (const flattenerName in flatteners) {
+			const scopedReducers = 
+				reducers
+					.map(reducer => reducer[flattenerName])
+					.reduce(
+						(acc, next) => (next && acc.push(next), acc)
+					, [])
+			;
+			out[flattenerName] = flatteners[flattenerName][operator](...scopedReducers);
+		}
 		return out;
 	};
