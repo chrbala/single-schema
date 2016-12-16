@@ -13,7 +13,8 @@ export default (operator: string) =>
 						(acc, next) => (next && acc.push(next), acc)
 					, [])
 			;
-			out[flattenerName] = flatteners[flattenerName][operator](...scopedReducers);
+			const create = flatteners[flattenerName][operator];
+			out[flattenerName] = create(...scopedReducers);
 		}
 		return out;
 	};

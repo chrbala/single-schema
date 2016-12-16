@@ -10,9 +10,11 @@
     "validate": "npm run lint && npm run flow && npm run test",
     "build-flow": "cp -r src lib && renamer --regex --find '.js$' --replace '.js.flow' 'lib/**/*'",
     "build": "babel src --out-dir lib",
-    "prepublish": "rm -rf lib && npm run build-flow && npm run build"
+    "prepublish": "rm -rf lib && npm run build-flow && npm run build",
+    "storybook": "start-storybook -p 9010"
   },
   "devDependencies": {
+    "@kadira/storybook": "^2.5.2",
     "ava": "^0.17.0",
     "babel-cli": "^6.18.0",
     "babel-core": "^6.18.2",
@@ -20,10 +22,14 @@
     "babel-plugin-transform-flow-strip-types": "^6.18.0",
     "babel-polyfill": "^6.16.0",
     "babel-preset-es2015": "^6.18.0",
+    "babel-preset-react-app": "^2.0.1",
     "babel-preset-stage-0": "^6.16.0",
     "chrbala-linter": "^1.0.5",
     "eslint": "^3.11.1",
     "flow-bin": "^0.36.0",
+    "react": "^15.4.0",
+    "react-dom": "^15.4.0",
+    "react-scripts": "^0.7.0",
     "renamer": "^0.6.1"
   },
   "ava": {

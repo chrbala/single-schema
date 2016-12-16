@@ -9,5 +9,5 @@ export default {
 	validate: Validator({cache: true}),
 	coerce: Coercer({cache: true}),
 	shape: Shaper({leafNode: undefined}),
-	update: Updater(),
+	createUpdate: Updater(),
 };

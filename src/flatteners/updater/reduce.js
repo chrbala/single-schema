@@ -20,7 +20,8 @@ const reduce = (children: ReducerType<*>) =>
 				? children[child] 
 				: reduce({})
 			;
-			update[child] = childStore({getState, subscribe});
+			const keyName = child == 'name' ? 'Name' : child;
+			update[keyName] = childStore({getState, subscribe});
 		}
 		return update;
 	}
