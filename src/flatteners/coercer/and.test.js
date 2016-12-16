@@ -16,7 +16,7 @@ const maxLength = length => ({
 	coerce: data => data.slice(0, length),
 });
 
-test('Can run an arrayOp', t => {
+test('Can coerce with multiple reducers', t => {
 	const { coerce } = and(isString, maxLength(3));
 	const actual = coerce(12345);
 	const expected = '123';

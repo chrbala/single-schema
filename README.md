@@ -17,6 +17,7 @@ It should be apparent from this file that this is a work in progress. Don't expe
 * More examples
 * Actual docs
 * Finish TODO tests
+* Add ability to remove a key on updater
 
 # Candidates for cross-flattener use
 * use validate to determine which reducer to pick with an OR operator
