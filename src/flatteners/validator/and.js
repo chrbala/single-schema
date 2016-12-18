@@ -1,6 +1,8 @@
 // @flow
 
-export default (...validators: Array<(data: *) => mixed>) => (data: *) =>
-	validators.reduce(
-		(acc, validator) => acc || validator(data)
-	, null);
+export default (...validators: Array<?(data: *) => mixed>) => () => (data: *) =>
+	validators
+		.filter(validator => validator)
+		.reduce(
+			(acc, validator) => acc || (validator && validator(data))
+		, null);

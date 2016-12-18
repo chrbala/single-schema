@@ -1,6 +1,6 @@
 // @flow
 
-import type { GenericObjectType, ReducerType } from '../shared/types';
+import type { GenericObjectType, AllReducerType } from '../shared/types';
 
 type OptionsType = {
 	cache: ?boolean,
@@ -11,7 +11,7 @@ export default ({cache: doesCache}: OptionsType) => {
 	const cache = {};
 	let initial = true;
 
-	return (keyset: ReducerType<*>, data: GenericObjectType, cb: *) => {
+	return (keyset: AllReducerType<*>, data: GenericObjectType, cb: *) => {
 		if (!initial && data === lastInput)
 			return lastOutput;
 

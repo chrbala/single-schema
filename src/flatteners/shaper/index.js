@@ -3,12 +3,17 @@
 import reduce from './reduce';
 import array from './array';
 
+import type { FlattenerType } from '../../shared/types';
+
 type OptionsType = {
 	leafNode: *,
 };
 
-export default ({leafNode = undefined}: OptionsType = {}) => ({
+type ShaperType = (options: *) => FlattenerType<*>;
+
+const Shaper: ShaperType = ({leafNode = undefined}: OptionsType = {}) => ({
 	reduce: reduce({leafNode}),
 	array,
-	and: null,
 });
+
+export default Shaper;

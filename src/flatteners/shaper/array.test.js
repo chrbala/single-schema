@@ -9,9 +9,7 @@ const array = createArray({
 	shape: Shaper(),
 });
 
-const whatever = () => () => 'whatever';
-
-const { shape } = array(whatever);
+const { shape } = array({});
 
 test('Coerce existing array', t => {
 	const actual = shape();

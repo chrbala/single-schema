@@ -1,6 +1,10 @@
 // @flow
 
-import type { ReducerType, GenericObjectType } from '../../shared/types';
+import type { 
+	AllReducerType, 
+	ReducerType, 
+	GenericObjectType,
+} from '../../shared/types';
 
 import { 
 	EXTRA_KEY_TEXT, 
@@ -18,8 +22,8 @@ const clean = obj => {
 	return out;
 };
 
-export default ({cache}: {cache: boolean} = {}) => 
-	(children: ReducerType<*>) => {
+const reduce: () => ReducerType<*> = ({cache}: {cache: boolean} = {}) => 
+	(children: AllReducerType<*>) => {
 		const iterate = Iterator({cache});
 
 		return (data: GenericObjectType) => {
@@ -39,3 +43,5 @@ export default ({cache}: {cache: boolean} = {}) =>
 			return Object.keys(out).length ? out : null;
 		};
 	};
+
+export default reduce;

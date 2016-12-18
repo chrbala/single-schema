@@ -1,7 +1,7 @@
 // @flow
 
 import React, { Component } from 'react';
-import { family, person } from './data';
+import { family } from './data';
 import { get, push } from '../../src/flatteners/updater/array';
 
 const Person = ({value, update}) =>
@@ -14,10 +14,10 @@ const Person = ({value, update}) =>
 
 const People = ({kind, value, update}) =>
 	<div>
-		{value.map((_person, i) => 
-			<Person key={i} value={_person} update={get(update)(i)} />
+		{value.map((person, i) => 
+			<Person key={i} value={person} update={get(update)(i)} />
 		)}
-		<button onClick={() => push(update)(person.shape())}>Add {kind}</button>
+		<button onClick={() => push(update)()}>Add {kind}</button>
 	</div>
 ;
 

@@ -3,11 +3,13 @@
 import reduce from './reduce';
 import array from './array';
 
-const Updater = () => ({
+import type { FlattenerType } from '../../shared/types';
+
+type UpdaterType = () => FlattenerType<*>;
+
+const Updater: UpdaterType = () => ({
 	reduce,
 	array,
-	and: null,
-	or: null,
 });
 
 export default Updater;

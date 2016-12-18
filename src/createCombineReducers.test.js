@@ -139,7 +139,7 @@ test('Reducer is provided the context of other reducers', t => {
 
 	const combineReducers = createCombineReducers({
 		doSomething: {
-			reduce: (_, context) => () => {
+			reduce: (_, context: {doSomethingElse: () => *}) => () => {
 				t.deepEqual(Object.keys(context), ['doSomething', 'doSomethingElse']);
 				t.is(context.doSomethingElse(), 5);
 			},

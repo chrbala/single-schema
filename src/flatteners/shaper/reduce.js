@@ -1,12 +1,12 @@
 // @flow
 
-import type { ReducerType } from '../../shared/types';
+import type { AllReducerType } from '../../shared/types';
 
 type OptionsType = {
 	leafNode: *,
 };
 export default ({leafNode}: OptionsType) => 
-	(children: ReducerType<*>) => () => {
+	(children: AllReducerType<*>) => () => {
 		const out = {};
 		for (const key in children) {
 			const child = children[key];

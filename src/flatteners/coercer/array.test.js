@@ -37,3 +37,10 @@ test('Coerce array-ish object', t => {
 	t.deepEqual(actual, expected);
 });
 /* eslint-enable quote-props, no-sparse-arrays */
+
+test('Array of reducers with no coercion', t => {
+	const { coerce: emptyCoerce } = array({});
+	const actual = emptyCoerce(['hi']);
+	const expected = ['hi'];
+	t.deepEqual(actual, expected);
+});

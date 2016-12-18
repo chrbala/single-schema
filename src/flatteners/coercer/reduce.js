@@ -2,7 +2,11 @@
 
 import Iterator from '../../util/iterator';
 
-import type { ReducerType, GenericObjectType } from '../../shared/types';
+import type { 
+	AllReducerType, 
+	ReducerType, 
+	GenericObjectType,
+} from '../../shared/types';
 
 const subset = (obj1, obj2) => {
 	const out = {};
@@ -11,8 +15,8 @@ const subset = (obj1, obj2) => {
 	return out;
 };
 
-export default ({cache}: {cache: boolean} = {}) => 
-	(children: ReducerType<*>) => {
+const reduce: () => ReducerType<*> = ({cache}: {cache: boolean} = {}) => 
+	(children: AllReducerType<*>) => {
 		const iterate = Iterator({cache});
 
 		return (data: GenericObjectType) => iterate(subset(children, data), data, 
@@ -20,3 +24,5 @@ export default ({cache}: {cache: boolean} = {}) =>
 		);
 	}
 ;
+
+export default reduce;

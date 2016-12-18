@@ -1,9 +1,9 @@
 // @flow
 
 import type { 
-	ReducerType, 
-	FlattenerType, 
+	AllReducerType, 
 	AllFlattenerType,
+	ReducerType,
 } from './shared/types';
 
 const mapObj = (obj, cb) => {
@@ -13,18 +13,22 @@ const mapObj = (obj, cb) => {
 	return out;
 };
 
-export default (flatteners: AllFlattenerType) => {
-	const reducerFlatters: FlattenerType = 
+type ReduceObjectType<T> = {
+	[key: T]: ReducerType<T>,
+};
+
+export default (flatteners: AllFlattenerType<*>) => {
+	const reducerFlatters: ReduceObjectType<*> = 
 		mapObj(flatteners, flattener => flattener.reduce)
 	;
 
 	return (children: *) => {
-		const out: ReducerType<typeof reducerFlatters> = {};
+		const out: AllReducerType<*> = {};
 		for (const name in reducerFlatters) {
-			const childFlatteners = mapObj(children,
+			const reducers = mapObj(children,
 				child => child && child[name]
 			);
-			out[name] = reducerFlatters[name](childFlatteners, out);
+			out[name] = reducerFlatters[name](reducers, out);
 		}
 		return out;
 	};

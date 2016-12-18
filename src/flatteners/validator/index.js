@@ -4,8 +4,14 @@ import reduce from './reduce';
 import array from './array';
 import and from './and';
 
-export default ({cache = false}: {cache: boolean} = {}) => ({
+import type { FlattenerType } from '../../shared/types';
+
+type ValidatorType = (options: *) => FlattenerType<*>;
+
+const Validator: ValidatorType = ({cache = false}: {cache: boolean} = {}) => ({
 	reduce: reduce({cache}),
 	array,
 	and,
 });
+
+export default Validator;

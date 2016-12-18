@@ -1,9 +1,9 @@
 // @flow
 
-import type { ReducerType } from '../../shared/types';
+import type { AllReducerType, ReducerType } from '../../shared/types';
 import type { ScopeType } from './types';
 
-const reduce = (children: ReducerType<*>) => 
+const reduce: ReducerType<*> = (children: AllReducerType<*>) => 
 	({subscribe: scopedSubscribe, getState: scopedGetstate}: ScopeType) => {
 		const update = (value: *) => scopedSubscribe(value);
 		for (const child in children) {
@@ -18,7 +18,7 @@ const reduce = (children: ReducerType<*>) =>
 				scopedSubscribe({...scopedGetstate(), [child]: data});
 			const childStore = children[child] 
 				? children[child] 
-				: reduce({})
+				: reduce({}, {})
 			;
 			const keyName = child == 'name' ? 'Name' : child;
 			update[keyName] = childStore({getState, subscribe});

@@ -4,6 +4,11 @@ It should be apparent from this file that this is a work in progress. Don't expe
 # Purpose
 # Usage
 
+# Taxonomy
+* Reducers act on other reducers and will be flattened into a single value, often acting on data
+* Operators act on 1 or more reducers, returning a single reducer
+* Flatteners govern how operators act on reducers
+
 # TODO
 * Come up with a name for things (lib, flattener, reducer)
 * Really needs better typing
@@ -21,7 +26,6 @@ It should be apparent from this file that this is a work in progress. Don't expe
 
 # Candidates for cross-flattener use
 * use validate to determine which reducer to pick with an OR operator
-* Array pushes add the child's shape, rather than the argument value
 
 # Possible features
 * Graphql support - build your schema

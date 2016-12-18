@@ -1,16 +1,18 @@
 // @flow
 
-import type { ReducerType, AnyFnType } from '../../shared/types';
+import type { AnyFnType } from '../../shared/types';
 import type { ScopeType } from './types';
 
 import reduce from './reduce';
 
-export default (children: ReducerType<*>) => 
+type ChildType = (scope: ScopeType) => (...args: Array<*>) => void;
+type ContextType = {shape: () => mixed};
+export default (child: ?ChildType) => (context: ContextType) =>
 	({subscribe, getState}: ScopeType) => 
 		(...args: Array<*>) => {
 			const newDataProvided = !!args.length;
 			if (!newDataProvided)
-				return {subscribe, getState, children};
+				return {subscribe, getState, child, context};
 
 			const newValue = args[0];
 			subscribe(newValue);
@@ -30,7 +32,7 @@ export const get = (getScope: () => *) =>
 		const {
 			subscribe: scopedSubscribe, 
 			getState: scopedGetstate, 
-			children,
+			child,
 		} = getScope();
 		
 		const getState = () => {
@@ -44,20 +46,27 @@ export const get = (getScope: () => *) =>
 		};
 		
 		const childScope = {getState, subscribe};
-		const out: {} & () => mixed = children
-			? children(childScope)
-			: reduce({})(childScope)
+		const out: {} & () => mixed = child
+			? child(childScope)
+			: reduce({}, {})(childScope)
 		;
 		return out;
 	}
 ;
 
-const arrayOp = (operation: AnyFnType, mutates: boolean) => 
-	(getScope: () => ScopeType) => 
+type OptionType = {mutates?: boolean, useShape?: boolean};
+const arrayOp = (operation: AnyFnType, {mutates, useShape}: OptionType = {}) => 
+	(getScope: () => *) => 
 		(...args: Array<*>) => {
-			const {subscribe, getState} = getScope();
+			const {subscribe, getState, context: { shape }} = getScope();
+
+			const selectedArgs = args.length || !useShape || !shape
+				? args
+				: [shape()]
+			;
+
 			const safeState = normalizeArray(getState(), mutates);
-			const out = operation.apply(safeState, args);
+			const out = operation.apply(safeState, selectedArgs);
 			subscribe(safeState);
 			return out;
 		}
@@ -66,14 +75,20 @@ const arrayOp = (operation: AnyFnType, mutates: boolean) =>
 
 export const length = arrayOp(function() {
 	return this.length;
-}, false);
+});
 
-export const copyWithin = arrayOp(Array.prototype.copyWithin, true);
-export const fill = arrayOp(Array.prototype.fill, true);
-export const pop = arrayOp(Array.prototype.pop, true);
-export const push = arrayOp(Array.prototype.push, true);
-export const reverse = arrayOp(Array.prototype.reverse, true);
-export const shift = arrayOp(Array.prototype.shift, true);
-export const sort = arrayOp(Array.prototype.sort, true);
-export const splice = arrayOp(Array.prototype.splice, true);
-export const unshift = arrayOp(Array.prototype.unshift, true);
+export const copyWithin = arrayOp(Array.prototype.copyWithin, {mutates: true});
+export const fill = arrayOp(Array.prototype.fill, {mutates: true});
+export const pop = arrayOp(Array.prototype.pop, {mutates: true});
+export const push = arrayOp(Array.prototype.push, {
+	mutates: true, 
+	useShape: true,
+});
+export const reverse = arrayOp(Array.prototype.reverse, {mutates: true});
+export const shift = arrayOp(Array.prototype.shift, {mutates: true});
+export const sort = arrayOp(Array.prototype.sort, {mutates: true});
+export const splice = arrayOp(Array.prototype.splice, {mutates: true});
+export const unshift = arrayOp(Array.prototype.unshift, {
+	mutates: true,
+	useShape: true,
+});

@@ -22,3 +22,17 @@ test('Can coerce with multiple reducers', t => {
 	const expected = '123';
 	t.is(actual, expected);
 });
+
+test('Skips missing children', t => {
+	const { coerce } = and(isString, {}, maxLength(3));
+	const actual = coerce(12345);
+	const expected = '123';
+	t.is(actual, expected);
+});
+
+test('Works if no children have a coerce', t => {
+	const { coerce } = and({}, {});
+	const actual = coerce(12345);
+	const expected = 12345;
+	t.is(actual, expected);
+});
