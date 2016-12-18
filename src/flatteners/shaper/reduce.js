@@ -10,7 +10,12 @@ export default ({leafNode}: OptionsType) =>
 		const out = {};
 		for (const key in children) {
 			const child = children[key];
-			out[key] = child ? child() : leafNode;
+			const value = child && child();
+			if (child) {
+				if (value !== undefined)
+					out[key] = value;
+			} else
+				out[key] = leafNode;
 		}
 		return out;
 	}

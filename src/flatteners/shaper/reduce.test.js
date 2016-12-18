@@ -26,6 +26,22 @@ test('Basic shape', t => {
 	t.deepEqual(actual, expected);
 });
 
+test('Shape removes undefined keys', t => {
+	const { shape } = combineReducers({
+		key: {
+			shape: () => undefined,
+		},
+		key2: empty,
+	});
+
+	const actual = shape();
+	const expected = {
+		key2: true,
+	};
+
+	t.deepEqual(actual, expected);
+});
+
 test('Deep shape', t => {
 	const { shape } = combineReducers({
 		key: empty,
