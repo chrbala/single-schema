@@ -1,5 +1,7 @@
 // @flow
 
+import { freeze, isFrozen } from '../../util/micro';
+
 import type { AnyFnType } from '../../shared/types';
 import type { ScopeType } from './types';
 
@@ -22,7 +24,7 @@ export default (child: ?ChildType) => (context: {}) =>
 
 const normalizeArray = (value, mutates) =>
 	Array.isArray(value) 
-		? mutates 
+		? mutates || !isFrozen(value)
 			? [...value] 
 			: value
 		: []
@@ -41,9 +43,9 @@ export const get = (scope: *) =>
 			return state[index];
 		};
 		const subscribe = data => {
-			const safeState = normalizeArray(scopedGetstate(), false);
+			const safeState = normalizeArray(scopedGetstate(), true);
 			safeState[index] = data;
-			scopedSubscribe(safeState);
+			scopedSubscribe(freeze(safeState));
 		};
 		
 		const childScope = {getState, subscribe};
@@ -71,7 +73,7 @@ const arrayOp = (operation: AnyFnType, {mutates, useShape}: OptionType = {}) =>
 
 			const safeState = normalizeArray(getState(), mutates);
 			const out = operation.apply(safeState, selectedArgs);
-			subscribe(safeState);
+			subscribe(freeze(safeState));
 			return out;
 		}
 	;

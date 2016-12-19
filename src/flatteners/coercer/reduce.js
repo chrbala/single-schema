@@ -1,6 +1,7 @@
 // @flow
 
 import Iterator from '../../util/iterator';
+import { freeze } from '../../util/micro';
 
 import type { 
 	AllReducerType, 
@@ -19,8 +20,10 @@ const reduce: () => ReducerType<*> = ({cache}: {cache: boolean} = {}) =>
 	(children: AllReducerType<*>) => {
 		const iterate = Iterator({cache});
 
-		return (data: GenericObjectType) => iterate(subset(children, data), data, 
-			(child, datum) => child ? child(datum) : datum
+		return (data: GenericObjectType) => freeze(
+			iterate(subset(children, data), data, 
+				(child, datum) => child ? child(datum) : datum
+			)
 		);
 	}
 ;

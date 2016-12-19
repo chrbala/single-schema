@@ -1,3 +1,5 @@
 // @flow
 
-export default () => () => () => [];
+import { freeze } from '../../util/micro';
+
+export default () => () => () => freeze([]);

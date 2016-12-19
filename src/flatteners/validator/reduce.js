@@ -1,5 +1,7 @@
 // @flow
 
+import { freeze } from '../../util/micro';
+
 import type { 
 	AllReducerType, 
 	ReducerType, 
@@ -40,7 +42,7 @@ const reduce: () => ReducerType<*> = ({cache}: {cache: boolean} = {}) =>
 				if (!children[key])
 					out[key] = EXTRA_KEY_TEXT;
 
-			return Object.keys(out).length ? out : null;
+			return Object.keys(out).length ? freeze(out) : null;
 		};
 	};
 

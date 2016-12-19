@@ -1,5 +1,7 @@
 // @flow
 
+import { freeze } from '../../util/micro';
+
 import type { AllReducerType } from '../../shared/types';
 
 type OptionsType = {
@@ -17,6 +19,6 @@ export default ({leafNode}: OptionsType) =>
 			} else
 				out[key] = leafNode;
 		}
-		return out;
+		return freeze(out);
 	}
 ;

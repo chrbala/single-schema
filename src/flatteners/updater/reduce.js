@@ -1,5 +1,7 @@
 // @flow
 
+import { freeze } from '../../util/micro';
+
 import type { AllReducerType, ReducerType } from '../../shared/types';
 import type { ScopeType } from './types';
 
@@ -16,7 +18,7 @@ const reduce: ReducerType<*> = (children: AllReducerType<*>) =>
 			;
 		};
 		const subscribe = key => data => 
-			scopedSubscribe({...scopedGetstate(), [key]: data});
+			scopedSubscribe(freeze({...scopedGetstate(), [key]: data}));
 
 		const getChild = (key: string) => {
 			if (!(key in children))
@@ -43,7 +45,7 @@ const reduce: ReducerType<*> = (children: AllReducerType<*>) =>
 			for (const key in state)
 				if (key != keyToDelete)
 					out[key] = state[key];
-			scopedSubscribe(out);
+			scopedSubscribe(freeze(out));
 		};
 
 		return Object.assign(getChild, {

@@ -1,5 +1,6 @@
 // @flow
 
+import { freeze } from '../../util/micro';
 import { EXPECTED_ARRAY } from './strings';
 
 export default (validate: ?(data: *) => mixed) => () => (data: *) => {
@@ -16,5 +17,5 @@ export default (validate: ?(data: *) => mixed) => () => (data: *) => {
 			hasErrors = true;
 		return error;
 	});
-	return hasErrors ? errors : null;
+	return hasErrors ? freeze(errors) : null;
 };
