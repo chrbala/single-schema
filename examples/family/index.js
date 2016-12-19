@@ -7,7 +7,10 @@ import { get, push } from '../../src/flatteners/updater/array';
 const Person = ({value, update}) =>
 	<div>
 		<label>name</label>
-		<input value={value.name} onChange={e => update.Name(e.target.value)} />
+		<input 
+			value={value.name} 
+			onChange={e => update('name').set(e.target.value)} 
+		/>
 		<br />
 	</div>
 ;
@@ -15,7 +18,7 @@ const Person = ({value, update}) =>
 const People = ({kind, value, update}) =>
 	<div>
 		{value.map((person, i) => 
-			<Person key={i} value={person} update={get(update)(i)} />
+			<Person key={i} value={value[i]} update={get(update)(i)} />
 		)}
 		<button onClick={() => push(update)()}>Add {kind}</button>
 	</div>
@@ -42,13 +45,13 @@ export default class Family extends Component {
 			<People 
 				kind="adults" 
 				value={familyState.adults} 
-				update={update.adults} 
+				update={update('adults')} 
 			/>
 			<br />
 			<People 
 				kind="children" 
 				value={familyState.children} 
-				update={update.children} 
+				update={update('children')} 
 			/>
 		</div>;
 	}

@@ -9,20 +9,6 @@ const combineReducers = createCombineReducers({
 	createUpdate: Updater(),
 });
 
-test('Update is the correct shape', t => {
-	const { createUpdate } = combineReducers({
-		key: null,
-	});
-
-	const getState = () => null;
-	const subscribe = () => null;
-
-	const update = createUpdate({getState, subscribe});
-	t.is(typeof update, 'function');
-	t.deepEqual(Object.keys(update), ['key']);
-	t.is(typeof update.key, 'function');
-});
-
 test('Can run a shallow update', t => {
 	t.plan(1);
 
@@ -36,10 +22,23 @@ test('Can run a shallow update', t => {
 	};
 	const subscribe = actual => t.is(actual, data);
 	const update = createUpdate({getState, subscribe});
-	update(data);
+	update.set(data);
 });
 
-test('Can run an update on a key', t => {
+test('Can get keys', t => {
+	const { createUpdate } = combineReducers({
+		key: null,
+	});
+
+	const getState = () => ({});
+	const subscribe = () => null;
+	const update = createUpdate({getState, subscribe});
+	const actual = update.keys();
+	const expected = ['key'];
+	t.deepEqual(actual, expected);
+});
+
+test('Can set a key value', t => {
 	t.plan(1);
 
 	const { createUpdate } = combineReducers({
@@ -54,10 +53,10 @@ test('Can run an update on a key', t => {
 		t.deepEqual(actual, expected);
 	};
 	const update = createUpdate({getState, subscribe});
-	update.key('hello');
+	update('key').set('hello');
 });
 
-test('Key updates immutably update objects', t => {
+test('Setting keys immutably updates objects', t => {
 	t.plan(1);
 
 	const { createUpdate } = combineReducers({
@@ -70,10 +69,10 @@ test('Key updates immutably update objects', t => {
 		t.not(actual, state);
 	};
 	const update = createUpdate({getState, subscribe});
-	update.key('hello');
+	update('key').set('hello');
 });
 
-test('Can run a deep update', t => {
+test('Can set deep keys', t => {
 	t.plan(1);
 
 	const { createUpdate } = combineReducers({
@@ -92,10 +91,10 @@ test('Can run a deep update', t => {
 		t.deepEqual(actual, expected);
 	};
 	const update = createUpdate({getState, subscribe});
-	update.key.deep('hello');
+	update('key')('deep').set('hello');
 });
 
-test('Deep updates immutably update objects', t => {
+test('Setting deep keys immutably updates objects', t => {
 	t.plan(1);
 
 	const { createUpdate } = combineReducers({
@@ -108,10 +107,10 @@ test('Deep updates immutably update objects', t => {
 	const getState = () => state;
 	const subscribe = actual => t.not(actual, state);
 	const update = createUpdate({getState, subscribe});
-	update.key.deep('hello');
+	update('key')('deep').set('hello');
 });
 
-test('Deep updates can be performed on missing object fragments', t => {
+test('Deep changes can be performed on missing object fragments', t => {
 	t.plan(1);
 
 	const { createUpdate } = combineReducers({
@@ -131,5 +130,14 @@ test('Deep updates can be performed on missing object fragments', t => {
 		t.deepEqual(actual, expected);
 	};
 	const update = createUpdate({getState, subscribe});
-	update.key.deep('hello');
+	update('key')('deep').set('hello');
+});
+
+test('Throws when unused key is accessed', t => {
+	const { createUpdate } = combineReducers({});
+
+	const getState = () => ({});
+	const subscribe = () => null;
+	const update = createUpdate({getState, subscribe});
+	t.throws(() => update('key'));
 });

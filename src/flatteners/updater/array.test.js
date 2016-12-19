@@ -6,7 +6,7 @@ import createCombineReducers from '../../createCombineReducers';
 import { createArray } from '../../operators';
 import Updater from './';
 import Shape from '../shaper';
-import { push, pop, length, get } from './array';
+import { push, pop, get } from './array';
 
 const flatteners = {
 	createUpdate: Updater(),
@@ -78,22 +78,13 @@ const array = createArray(flatteners);
 		update(undefined);
 	});
 
-	test('Can get length', t => {
-		const getState = () => [1, 2, 3];
-		const subscribe = () => null;
-		const update = createUpdate({getState, subscribe});
-		const actual = length(update)();
-		const expected = 3;
-		t.is(actual, expected);
-	});
-
 	test('Can use get to set values in an array', t => {
 		t.plan(1);
 
 		const getState = () => ['value1', 'value2'];
 		const subscribe = actual => t.deepEqual(actual, ['value1', 'newValue']);
 		const update = createUpdate({getState, subscribe});
-		get(update)(1)('newValue');
+		get(update)(1).set('newValue');
 	});
 })();
 
@@ -113,7 +104,7 @@ test('Can use get to set deep keys in an array', t => {
 	];
 	const subscribe = actual => t.deepEqual(actual, expected);
 	const update = createUpdate({getState, subscribe});
-	get(update)(1).key('newValue');
+	get(update)(1)('key').set('newValue');
 });
 
 test('Push the default shape with no args', t => {

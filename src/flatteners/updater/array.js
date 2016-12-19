@@ -34,7 +34,7 @@ export const get = (getScope: () => *) =>
 			getState: scopedGetstate, 
 			child,
 		} = getScope();
-		
+
 		const getState = () => {
 			const state = normalizeArray(scopedGetstate(), false);
 			return state[index];
@@ -46,11 +46,10 @@ export const get = (getScope: () => *) =>
 		};
 		
 		const childScope = {getState, subscribe};
-		const out: {} & () => mixed = child
+		return child
 			? child(childScope)
 			: reduce({}, {})(childScope)
 		;
-		return out;
 	}
 ;
 
@@ -72,10 +71,6 @@ const arrayOp = (operation: AnyFnType, {mutates, useShape}: OptionType = {}) =>
 		}
 	;
 ;
-
-export const length = arrayOp(function() {
-	return this.length;
-});
 
 export const copyWithin = arrayOp(Array.prototype.copyWithin, {mutates: true});
 export const fill = arrayOp(Array.prototype.fill, {mutates: true});
