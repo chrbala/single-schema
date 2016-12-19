@@ -5,19 +5,20 @@ import type { ScopeType } from './types';
 
 import reduce from './reduce';
 
-type ChildType = (scope: ScopeType) => (...args: Array<*>) => void;
-type ContextType = {shape: () => mixed};
-export default (child: ?ChildType) => (context: ContextType) =>
-	({subscribe, getState}: ScopeType) => 
-		(...args: Array<*>) => {
-			const newDataProvided = !!args.length;
-			if (!newDataProvided)
-				return {subscribe, getState, child, context};
+const STUPID_PRIVATE_KEY = '@@_!_DO_NOT_USE_';
 
-			const newValue = args[0];
-			subscribe(newValue);
-		}
-	;
+type ChildType = (scope: ScopeType) => (...args: Array<*>) => void;
+export default (child: ?ChildType) => (context: {}) =>
+	({subscribe, getState}: ScopeType) => ({
+		set: subscribe, 
+		[STUPID_PRIVATE_KEY]: {
+			subscribe, 
+			getState, 
+			child, 
+			context,
+		},
+	})
+;
 
 const normalizeArray = (value, mutates) =>
 	Array.isArray(value) 
@@ -27,13 +28,13 @@ const normalizeArray = (value, mutates) =>
 		: []
 	;
 
-export const get = (getScope: () => *) => 
+export const get = (scope: *) => 
 	(index: number) => {
 		const {
 			subscribe: scopedSubscribe, 
 			getState: scopedGetstate, 
 			child,
-		} = getScope();
+		} = scope[STUPID_PRIVATE_KEY];
 
 		const getState = () => {
 			const state = normalizeArray(scopedGetstate(), false);
@@ -55,9 +56,13 @@ export const get = (getScope: () => *) =>
 
 type OptionType = {mutates?: boolean, useShape?: boolean};
 const arrayOp = (operation: AnyFnType, {mutates, useShape}: OptionType = {}) => 
-	(getScope: () => *) => 
+	(scope: *) => 
 		(...args: Array<*>) => {
-			const {subscribe, getState, context: { shape }} = getScope();
+			const {
+				subscribe, 
+				getState, 
+				context: { shape },
+			} = scope[STUPID_PRIVATE_KEY];
 
 			const selectedArgs = args.length || !useShape || !shape
 				? args

@@ -19,6 +19,18 @@ const array = createArray(flatteners);
 (() => {
 	const { createUpdate } = array({});
 
+	test('Can set the current value of the array', t => {
+		t.plan(1);
+
+		const VALUE = ['VALUE'];
+
+		const state = [];
+		const getState = () => state;
+		const subscribe = actual => t.is(actual, VALUE);
+		const update = createUpdate({getState, subscribe});
+		update.set(VALUE);
+	});
+
 	test('Can run an arrayOp', t => {
 		t.plan(1);
 
@@ -66,7 +78,7 @@ const array = createArray(flatteners);
 		const getState = () => [];
 		const subscribe = data => t.deepEqual(data, [1, 2, 3]);
 		const update = createUpdate({getState, subscribe});
-		update([1, 2, 3]);
+		update.set([1, 2, 3]);
 	});
 
 	test('Can replace state with undefined', t => {
@@ -75,7 +87,7 @@ const array = createArray(flatteners);
 		const getState = () => [];
 		const subscribe = data => t.is(data, undefined);
 		const update = createUpdate({getState, subscribe});
-		update(undefined);
+		update.set(undefined);
 	});
 
 	test('Can use get to set values in an array', t => {
