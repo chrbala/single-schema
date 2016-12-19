@@ -17,10 +17,12 @@ It should be apparent from this file that this is a work in progress. Don't expe
 * Figure out what should be public API on launch and organize files accordingly
 * More examples
 * Actual docs
+* Graphql support - build your schema
+* Metadata annotations (name, description, etc)
+* Arbitrary data path comparisons for validation
 
 # Candidates for cross-flattener use
 * use validate to determine which reducer to pick with an OR operator
 
 # Possible features
-* Graphql support - build your schema
 * Async support
