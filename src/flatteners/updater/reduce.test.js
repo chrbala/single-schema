@@ -38,6 +38,21 @@ test('Can get keys', t => {
 	t.deepEqual(actual, expected);
 });
 
+test('Can delete a key', t => {
+	t.plan(1);
+
+	const { createUpdate } = combineReducers({
+		key: null,
+	});
+
+	const getState = () => ({
+		key: 'value',
+	});
+	const subscribe = actual => t.deepEqual(actual, {});
+	const update = createUpdate({getState, subscribe});
+	update.delete('key');
+});
+
 test('Can set a key value', t => {
 	t.plan(1);
 

@@ -34,10 +34,22 @@ const reduce: ReducerType<*> = (children: AllReducerType<*>) =>
 		};
 
 		const keys = () => Object.keys(children);
+		const deleteKey = keyToDelete => {
+			const state = scopedGetstate();
+			if (state === undefined || state === null)
+				return;
+
+			const out = {};
+			for (const key in state)
+				if (key != keyToDelete)
+					out[key] = state[key];
+			scopedSubscribe(out);
+		};
 
 		return Object.assign(getChild, {
 			keys, 
 			set: scopedSubscribe, 
+			delete: deleteKey,
 		});
 	}
 ;
