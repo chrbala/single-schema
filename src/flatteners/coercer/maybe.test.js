@@ -56,3 +56,32 @@ test('Maybe does not add new keys', t => {
 	};
 	t.deepEqual(actual, expected);
 });
+
+test('Recursive data structures', t => {
+	const node = combineReducers(() => ({
+		value: isString,
+		next: maybe(node),
+	}));
+	const { coerce } = node;
+	const actual = coerce({
+		value: 'one',
+		next: {
+			value: 'two',
+			next: {
+				value: 123,
+				next: null,
+			},
+		},
+	});
+	const expected = {
+		value: 'one',
+		next: {
+			value: 'two',
+			next: {
+				value: '123',
+				next: null,
+			},
+		},
+	};
+	t.deepEqual(actual, expected);
+});

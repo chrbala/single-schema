@@ -12,7 +12,7 @@ test('createCombineReducers returns fn that creates the proper keys', t => {
 		},
 	});
 
-	const reducers = combineReducers();
+	const reducers = combineReducers({});
 
 	const actual = Object.keys(reducers);
 	const expected = ['doSomething'];
@@ -33,7 +33,7 @@ test('Reducer is passed in all the data', t => {
 		},
 	});
 
-	const { doSomething } = combineReducers();
+	const { doSomething } = combineReducers({});
 	doSomething(inputData);
 });
 
@@ -57,7 +57,7 @@ test('Only the relevant reducer is run', t => {
 	t.is(spy1.timesRun(), 0);
 	t.is(spy2.timesRun(), 0);
 
-	const { doSomething } = combineReducers();
+	const { doSomething } = combineReducers({});
 	doSomething(inputData);
 
 	t.is(spy1.timesRun(), 1);
@@ -149,6 +149,6 @@ test('Reducer is provided the context of other reducers', t => {
 		},
 	});
 
-	const { doSomething } = combineReducers();
+	const { doSomething } = combineReducers({});
 	doSomething();
 });
