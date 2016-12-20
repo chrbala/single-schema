@@ -1,17 +1,12 @@
 // @flow
 
+import { mapObj } from './util/micro';
+
 import type { 
 	AllReducerType, 
 	AllFlattenerType,
 	ReducerType,
 } from './shared/types';
-
-const mapObj = (obj, cb) => {
-	const out = {};
-	for (const key in obj)
-		out[key] = cb(obj[key], key);
-	return out;
-};
 
 const unThunk = maybeThunk => 
 	typeof maybeThunk == 'function'
@@ -23,7 +18,7 @@ type ReduceObjectType<T> = {
 	[key: T]: ReducerType<T>,
 };
 
-type ArgType = AllFlattenerType<*> | () => AllFlattenerType<*>;
+type ArgType = AllFlattenerType<*>;
 export default (flatteners: ArgType) => {
 	const reducerFlatters: ReduceObjectType<*> = 
 		mapObj(flatteners, flattener => flattener.reduce)

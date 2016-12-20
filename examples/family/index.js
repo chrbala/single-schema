@@ -2,7 +2,6 @@
 
 import React, { Component } from 'react';
 import { family } from './data';
-import { get, push } from '../../src/flatteners/updater/array';
 
 const Person = ({value, update}) =>
 	<div>
@@ -18,9 +17,9 @@ const Person = ({value, update}) =>
 const People = ({kind, value, update}) =>
 	<div>
 		{value.map((person, i) => 
-			<Person key={i} value={value[i]} update={get(update)(i)} />
+			<Person key={i} value={value[i]} update={update.get(i)} />
 		)}
-		<button onClick={() => push(update)()}>Add {kind}</button>
+		<button onClick={() => update.push()}>Add {kind}</button>
 	</div>
 ;
 
