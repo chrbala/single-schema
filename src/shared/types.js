@@ -14,8 +14,8 @@ export type ReducerType<T> = (
 	context: FlattenerType<T>
 ) => AnyFnType;
 
-export type AllReducerType<T> = {
-	[keys: $Keys<T>]: AnyFnType,
+export type AllReducerType = {
+	[keys: string]: AnyFnType,
 };
 
 export type FlattenerType<T> = {

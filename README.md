@@ -20,6 +20,7 @@ It should be apparent from this file that this is a work in progress. Don't expe
 * Graphql support - build your schema
 * Metadata annotations (name, description, etc)
 * Arbitrary data path comparisons for validation
+* Map type
 
 # Candidates for cross-flattener use
 * use validate to determine which reducer to pick with an OR operator

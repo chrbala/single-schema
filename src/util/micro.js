@@ -14,8 +14,10 @@ export const isFrozen = (obj: *) =>
 	process.env.NODE_ENV != 'production' && Object.isFrozen(obj)
 ;
 
-export const mapObj = (obj: {}, cb: (value: *, key: string) => mixed) => {
-	const out = {};
+type AnyType = *;
+
+export const mapObj = (obj: {}, cb: (value: *, key: string) => AnyType) => {
+	const out: {[key: string]: *} = {};
 	for (const key in obj)
 		out[key] = cb(obj[key], key);
 	return out;

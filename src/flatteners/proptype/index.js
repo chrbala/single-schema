@@ -5,15 +5,12 @@ import array from './array';
 import and from './and';
 import maybe from './maybe';
 
-import * as _leaves from './leaves';
-export const leaves = _leaves;
+export * as leaves from './leaves';
 
 import type { FlattenerType } from '../../shared/types';
 
-type CoerceType = (options: *) => FlattenerType<*>;
-
-const Coerce: CoerceType = ({cache}: {cache: boolean} = {}) => ({
-	reduce: reduce({cache}),
+const Coerce: () => FlattenerType<*> = () => ({
+	reduce,
 	array,
 	and,
 	maybe,

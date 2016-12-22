@@ -1,7 +1,7 @@
 // @flow
 
 import React, { Component } from 'react';
-import { family } from './data';
+import { family, people, person } from './data';
 
 const Person = ({value, update}) =>
 	<div>
@@ -14,14 +14,22 @@ const Person = ({value, update}) =>
 	</div>
 ;
 
+Person.propTypes = {
+	value: person.proptype(),
+};
+
 const People = ({kind, value, update}) =>
 	<div>
-		{value.map((person, i) => 
+		{value.map((_, i) => 
 			<Person key={i} value={value[i]} update={update.get(i)} />
 		)}
 		<button onClick={() => update.push()}>Add {kind}</button>
 	</div>
 ;
+
+People.propTypes = {
+	value: people.proptype(),
+};
 
 export default class Family extends Component {
 	state = {

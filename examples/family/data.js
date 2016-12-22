@@ -1,18 +1,15 @@
 // @flow
 
 import { combineReducers, array } from '../../src';
-
-const string = {
-	coerce: value => String(value),
-	validate: value => typeof value == 'string',
-	shape: () => '',
-};
+import leaves from '../../src/defaultLeaves';
 
 export const person = combineReducers({
-	name: string,
+	name: leaves.string,
 });
 
+export const people = array(person);
+
 export const family = combineReducers({
-	adults: array(person),
-	children: array(person),
+	adults: people,
+	children: people,
 });

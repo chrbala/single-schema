@@ -4,6 +4,9 @@ import reduce from './reduce';
 import array from './array';
 import maybe from './maybe';
 
+import * as _leaves from './leaves';
+export const leaves = _leaves;
+
 import type { FlattenerType } from '../../shared/types';
 
 type OptionsType = {
