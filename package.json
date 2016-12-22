@@ -38,8 +38,5 @@
       "babel-polyfill"
     ],
     "babel": "inherit"
-  },
-  "dependencies": {
-    "enzyme": "^2.6.0"
   }
 }

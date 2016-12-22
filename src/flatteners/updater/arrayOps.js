@@ -48,7 +48,7 @@ export const unshift = arrayOp(Array.prototype.unshift, {
 	useShape: true,
 });
 
-export const get = (scope: *) => 
+export default (scope: *) => 
 	(index: number) => {
 		const {
 			subscribe: scopedSubscribe, 

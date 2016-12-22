@@ -95,7 +95,7 @@ const array = createArray(flatteners);
 		const getState = () => ['value1', 'value2'];
 		const subscribe = actual => t.deepEqual(actual, ['value1', 'newValue']);
 		const update = createUpdate({getState, subscribe});
-		update.get(1).set('newValue');
+		update(1).set('newValue');
 	});
 })();
 
@@ -115,7 +115,7 @@ test('Can use get to set deep keys in an array', t => {
 	];
 	const subscribe = actual => t.deepEqual(actual, expected);
 	const update = createUpdate({getState, subscribe});
-	update.get(1)('key').set('newValue');
+	update(1)('key').set('newValue');
 });
 
 test('Push the default shape with no args', t => {
