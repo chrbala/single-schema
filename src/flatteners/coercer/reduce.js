@@ -17,7 +17,7 @@ const subset = (obj1, obj2) => {
 };
 
 const reduce: () => ReducerType<*> = ({cache}: {cache: boolean} = {}) => 
-	(children: AllReducerType<*>) => {
+	(children: AllReducerType) => {
 		const iterate = Iterator({cache});
 
 		return (data: GenericObjectType) => freeze(

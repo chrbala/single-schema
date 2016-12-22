@@ -10,7 +10,7 @@ export type AnyFnType = (...args: Array<*>) => *;
 {};
 
 export type ReducerType<T> = (
-	child: AllReducerType<T>, 
+	child: AllReducerType, 
 	context: FlattenerType<T>
 ) => AnyFnType;
 
@@ -21,7 +21,7 @@ export type AllReducerType = {
 export type FlattenerType<T> = {
 	reduce?: ReducerType<T>,
 	[key: string]: (...reducers: Array<?AnyFnType>) => 
-		(...context: Array<AllReducerType<*>>) => *,
+		(...context: Array<AllReducerType>) => *,
 };
 
 // this fixes type coloring after () => * in SublimeText

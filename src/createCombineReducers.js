@@ -25,7 +25,7 @@ export default (flatteners: ArgType) => {
 	;
 
 	return (children: {} | () => {}) => {
-		const out: AllReducerType<*> = {};
+		const out: AllReducerType = {};
 		for (const name in reducerFlatters)
 			out[name] = (...args) => {
 				const reducers = mapObj(unThunk(children),

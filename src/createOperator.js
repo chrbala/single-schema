@@ -8,7 +8,7 @@ import type {
 
 export default (operator: string) => 
 	(flatteners: AllFlattenerType<*>) => 
-		(...reducers: Array<AllReducerType<*>>) => {
+		(...reducers: Array<AllReducerType>) => {
 			const out: {[key: $Keys<typeof flatteners>]: AnyFnType} = {};
 			for (const flattenerName in flatteners) {
 				const scopedReducers = reducers.map(reducer => reducer[flattenerName]);
@@ -16,7 +16,7 @@ export default (operator: string) =>
 				
 				const create = flatteners[flattenerName][operator];
 				out[flattenerName] = create
-					? create(...scopedReducers)(...reducerContexts)
+					? create(...scopedReducers)(...reducerContexts)(out)
 					: () => console.warn(
 							new Error(`${flattenerName}/${operator} was not found`)
 						)

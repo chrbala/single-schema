@@ -11,7 +11,7 @@ export default ({cache: doesCache}: OptionsType) => {
 	const cache = {};
 	let initial = true;
 
-	return (keyset: AllReducerType<*>, data: GenericObjectType, cb: *) => {
+	return (keyset: AllReducerType, data: GenericObjectType, cb: *) => {
 		if (!initial && data === lastInput)
 			return lastOutput;
 

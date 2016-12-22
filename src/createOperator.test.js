@@ -15,7 +15,7 @@ test('Can create an operator', t => {
 	const VALUE = 'VALUE';
 	const operator = createOperator('operator')({
 		flattener: {
-			operator: () => () => () => VALUE,
+			operator: () => () => () => () => VALUE,
 		},
 	});
 	const { flattener } = operator();
@@ -31,7 +31,7 @@ test('Can create an operator with multiple reducers', t => {
 	};
 	const operator = createOperator('operator')({
 		flattener: {
-			operator: (...reducers) => () => () =>
+			operator: (...reducers) => () => () => () =>
 				t.deepEqual(reducers, [reduce, reduce, reduce])
 			,
 		},
@@ -48,7 +48,7 @@ test('Operators are provided reducer context', t => {
 	};
 	const operator = createOperator('operator')({
 		flattener: {
-			operator: () => (...context) => () => 
+			operator: () => (...context) => () => () =>
 				t.deepEqual(context, [reducer, reducer])
 			,
 		},

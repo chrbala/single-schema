@@ -28,7 +28,7 @@ const People = ({kind, value, update}) =>
 ;
 
 People.propTypes = {
-	value: people.proptype(),
+	value: people.proptype,
 };
 
 export default class Family extends Component {

@@ -8,3 +8,4 @@ libs/
 
 [options]
 suppress_comment= \\(.\\|\n\\)*\\$FlowFixMe
+esproposal.export_star_as=enable

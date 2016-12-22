@@ -1,16 +1,11 @@
 // @flow
 
-import PropTypes from './proptypes';
+import { createPropType } from './shared';
 
-import { mapObj } from '../../util/micro';
+import type { ReducerType } from '../../shared/types';
 
-import type { 
-	AllReducerType, 
-	ReducerType, 
-} from '../../shared/types';
-
-const reduce: ReducerType<*> = (children: AllReducerType<*>) => () => 
-	PropTypes.shape(mapObj(children, child => child() || PropTypes.any))
+const reduce: ReducerType<*> = (_, {validate}) => () => 
+	createPropType(validate)
 ;
 
 export default reduce;

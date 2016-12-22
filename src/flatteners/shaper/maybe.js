@@ -1,3 +1,3 @@
 // @flow
 
-export default () => () => () => undefined;
+export default () => () => () => () => undefined;

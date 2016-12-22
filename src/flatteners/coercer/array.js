@@ -2,7 +2,7 @@
 
 import { freeze } from '../../util/micro';
 
-export default (coerce: ?(data: *) => mixed) => () => (data: *) => {
+export default (coerce: ?(data: *) => mixed) => () => () => (data: *) => {
 	if (!coerce)
 		return data;
 

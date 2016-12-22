@@ -3,7 +3,7 @@
 import { freeze } from '../../util/micro';
 import { EXPECTED_ARRAY } from './strings';
 
-export default (validate: ?(data: *) => mixed) => () => (data: *) => {
+export default (validate: ?(data: *) => mixed) => () => () => (data: *) => {
 	if (!validate)
 		return null;
 

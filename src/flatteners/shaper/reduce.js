@@ -8,7 +8,7 @@ type OptionsType = {
 	leafNode: *,
 };
 export default ({leafNode}: OptionsType) => 
-	(children: AllReducerType<*>) => () => {
+	(children: AllReducerType) => () => {
 		const out = {};
 		for (const key in children) {
 			const child = children[key];
