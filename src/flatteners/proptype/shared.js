@@ -12,5 +12,5 @@ export const createPropType = (validate: () => mixed) =>
 ;
 
 export const operation = () => () => ({validate}: {validate: () => mixed}) => 
-	createPropType(validate)
+	() => createPropType(validate)
 ;

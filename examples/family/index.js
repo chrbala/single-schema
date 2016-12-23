@@ -21,14 +21,14 @@ Person.propTypes = {
 const People = ({kind, value, update}) =>
 	<div>
 		{value.map((_, i) => 
-			<Person key={i} value={value[i]} update={update.get(i)} />
+			<Person key={i} value={value[i]} update={update(i)} />
 		)}
 		<button onClick={() => update.push()}>Add {kind}</button>
 	</div>
 ;
 
 People.propTypes = {
-	value: people.proptype,
+	value: people.proptype(),
 };
 
 export default class Family extends Component {

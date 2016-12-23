@@ -1,10 +1,16 @@
 // @flow
 
 import { combineReducers, array } from '../../src';
-import leaves from '../../src/defaultLeaves';
+
+const string = {
+	validate: value => typeof value == 'string'
+		? null
+		: `Expected string, got ${typeof value}`,
+	shape: () => '',
+};
 
 export const person = combineReducers({
-	name: leaves.string,
+	name: string,
 });
 
 export const people = array(person);
