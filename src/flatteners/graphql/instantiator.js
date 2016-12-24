@@ -10,31 +10,53 @@ type ReturnType = {
 type GetChildrenType = () => {
 	[key: string]: ReturnType,
 };
-type MapType = {
-	[key: string]: *,
-};
 type ChildrenType = {
 	graphql: GetChildrenType,
 };
-export default ({graphql}: MapType) => 
-	({fields: configFields = {}, ...config}: MapType) => 
+type StoreType = {
+	set: (name: string, graphQLObject: {}) => mixed,
+	get: (key: string) => () => {},
+};
+type ConfigType = {
+	name: string,
+	fields?: {},
+	[key: string]: *,
+};
+type GraphqlAnyType = *;
+type VariationType = {
+	createName: (rawName: string) => string,
+	build: (GraphqlConfig: ConfigType) => GraphqlAnyType,
+};
+type InitialConfigType = {
+	store: StoreType,
+	variations: Array<VariationType>,
+};
+
+export default ({store, variations}: InitialConfigType) => 
+	({fields: configFields = {}, ...config}: ConfigType) => 
 		({graphql: getChildren, ...remainingChildren}: ChildrenType) => {
-			const create = (kind: KindType) => () => new graphql[kind]({
+			const allConfig = {
 				...config,
-				fields: mapObj(getChildren(), 
+				fields: () => mapObj(getChildren(), 
 					(child, key) => {
 						const childValue = child();
 						return {
 							...configFields[key],
-							type: childValue[kind] || childValue,
+							type: typeof childValue == 'string'
+								? store.get(childValue)
+								: childValue,
 						};
 					}
 				),
+			};
+
+			variations.forEach(({createName, build}) => {
+				const name = createName(config.name);
+				store.set(name, () => build({...allConfig, name}));
 			});
 
 			return {
 				...remainingChildren,
-				GraphQLObjectType: create('GraphQLObjectType'),
-				GraphQLInputObjectType: create('GraphQLInputObjectType'),
+				graphql: config.name,
 			};
 		};
