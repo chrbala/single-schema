@@ -32,6 +32,7 @@ test('Base test', t => {
 			build: (config: any) => new GraphQLObjectType(config),
 			/* eslint-enable flowtype/no-weak-types */
 		}],
+		graphql: graphqlLib,
 	});
 
 	const string = {
@@ -51,7 +52,7 @@ test('Base test', t => {
 	const actual = getValue(grahpqlObject.getFields());
 	const expected = { 
 		key: { 
-			type: '[String]', 
+			type: '[String!]!', 
 			isDeprecated: false, 
 			name: 'key', 
 			args: [],

@@ -30,6 +30,7 @@ type VariationType = {
 type InitialConfigType = {
 	store: StoreType,
 	variations: Array<VariationType>,
+	graphql: {[key: string]: *},
 };
 
 const applyAll = (functions, value) => functions.reduce(
@@ -43,8 +44,8 @@ const normalizeChild = (store, child) => typeof child.baseName == 'string'
 		: child
 ;
 
-const getType = (store, child) => {
-	const normalized = normalizeChild(store, child);
+const getType = (store, child, {GraphQLNonNull}) => {
+	const normalized = new GraphQLNonNull(normalizeChild(store, child));
 
 	return child.wrappers
 		? applyAll(child.wrappers, normalized)
@@ -52,7 +53,7 @@ const getType = (store, child) => {
 	;
 };
 
-export default ({store, variations}: InitialConfigType) => 
+export default ({store, variations, graphql}: InitialConfigType) => 
 	({fields: configFields = {}, ...config}: ConfigType) => 
 		({graphql: getChildren, ...remainingChildren}: ChildrenType) => {
 			const allConfig = {
@@ -60,7 +61,7 @@ export default ({store, variations}: InitialConfigType) =>
 				fields: () => mapObj(getChildren(), 
 					(child, key) => ({
 						...configFields[key],
-						type: getType(store, child()),
+						type: getType(store, child(), graphql),
 					})
 				),
 			};

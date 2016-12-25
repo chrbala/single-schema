@@ -3,7 +3,7 @@
 import test from 'ava';
 
 import * as graphql from 'graphql';
-import { GraphQLObjectType, GraphQLString, GraphQLList } from 'graphql';
+import { GraphQLObjectType, GraphQLString } from 'graphql';
 
 import createCombineReducers from '../../createCombineReducers';
 import Instantiator from './instantiator';
@@ -31,6 +31,7 @@ test('Basic test', t => {
 			build: (config: any) => new GraphQLObjectType(config),
 			/* eslint-enable flowtype/no-weak-types */
 		}],
+		graphql,
 	});
 
 	const register = instantiate({
@@ -46,7 +47,7 @@ test('Basic test', t => {
 	const actual = getValue(grahpqlObject.getFields());
 	const expected = { 
 		label: { 
-			type: 'String', 
+			type: 'String!', 
 			isDeprecated: false, 
 			name: 'label', 
 			args: [],
@@ -67,6 +68,7 @@ test('Depth test', t => {
 			build: (config: any) => new GraphQLObjectType(config),
 			/* eslint-enable flowtype/no-weak-types */
 		}],
+		graphql,
 	});
 
 	const registerChild = instantiate({
@@ -88,7 +90,7 @@ test('Depth test', t => {
 	const actual = getValue(grahpqlObject.getFields());
 	const expected = { 
 		child: { 
-			type: CHILD_NAME, 
+			type: `${CHILD_NAME}!`, 
 			isDeprecated: false, 
 			name: 'child', 
 			args: [],
@@ -111,6 +113,7 @@ test('createName test', t => {
 			createName: rawName => rawName + SUFFIX,
 			build: ({name}) => t.is(name, COMBINED_NAME),
 		}],
+		graphql,
 	});
 
 	const register = instantiate({
