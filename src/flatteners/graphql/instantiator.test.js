@@ -2,37 +2,23 @@
 
 import test from 'ava';
 
-import { GraphQLObjectType } from 'graphql';
-import { GraphQLString } from 'graphql';
+import * as graphql from 'graphql';
+import { GraphQLObjectType, GraphQLString, GraphQLList } from 'graphql';
 
 import createCombineReducers from '../../createCombineReducers';
 import Instantiator from './instantiator';
 import GraphQLFlattener from './';
-
-const createStore = () => {
-	const thunks = {};
-	const values = {};
-	
-	const set = (name, value) => thunks[name] = value;
-	const get = name => {
-		if (!values[name])
-			values[name] = thunks[name]();
-		return values[name];
-	};
-	
-	return {
-		set,
-		get,
-	};
-};
+import createStore from './createStore';
 
 const combineReducers = createCombineReducers({
-	graphql: GraphQLFlattener(),
+	graphql: GraphQLFlattener({graphql}),
 });
 
 const string = {
 	graphql: () => GraphQLString,
 };
+
+const getValue = value => JSON.parse(JSON.stringify(value));
 
 test('Basic test', t => {
 	const NAME = 'NAME';
@@ -57,14 +43,54 @@ test('Basic test', t => {
 	const grahpqlObject = store.get(NAME);
 	t.is(NAME, grahpqlObject.name);
 
-	const getValue = value => JSON.parse(JSON.stringify(value));
-
 	const actual = getValue(grahpqlObject.getFields());
 	const expected = { 
 		label: { 
 			type: 'String', 
 			isDeprecated: false, 
 			name: 'label', 
+			args: [],
+		}, 
+	};
+	t.deepEqual(actual, expected);
+});
+
+test('Depth test', t => {
+	const PARENT_NAME = 'PARENT';
+	const CHILD_NAME = 'CHILD';
+	const store = createStore();
+	const instantiate = Instantiator({
+		store,
+		variations: [{
+			createName: rawName => rawName,
+			/* eslint-disable flowtype/no-weak-types */
+			build: (config: any) => new GraphQLObjectType(config),
+			/* eslint-enable flowtype/no-weak-types */
+		}],
+	});
+
+	const registerChild = instantiate({
+		name: CHILD_NAME,
+	});
+	const child = registerChild(combineReducers({
+		key: string,
+	}));
+
+	const registerParent = instantiate({
+		name: PARENT_NAME,
+	});
+	registerParent(combineReducers({
+		child,
+	}));
+
+	const grahpqlObject = store.get(PARENT_NAME);
+
+	const actual = getValue(grahpqlObject.getFields());
+	const expected = { 
+		child: { 
+			type: CHILD_NAME, 
+			isDeprecated: false, 
+			name: 'child', 
 			args: [],
 		}, 
 	};
