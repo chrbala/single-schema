@@ -13,15 +13,19 @@ import createStore from './createStore';
 
 const getValue = value => JSON.parse(JSON.stringify(value));
 
+const string = {
+	graphql: () => GraphQLString,
+};
+
+const flatteners = {
+	graphql: GraphQLFlattener({graphql: graphqlLib}),
+};
+
+const combineReducers = createCombineReducers(flatteners);
+const array = createArray(flatteners);
+
 test('Base test', t => {
 	const NAME = 'ArrayExample';
-
-	const flatteners = {
-		graphql: GraphQLFlattener({graphql: graphqlLib}),
-	};
-
-	const combineReducers = createCombineReducers(flatteners);
-	const array = createArray(flatteners);
 
 	const store = createStore();
 	const instantiate = Instantiator({
@@ -34,10 +38,6 @@ test('Base test', t => {
 		}],
 		graphql: graphqlLib,
 	});
-
-	const string = {
-		graphql: () => GraphQLString,
-	};
 
 	const register = instantiate({
 		name: NAME,

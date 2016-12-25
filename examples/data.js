@@ -1,12 +1,15 @@
 // @flow
 
-import { combineReducers, array } from '../../src';
+import { GraphQLString } from 'graphql';
+
+import { combineReducers, array } from '../src';
 
 const string = {
 	validate: value => typeof value == 'string'
 		? null
 		: `Expected string, got ${typeof value}`,
 	shape: () => '',
+	graphql: () => GraphQLString,
 };
 
 export const person = combineReducers({

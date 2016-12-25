@@ -11,7 +11,8 @@
     "build-flow": "cp -r src lib && renamer --regex --find '.js$' --replace '.js.flow' 'lib/**/*'",
     "build": "babel src --out-dir lib",
     "prepublish": "rm -rf lib && npm run build-flow && npm run build",
-    "storybook": "start-storybook -p 9010"
+    "storybook": "start-storybook -p 9010",
+    "graphql": "nodemon examples/graphql"
   },
   "devDependencies": {
     "@kadira/storybook": "^2.5.2",
@@ -39,5 +40,10 @@
       "babel-polyfill"
     ],
     "babel": "inherit"
+  },
+  "dependencies": {
+    "express": "^4.14.0",
+    "express-graphql": "^0.6.1",
+    "nodemon": "^1.11.0"
   }
 }

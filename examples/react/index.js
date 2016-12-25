@@ -1,7 +1,7 @@
 // @flow
 
 import React, { Component } from 'react';
-import { family, people, person } from './data';
+import { family, people, person } from '../data';
 
 const Person = ({value, update}) =>
 	<div>

@@ -33,25 +33,37 @@ type InitialConfigType = {
 	graphql: {[key: string]: *},
 };
 
-const applyAll = (functions, value) => functions.reduce(
+const applyAll = ({value, wrappers}) => wrappers.reduce(
 	(acc, next) => next(acc)
 , value);
 
-const normalizeChild = (store, child) => typeof child.baseName == 'string'
-	? store.get(child.baseName)
-	: child.value
-		? child.value
-		: child
-;
+const normalizeChild = (store, child, {GraphQLScalarType, GraphQLNonNull}) => {
+	let value;
+	let wrappers;
 
-const getType = (store, child, {GraphQLNonNull}) => {
-	const normalized = new GraphQLNonNull(normalizeChild(store, child));
+	if (child instanceof GraphQLScalarType) {
+		value = child;
+		wrappers = [];
+	} else if (child.value instanceof GraphQLScalarType) {
+		value = child.value;
+		wrappers = child.wrappers;
+	} else if (typeof child.baseName == 'string') {
+		value = store.get(child.baseName);
+		wrappers = child.wrappers;
+	} else {
+		console.log(child.key());
+		throw new Error('NOPE');
+	}
 
-	return child.wrappers
-		? applyAll(child.wrappers, normalized)
-		: normalized
-	;
+	return {
+		value: new GraphQLNonNull(value),
+		wrappers,
+	};
 };
+
+const getType = (store, child, graphql) => 
+	applyAll(normalizeChild(store, child, graphql))
+;
 
 export default ({store, variations, graphql}: InitialConfigType) => 
 	({fields: configFields = {}, ...config}: ConfigType) => 

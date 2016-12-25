@@ -71,12 +71,13 @@ test('Depth test', t => {
 		graphql,
 	});
 
-	const registerChild = instantiate({
-		name: CHILD_NAME,
-	});
-	const child = registerChild(combineReducers({
+	const child = combineReducers({
 		key: string,
-	}));
+		hello: string,
+	});
+	instantiate({
+		name: CHILD_NAME,
+	})(child);
 
 	const registerParent = instantiate({
 		name: PARENT_NAME,
