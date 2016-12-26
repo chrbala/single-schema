@@ -134,6 +134,30 @@ test('Reducer is still run when child is null', t => {
 	doSomething();
 });
 
+test('Reducer can have state', t => {
+	let i = 0;
+
+	const combineReducers = createCombineReducers({
+		doSomething: {
+			reduce: ({key}) => {
+				i++;
+				return () => t.is(key, null);
+			},
+		},
+	});
+
+	const { doSomething } = combineReducers({
+		key: null,
+	});
+
+	doSomething();
+	doSomething();
+
+	t.is(i, 1);
+});
+
+test.todo('Can create cyclic types');
+
 test('Reducer is provided the context of other reducers', t => {
 	t.plan(2);
 

@@ -6,26 +6,31 @@ import { combineReducers } from '../../src';
 import { person, family } from '../data';
 import { store, instantiate } from './setup';
 
+const exampleFamily = {
+	adults: [ {name: 'Bob'}, {name: 'Susan'} ],
+	children: [ {name: 'Larry'}, {name: 'Curly'}, {name: 'Moe'} ],
+};
+
 instantiate({
-	name: 'Person',
+	name: 'person',
 })(person);
 
 instantiate({
-	name: 'Family',
+	name: 'family',
 })(family);
 
-// const query = combineReducers({
-// 	family,
-// });
-// instantiate({
-// 	name: 'query',
-// })(query);
+const query = combineReducers({
+	family,
+});
+instantiate({
+	name: 'query',
+	fields: {
+		family: {
+			resolve: () => exampleFamily,
+		},
+	},
+})(query);
 
-const f = store.get('Family').getFields();
-console.log(f);
-
-// console.log(store.get('Family').getFields());
-
-// export default new GraphQLSchema({
-// 	query: store.get('query'),
-// });
+export default new GraphQLSchema({
+	query: store.get('query'),
+});

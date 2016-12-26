@@ -5,7 +5,7 @@ import express from 'express';
 
 import schema from './schema';
 
-const PORT = '8888';
+const PORT = 4000;
 
 const error = e => console.log(e);
 const success = () => console.log(

@@ -30,6 +30,7 @@ test('Basic test', t => {
 			/* eslint-disable flowtype/no-weak-types */
 			build: (config: any) => new GraphQLObjectType(config),
 			/* eslint-enable flowtype/no-weak-types */
+			getChildName: name => name,
 		}],
 		graphql,
 	});
@@ -67,6 +68,7 @@ test('Depth test', t => {
 			/* eslint-disable flowtype/no-weak-types */
 			build: (config: any) => new GraphQLObjectType(config),
 			/* eslint-enable flowtype/no-weak-types */
+			getChildName: name => store.get(name),
 		}],
 		graphql,
 	});
@@ -113,6 +115,7 @@ test('createName test', t => {
 		variations: [{
 			createName: rawName => rawName + SUFFIX,
 			build: ({name}) => t.is(name, COMBINED_NAME),
+			getChildName: name => store.get(name),
 		}],
 		graphql,
 	});
@@ -126,3 +129,55 @@ test('createName test', t => {
 
 	store.get(COMBINED_NAME);
 });
+
+test('getChildName test', t => {
+	const PARENT_NAME = 'PARENT';
+	const CHILD_NAME = 'CHILD';
+	const toVariationName = name => `${name}_VARIATION`;
+
+	const store = createStore();
+	const instantiate = Instantiator({
+		store,
+		variations: [{
+			createName: rawName => rawName,
+			/* eslint-disable flowtype/no-weak-types */
+			build: (config: any) => new GraphQLObjectType(config),
+			/* eslint-enable flowtype/no-weak-types */
+			getChildName: name => toVariationName(name),
+		}, {
+			createName: rawName => toVariationName(rawName),
+			/* eslint-disable flowtype/no-weak-types */
+			build: (config: any) => new GraphQLObjectType(config),
+			/* eslint-enable flowtype/no-weak-types */
+			getChildName: name => name,
+		}],
+		graphql,
+	});
+
+	const child = combineReducers({
+		label: string,
+	});
+	instantiate({
+		name: CHILD_NAME,
+	})(child);
+
+	instantiate({
+		name: PARENT_NAME,
+	})(combineReducers({
+		child,
+	}));
+
+	const actual = getValue(store.get(PARENT_NAME).getFields());
+	const expected = { 
+		child: { 
+			type: 'CHILD_VARIATION!',
+			isDeprecated: false,
+			name: 'child',
+			args: [],
+		},
+	};
+
+	t.deepEqual(actual, expected);
+});
+
+test.todo('Recursive data structures');

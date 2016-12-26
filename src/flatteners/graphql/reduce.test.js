@@ -21,7 +21,7 @@ test('Base test', t => {
 		key: string,
 	});
 
-	const actual = graphql().key();
+	const actual = graphql().getChildren().key();
 	const expected = GraphQLString;
 
 	t.is(actual, expected);

@@ -1,17 +1,12 @@
 // @flow
 
+import { NAME, VALUE } from './types';
+import type { InputType, OutputType, ByValueType } from './types';
+import { normalizeInput } from './shared';
 import { mapObj } from '../../util/micro';
 
-type KindType = 'GraphQLObjectType' | 'GraphQLInputObjectType';
-type ReturnType = {
-	[key: KindType]: () => {},
-};
-
-type GetChildrenType = () => {
-	[key: string]: ReturnType,
-};
 type ChildrenType = {
-	graphql: GetChildrenType,
+	graphql: () => InputType,
 };
 type StoreType = {
 	set: (name: string, graphQLObject: {}) => mixed,
@@ -22,10 +17,14 @@ type ConfigType = {
 	fields?: {},
 	[key: string]: *,
 };
+
+type GetChildType = (name: string) => string;
+
 type GraphqlAnyType = *;
 type VariationType = {
 	createName: (rawName: string) => string,
 	build: (GraphqlConfig: ConfigType) => GraphqlAnyType,
+	getChildName: GetChildType,
 };
 type InitialConfigType = {
 	store: StoreType,
@@ -33,61 +32,63 @@ type InitialConfigType = {
 	graphql: {[key: string]: *},
 };
 
-const applyAll = ({value, wrappers}) => wrappers.reduce(
+const applyAll = ({getValue, wrappers}) => wrappers.reduce(
 	(acc, next) => next(acc)
-, value);
+, getValue());
 
-const normalizeChild = (store, child, {GraphQLScalarType, GraphQLNonNull}) => {
-	let value;
-	let wrappers;
+type NormalizeChildType = (arg: {
+	store: StoreType, 
+	child: OutputType, 
+	graphql: *, 
+	getChildName: GetChildType,
+}) => ByValueType;
+const normalizeChild: NormalizeChildType = ({
+	store, 
+	child, 
+	graphql: {GraphQLNonNull}, 
+	getChildName,
+}) => {
+	let getValue;
 
-	if (child instanceof GraphQLScalarType) {
-		value = child;
-		wrappers = [];
-	} else if (child.value instanceof GraphQLScalarType) {
-		value = child.value;
-		wrappers = child.wrappers;
-	} else if (typeof child.baseName == 'string') {
-		value = store.get(child.baseName);
-		wrappers = child.wrappers;
-	} else {
-		console.log(child.key());
-		throw new Error('NOPE');
-	}
+	if (child.type === VALUE)
+		getValue = child.getValue;
+	else if (child.type === NAME)
+		getValue = () => store.get(getChildName(child.getName()));
 
 	return {
-		value: new GraphQLNonNull(value),
-		wrappers,
+		type: VALUE,
+		getValue: () => new GraphQLNonNull(getValue()),
+		wrappers: child.wrappers,
 	};
 };
 
 const getType = (store, child, graphql) => 
-	applyAll(normalizeChild(store, child, graphql))
+	applyAll(normalizeChild(store, child, graphql));
 ;
 
 export default ({store, variations, graphql}: InitialConfigType) => 
 	({fields: configFields = {}, ...config}: ConfigType) => 
-		({graphql: getChildren, ...remainingChildren}: ChildrenType) => {
-			const allConfig = {
-				...config,
-				fields: () => mapObj(getChildren(), 
-					(child, key) => ({
-						...configFields[key],
-						type: getType(store, child(), graphql),
-					})
-				),
-			};
+		({graphql: childNode}: ChildrenType) => {
+			const normalized = normalizeInput(childNode());
+			normalized.register(config.name);
 
-			variations.forEach(({createName, build}) => {
+			variations.forEach(({createName, build, getChildName}) => {
+				const allConfig = {
+					...config,
+					fields: () => mapObj(normalized.getChildren(),
+						(child, key) => ({
+							...configFields[key],
+							type: getType({
+								store, 
+								child: normalizeInput(child()), 
+								graphql, 
+								getChildName,
+							}),
+						})
+					),
+				};
+
 				const name = createName(config.name);
 				store.set(name, () => build({...allConfig, name}));
 			});
-
-			return {
-				...remainingChildren,
-				graphql: () => ({
-					baseName: config.name,
-					wrappers: [],
-				}),
-			};
 		};

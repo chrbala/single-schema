@@ -14,6 +14,7 @@ export const instantiate = Instantiator({
 		/* eslint-disable flowtype/no-weak-types */
 		build: (config: any) => new GraphQLObjectType(config),
 		/* eslint-enable flowtype/no-weak-types */
+		getChildName: name => name,
 	}],
 	graphql,
 });

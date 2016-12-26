@@ -26,13 +26,20 @@ export default (flatteners: ArgType) => {
 
 	return (children: {} | () => {}) => {
 		const out: AllReducerType = {};
-		for (const name in reducerFlatters)
+		for (const name in reducerFlatters) {
+			let cache;
+
 			out[name] = (...args) => {
-				const reducers = mapObj(unThunk(children),
-					child => child && child[name]
-				);
-				return reducerFlatters[name](reducers, out)(...args);
+				if (!cache) {
+					const reducers = mapObj(unThunk(children),
+						child => child && child[name]
+					);
+					cache = reducerFlatters[name](reducers, out);
+				}
+
+				return cache(...args);
 			};
+		}
 		return out;
 	};
 };
