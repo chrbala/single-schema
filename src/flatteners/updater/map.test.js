@@ -83,3 +83,19 @@ test('Can use get to set deep keys in a map', t => {
 	const update = createUpdate({getState, subscribe});
 	update('asdf')('key').set('newValue');
 });
+
+test('Push the default shape with no args', t => {
+	t.plan(1);
+	
+	const VALUE = 'VALUE';
+	const { createUpdate } = map({
+		shape: () => VALUE,
+	});
+
+	const getState = () => ({});
+	const subscribe = actual => t.deepEqual(actual, {
+		key: VALUE,
+	});
+	const update = createUpdate({getState, subscribe});
+	update.insert('key');
+});

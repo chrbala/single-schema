@@ -19,7 +19,6 @@ It should be apparent from this file that this is a work in progress. Don't expe
 * Actual docs
 * Metadata annotations (name, description, etc)
 * Arbitrary data path comparisons for validation
-* Build out map type
 * Build out ability to set field options from the field itself
 * Build out in-memory database for graphql example 
 * Build out relay example
