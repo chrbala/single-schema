@@ -1,36 +1,17 @@
 // @flow
 
 import { NAME, VALUE } from './types';
-import type { InputType, OutputType, ByValueType } from './types';
+import type { 
+	InputType, 
+	OutputType, 
+	ByValueType,
+	StoreType,
+	GetChildType,
+	InitialConfigType,
+	ConfigType,
+} from './types';
 import { normalizeInput } from './shared';
 import { mapObj } from '../../util/micro';
-
-type ChildrenType = {
-	graphql: () => InputType,
-};
-type StoreType = {
-	set: (name: string, graphQLObject: {}) => mixed,
-	get: (key: string) => () => {},
-};
-type ConfigType = {
-	name: string,
-	fields?: {},
-	[key: string]: *,
-};
-
-type GetChildType = (name: string) => string;
-
-type GraphqlAnyType = *;
-type VariationType = {
-	createName: (rawName: string) => string,
-	build: (GraphqlConfig: ConfigType) => GraphqlAnyType,
-	getChildName: GetChildType,
-};
-type InitialConfigType = {
-	store: StoreType,
-	variations: Array<VariationType>,
-	graphql: {[key: string]: *},
-};
 
 const applyAll = ({getValue, wrappers}) => wrappers.reduce(
 	(acc, next) => next(acc)
@@ -67,8 +48,8 @@ const getType = (store, child, graphql) =>
 ;
 
 export default ({store, variations, graphql}: InitialConfigType) => 
-	({fields: configFields = {}, ...config}: ConfigType) => 
-		({graphql: childNode}: ChildrenType) => {
+	(childNode: () => InputType) => 
+		({fields: configFields = {}, ...config}: ConfigType) => {
 			const normalized = normalizeInput(childNode());
 			normalized.register(config.name);
 

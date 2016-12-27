@@ -1,14 +1,15 @@
 // @flow
 
 import { NAME } from './types';
-import type { ByNameType } from './types';
+import type { ByNameType, InitialConfigType } from './types';
 import type { AllReducerType } from '../../shared/types';
+import Instantiator from './instantiator';
 
-export default (children: AllReducerType) => {
+export default (config: InitialConfigType) => (children: AllReducerType) => {
 	let name;
 	let hasBeenSet = false;
 
-	return () => {
+	const cb = () => {
 		const getName = () => {
 			if (!hasBeenSet)
 				throw new Error('Value has not been set');
@@ -22,7 +23,7 @@ export default (children: AllReducerType) => {
 			name = _name;
 		};
 		const getChildren = () => children;
-
+ 
 		const out: ByNameType = {
 			type: NAME,
 			getName,
@@ -33,4 +34,9 @@ export default (children: AllReducerType) => {
 
 		return out;
 	};
+
+	const instantiate = Instantiator(config);
+	instantiate(cb);
+
+	return cb;
 };

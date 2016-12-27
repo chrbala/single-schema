@@ -4,17 +4,12 @@ import reduce from './reduce';
 import array from './array';
 import maybe from './maybe';
 
-import type { FlattenerType } from '../../shared/types';
+import type { InitialConfigType } from './types';
 
-type ConfigType = {
-	graphql: {},
-};
-type GraphqlFlattenerType = (config: ConfigType) => FlattenerType<*>;
-
-const GraphQLFlattener: GraphqlFlattenerType = ({graphql}) => ({
-	reduce,
-	array: array({graphql}),
-	maybe: maybe({graphql}),
+const GraphQLFlattener = (config: InitialConfigType) => ({
+	reduce: reduce(config),
+	array: array(config),
+	maybe: maybe(config),
 });
 
 export default GraphQLFlattener;

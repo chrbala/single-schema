@@ -3,8 +3,8 @@
 import { GraphQLSchema } from 'graphql';
 
 import { combineReducers } from '../../src';
+import { store } from '../../src/defaultSelection';
 import { person, family } from '../data';
-import { store } from './setup';
 
 const exampleFamily = {
 	adults: [ {name: 'Bob'}, {name: 'Susan'} ],
