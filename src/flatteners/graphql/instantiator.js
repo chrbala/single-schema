@@ -45,12 +45,11 @@ const normalizeChild: NormalizeChildType = ({
 
 const getType = (store, child, graphql) => 
 	applyAll(normalizeChild(store, child, graphql));
-;
 
 export default ({store, variations, graphql}: InitialConfigType) => 
-	(childNode: () => InputType) => 
+	(childNode: InputType) => 
 		({fields: configFields = {}, ...config}: ConfigType) => {
-			const normalized = normalizeInput(childNode());
+			const normalized = normalizeInput(childNode);
 			normalized.register(config.name);
 
 			variations.forEach(({createName, build, getChildName}) => {

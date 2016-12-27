@@ -7,10 +7,11 @@ type WrapperType = (graphql: *) => (value: *) => mixed;
 
 export default (wrapper: WrapperType) => ({graphql}: *) => 
 	(input: () => InputType) => 
-		() => () => {
+		() => () => () => {
 			const { wrappers, ...rest } = normalizeInput(input());
-			return () => ({
+			
+			return {
 				...rest,
 				wrappers: [...wrappers, wrapper(graphql)],
-			});
+			};
 		};

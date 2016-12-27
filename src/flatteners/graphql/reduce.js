@@ -9,37 +9,33 @@ export default (config: InitialConfigType) => (children: AllReducerType) => {
 	let name;
 	let hasBeenSet = false;
 
-	const cb = () => {
-		const getName = () => {
-			if (!hasBeenSet)
-				throw new Error('Value has not been set');
-			return name;
-		};
-		const register = (_name: string) => {
-			if (hasBeenSet)
-				throw new Error('Can only set register graphql objects once');
-			hasBeenSet = true;
+	const getName = () => {
+		if (!hasBeenSet)
+			throw new Error('Value has not been set');
+		return name;
+	};
+	const register = (_name: string) => {
+		if (hasBeenSet)
+			throw new Error('Can only set register graphql objects once');
+		hasBeenSet = true;
 
-			name = _name;
-		};
-		const getChildren = () => children;
- 
-		const out: ByNameType = {
-			type: NAME,
-			getName,
-			register,
-			getChildren,
-			wrappers: [],
-		};
+		name = _name;
+	};
+	const getChildren = () => children;
 
-		return out;
+	const out: ByNameType = {
+		type: NAME,
+		getName,
+		register,
+		getChildren,
+		wrappers: [],
 	};
 
 	return (...args: Array<*>) => {
 		if (!args.length)
-			return cb();
+			return out;
 
 		const graphqlConfig = args[0];
-		return Instantiator(config)(cb)(graphqlConfig);
+		Instantiator(config)(out)(graphqlConfig);
 	};
 };

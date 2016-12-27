@@ -2,7 +2,7 @@
 
 import test from 'ava';
 
-import * as graphqlLib from 'graphql';
+import * as graphql from 'graphql';
 import { GraphQLString, GraphQLObjectType } from 'graphql';
 
 import createCombineReducers from '../../createCombineReducers';
@@ -20,23 +20,23 @@ const defaultVariation = {
 	getChildName: name => name,
 };
 
+const string = {
+	graphql: () => GraphQLString,
+};
+
 test('Base test', t => {
 	const NAME = 'ArrayExample';
 
 	const store = createStore();
 	const flatteners = {
 		graphql: GraphQLFlattener({
-			graphql: graphqlLib,
+			graphql,
 			variations: [defaultVariation],
 			store,
 		}),
 	};
 	const combineReducers = createCombineReducers(flatteners);
 	const maybe = createMaybe(flatteners);
-
-	const string = {
-		graphql: () => GraphQLString,
-	};
 
 	combineReducers({
 		key: maybe(string),
@@ -55,5 +55,46 @@ test('Base test', t => {
 			args: [],
 		}, 
 	};
+	t.deepEqual(actual, expected);
+});
+
+test.only('Recursive data structures', t => {
+	const NAME = 'Node';
+
+	const store = createStore();
+	const flatteners = {
+		graphql: GraphQLFlattener({
+			graphql,
+			variations: [defaultVariation],
+			store,
+		}),
+	};
+	const combineReducers = createCombineReducers(flatteners);
+	const maybe = createMaybe(flatteners);
+	
+	const node = combineReducers(() => ({
+		value: string,
+		next: maybe(node),
+	}));
+	node.graphql({
+		name: NAME,
+	});
+
+	const actual = getValue(store.get(NAME).getFields());
+	const expected = {
+	  value: {
+	    type: 'String!',
+	    isDeprecated: false,
+	    name: 'value',
+	    args: [],
+	  },
+	  next: {
+	    type: 'Node',
+	    isDeprecated: false,
+	    name: 'next',
+	    args: [],
+	  },
+	};
+
 	t.deepEqual(actual, expected);
 });

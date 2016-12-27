@@ -189,5 +189,3 @@ test('getChildName test', t => {
 
 	t.deepEqual(actual, expected);
 });
-
-test.todo('Recursive data structures');
