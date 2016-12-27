@@ -1,17 +1,9 @@
 // @flow
 
-import { freeze, isFrozen } from '../../util/micro';
-import reduce from './reduce';
+import { freeze } from '../../util/micro';
+import { normalizeArray } from './arrayOrMap';
 
 import type { AnyFnType } from '../../shared/types';
-
-const normalizeArray = (value: *, mutates: boolean) =>
-	Array.isArray(value) 
-		? mutates || !isFrozen(value)
-			? [...value] 
-			: value
-		: []
-	;
 
 type OptionType = {mutates: boolean, useShape?: boolean};
 const arrayOp = (operation: AnyFnType, {mutates, useShape}: OptionType = {}) => 
@@ -47,29 +39,3 @@ export const unshift = arrayOp(Array.prototype.unshift, {
 	mutates: true,
 	useShape: true,
 });
-
-export default (scope: *) => 
-	(index: number) => {
-		const {
-			subscribe: scopedSubscribe, 
-			getState: scopedGetstate, 
-			child,
-		} = scope;
-
-		const getState = () => {
-			const state = normalizeArray(scopedGetstate(), false);
-			return state[index];
-		};
-		const subscribe = data => {
-			const safeState = normalizeArray(scopedGetstate(), true);
-			safeState[index] = data;
-			scopedSubscribe(freeze(safeState));
-		};
-		
-		const childScope = {getState, subscribe};
-		return child
-			? child(childScope)
-			: reduce({}, {})(childScope)
-		;
-	}
-;
