@@ -5,11 +5,18 @@ import test from 'ava';
 import * as graphqlLib from 'graphql';
 import { GraphQLString, GraphQLObjectType } from 'graphql';
 
-import Instantiator from './instantiator';
 import createCombineReducers from '../../createCombineReducers';
 import { createArray } from '../../operators';
 import GraphQLFlattener from './';
 import createStore from './createStore';
+
+const defaultVariation = {
+	createName: rawName => rawName,
+	/* eslint-disable flowtype/no-weak-types */
+	build: (config: any) => new GraphQLObjectType(config),
+	/* eslint-enable flowtype/no-weak-types */
+	getChildName: name => name,
+};
 
 const getValue = value => JSON.parse(JSON.stringify(value));
 
@@ -17,36 +24,25 @@ const string = {
 	graphql: () => GraphQLString,
 };
 
-const flatteners = {
-	graphql: GraphQLFlattener({graphql: graphqlLib}),
-};
-
-const combineReducers = createCombineReducers(flatteners);
-const array = createArray(flatteners);
-
 test('Base test', t => {
 	const NAME = 'ArrayExample';
 
 	const store = createStore();
-	const instantiate = Instantiator({
-		store,
-		variations: [{
-			createName: rawName => rawName,
-			/* eslint-disable flowtype/no-weak-types */
-			build: (config: any) => new GraphQLObjectType(config),
-			/* eslint-enable flowtype/no-weak-types */
-			getChildName: name => name,
-		}],
-		graphql: graphqlLib,
-	});
+	const flatteners = {
+		graphql: GraphQLFlattener({
+			graphql: graphqlLib,
+			variations: [defaultVariation],
+			store,
+		}),
+	};
+	const combineReducers = createCombineReducers(flatteners);
+	const array = createArray(flatteners);
 
-	const register = instantiate({
+	combineReducers({
+		key: array(string),
+	}).graphql({
 		name: NAME,
 	});
-
-	register(combineReducers({
-		key: array(string),
-	}));
 
 	const grahpqlObject = store.get(NAME);
 

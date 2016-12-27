@@ -13,14 +13,17 @@ It should be apparent from this file that this is a work in progress. Don't expe
 * Come up with a name for things (lib, flattener, reducer)
 * Really needs better typing
 * Write operators: or, exact/permissive
-* Cross-flattener use (?)
+* Better cross-flattener use (?)
 * Figure out what should be public API on launch and organize files accordingly
 * More examples
 * Actual docs
-* Graphql support - build your schema
 * Metadata annotations (name, description, etc)
 * Arbitrary data path comparisons for validation
-* Map type
+* Rework graphql register API
+* Build out map type
+* Build out ability to set field options from the field itself
+* Build out in-memory database for graphql example 
+* Build out relay example
 
 # Candidates for cross-flattener use
 * use validate to determine which reducer to pick with an OR operator

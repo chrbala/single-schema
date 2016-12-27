@@ -6,13 +6,8 @@ import * as graphql from 'graphql';
 import { GraphQLObjectType, GraphQLString } from 'graphql';
 
 import createCombineReducers from '../../createCombineReducers';
-import Instantiator from './instantiator';
 import GraphQLFlattener from './';
 import createStore from './createStore';
-
-const combineReducers = createCombineReducers({
-	graphql: GraphQLFlattener({graphql}),
-});
 
 const string = {
 	graphql: () => GraphQLString,
@@ -20,27 +15,31 @@ const string = {
 
 const getValue = value => JSON.parse(JSON.stringify(value));
 
+const defaultVariation = {
+	createName: rawName => rawName,
+	/* eslint-disable flowtype/no-weak-types */
+	build: (config: any) => new GraphQLObjectType(config),
+	/* eslint-enable flowtype/no-weak-types */
+	getChildName: name => name,
+};
+
 test('Basic test', t => {
-	const NAME = 'NAME';
 	const store = createStore();
-	const instantiate = Instantiator({
-		store,
-		variations: [{
-			createName: rawName => rawName,
-			/* eslint-disable flowtype/no-weak-types */
-			build: (config: any) => new GraphQLObjectType(config),
-			/* eslint-enable flowtype/no-weak-types */
-			getChildName: name => name,
-		}],
-		graphql,
+	const combineReducers = createCombineReducers({
+		graphql: GraphQLFlattener({
+			graphql,
+			variations: [defaultVariation],
+			store,
+		}),
 	});
 
-	const register = instantiate({
+	const NAME = 'NAME';
+
+	combineReducers({
+		label: string,
+	}).graphql({
 		name: NAME,
 	});
-	register(combineReducers({
-		label: string,
-	}));
 
 	const grahpqlObject = store.get(NAME);
 	t.is(NAME, grahpqlObject.name);
@@ -61,32 +60,26 @@ test('Depth test', t => {
 	const PARENT_NAME = 'PARENT';
 	const CHILD_NAME = 'CHILD';
 	const store = createStore();
-	const instantiate = Instantiator({
-		store,
-		variations: [{
-			createName: rawName => rawName,
-			/* eslint-disable flowtype/no-weak-types */
-			build: (config: any) => new GraphQLObjectType(config),
-			/* eslint-enable flowtype/no-weak-types */
-			getChildName: name => store.get(name),
-		}],
-		graphql,
+	const combineReducers = createCombineReducers({
+		graphql: GraphQLFlattener({
+			graphql,
+			variations: [defaultVariation],
+			store,
+		}),
 	});
 
 	const child = combineReducers({
 		key: string,
 		hello: string,
-	});
-	instantiate({
+	}).graphql({
 		name: CHILD_NAME,
-	})(child);
+	});
 
-	const registerParent = instantiate({
+	combineReducers({
+		child,
+	}).graphql({
 		name: PARENT_NAME,
 	});
-	registerParent(combineReducers({
-		child,
-	}));
 
 	const grahpqlObject = store.get(PARENT_NAME);
 
@@ -110,22 +103,19 @@ test('createName test', t => {
 	const COMBINED_NAME = `${NAME}${SUFFIX}`;
 	
 	const store = createStore();
-	const instantiate = Instantiator({
-		store,
-		variations: [{
-			createName: rawName => rawName + SUFFIX,
-			build: ({name}) => t.is(name, COMBINED_NAME),
-			getChildName: name => store.get(name),
-		}],
-		graphql,
+	const combineReducers = createCombineReducers({
+		graphql: GraphQLFlattener({
+			graphql,
+			variations: [defaultVariation],
+			store,
+		}),
 	});
 
-	const register = instantiate({
+	combineReducers({
+		label: string,
+	}).graphql({
 		name: NAME,
 	});
-	register(combineReducers({
-		label: string,
-	}));
 
 	store.get(COMBINED_NAME);
 });
@@ -135,37 +125,35 @@ test('getChildName test', t => {
 	const CHILD_NAME = 'CHILD';
 	const toVariationName = name => `${name}_VARIATION`;
 
+	const extraVariation = {
+		createName: rawName => toVariationName(rawName),
+		/* eslint-disable flowtype/no-weak-types */
+		build: (config: any) => new GraphQLObjectType(config),
+		/* eslint-enable flowtype/no-weak-types */
+		getChildName: name => name,
+	};
+
 	const store = createStore();
-	const instantiate = Instantiator({
-		store,
-		variations: [{
-			createName: rawName => rawName,
-			/* eslint-disable flowtype/no-weak-types */
-			build: (config: any) => new GraphQLObjectType(config),
-			/* eslint-enable flowtype/no-weak-types */
-			getChildName: name => toVariationName(name),
-		}, {
-			createName: rawName => toVariationName(rawName),
-			/* eslint-disable flowtype/no-weak-types */
-			build: (config: any) => new GraphQLObjectType(config),
-			/* eslint-enable flowtype/no-weak-types */
-			getChildName: name => name,
-		}],
-		graphql,
+	const combineReducers = createCombineReducers({
+		graphql: GraphQLFlattener({
+			graphql,
+			variations: [defaultVariation, extraVariation],
+			store,
+		}),
 	});
 
 	const child = combineReducers({
 		label: string,
 	});
-	instantiate({
+	child.graphql({
 		name: CHILD_NAME,
-	})(child);
+	});
 
-	instantiate({
-		name: PARENT_NAME,
-	})(combineReducers({
+	combineReducers({
 		child,
-	}));
+	}).graphql({
+		name: PARENT_NAME,
+	});
 
 	const actual = getValue(store.get(PARENT_NAME).getFields());
 	const expected = { 
