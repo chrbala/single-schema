@@ -17,17 +17,14 @@ person.graphql({
 
 family.graphql({
 	name: 'family',
+}, {
+	resolve: () => exampleFamily,
 });
 
 combineReducers({
 	family,
 }).graphql({
 	name: 'query',
-	fields: {
-		family: {
-			resolve: () => exampleFamily,
-		},
-	},
 });
 
 export default new GraphQLSchema({

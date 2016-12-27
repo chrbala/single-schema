@@ -30,6 +30,7 @@ const normalizeChild: NormalizeChildType = ({
 	getChildName,
 }) => {
 	let getValue;
+	const { wrappers, getFieldConfig } = child;
 
 	if (child.type === VALUE)
 		getValue = child.getValue;
@@ -39,7 +40,8 @@ const normalizeChild: NormalizeChildType = ({
 	return {
 		type: VALUE,
 		getValue: () => new GraphQLNonNull(getValue()),
-		wrappers: child.wrappers,
+		wrappers,
+		getFieldConfig,
 	};
 };
 
@@ -56,15 +58,20 @@ export default ({store, variations, graphql}: InitialConfigType) =>
 				const allConfig = {
 					...config,
 					fields: () => mapObj(normalized.getChildren(),
-						(child, key) => ({
-							...configFields[key],
-							type: getType({
-								store, 
-								child: normalizeInput(child()), 
-								graphql, 
-								getChildName,
-							}),
-						})
+						(child, key) => {
+							const normalizedChild = normalizeInput(child());
+
+							return {
+								...configFields[key],
+								type: getType({
+									store, 
+									child: normalizedChild, 
+									graphql, 
+									getChildName,
+								}),
+								...normalizedChild.getFieldConfig(),
+							};
+						}
 					),
 				};
 

@@ -10,6 +10,7 @@ export const normalizeInput: (input: InputType) => OutputType = input => {
 			type: VALUE,
 			getValue: () => input,
 			wrappers: [],
+			getFieldConfig: () => ({}),
 		};
 	
 	return input;
