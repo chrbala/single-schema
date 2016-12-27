@@ -71,7 +71,8 @@ test('Depth test', t => {
 	const child = combineReducers({
 		key: string,
 		hello: string,
-	}).graphql({
+	});
+	child.graphql({
 		name: CHILD_NAME,
 	});
 
@@ -96,17 +97,20 @@ test('Depth test', t => {
 });
 
 test('createName test', t => {
-	t.plan(1);
-
 	const NAME = 'NAME';
-	const SUFFIX = 'SUFFIX';
-	const COMBINED_NAME = `${NAME}${SUFFIX}`;
+	const toVariationName = name => `${name}_VARIATION`;
 	
 	const store = createStore();
 	const combineReducers = createCombineReducers({
 		graphql: GraphQLFlattener({
 			graphql,
-			variations: [defaultVariation],
+			variations: [{
+				createName: rawName => toVariationName(rawName),
+				/* eslint-disable flowtype/no-weak-types */
+				build: (config: any) => new GraphQLObjectType(config),
+				/* eslint-enable flowtype/no-weak-types */
+				getChildName: name => name,
+			}],
 			store,
 		}),
 	});
@@ -117,7 +121,17 @@ test('createName test', t => {
 		name: NAME,
 	});
 
-	store.get(COMBINED_NAME);
+	const actual = getValue(store.get(toVariationName(NAME)).getFields());
+	const expected = {
+	  label: {
+	    type: 'String!',
+	    isDeprecated: false,
+	    name: 'label',
+	    args: [],
+	  },
+	};
+
+	t.deepEqual(actual, expected);
 });
 
 test('getChildName test', t => {
@@ -125,7 +139,15 @@ test('getChildName test', t => {
 	const CHILD_NAME = 'CHILD';
 	const toVariationName = name => `${name}_VARIATION`;
 
-	const extraVariation = {
+	const parentVariation = {
+		createName: rawName => rawName,
+		/* eslint-disable flowtype/no-weak-types */
+		build: (config: any) => new GraphQLObjectType(config),
+		/* eslint-enable flowtype/no-weak-types */
+		getChildName: name => toVariationName(name),
+	};
+
+	const childVariation = {
 		createName: rawName => toVariationName(rawName),
 		/* eslint-disable flowtype/no-weak-types */
 		build: (config: any) => new GraphQLObjectType(config),
@@ -137,7 +159,7 @@ test('getChildName test', t => {
 	const combineReducers = createCombineReducers({
 		graphql: GraphQLFlattener({
 			graphql,
-			variations: [defaultVariation, extraVariation],
+			variations: [parentVariation, childVariation],
 			store,
 		}),
 	});

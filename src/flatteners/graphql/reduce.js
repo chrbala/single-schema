@@ -35,8 +35,11 @@ export default (config: InitialConfigType) => (children: AllReducerType) => {
 		return out;
 	};
 
-	const instantiate = Instantiator(config);
-	instantiate(cb);
+	return (...args: Array<*>) => {
+		if (!args.length)
+			return cb();
 
-	return cb;
+		const graphqlConfig = args[0];
+		return Instantiator(config)(cb)(graphqlConfig);
+	};
 };
