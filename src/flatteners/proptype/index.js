@@ -8,6 +8,7 @@ import type { FlattenerType } from '../../shared/types';
 const Coerce: () => FlattenerType<*> = () => ({
 	reduce,
 	array: operation,
+	map: operation,
 	and: operation,
 	maybe: operation,
 });
