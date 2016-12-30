@@ -19,14 +19,12 @@ export type ByNameType = {
 	register: (value: *) => void,
 	getChildren: () => {},
 	wrappers: Array<WrapperType>,
-	getFieldConfig: () => {},
 } & AssertType;
 
 export type ByValueType = {
 	type: ValueType,
 	getValue: () => {},
 	wrappers: Array<WrapperType>,
-	getFieldConfig: () => {},
 } & AssertType;
 
 export type LeafType = Class<*>;

@@ -8,7 +8,6 @@ import Instantiator from './instantiator';
 export default (config: InitialConfigType) => (children: AllReducerType) => {
 	let name;
 	let hasBeenSet = false;
-	let localGraphqlConfig;
 
 	const getName = () => {
 		if (!hasBeenSet)
@@ -23,7 +22,6 @@ export default (config: InitialConfigType) => (children: AllReducerType) => {
 		name = _name;
 	};
 	const getChildren = () => children;
-	const getFieldConfig = () => localGraphqlConfig;
 
 	const out: ByNameType = {
 		type: NAME,
@@ -31,15 +29,13 @@ export default (config: InitialConfigType) => (children: AllReducerType) => {
 		register,
 		getChildren,
 		wrappers: [],
-		getFieldConfig,
 	};
 
 	return (...args: Array<*>) => {
 		if (!args.length)
 			return out;
 
-		const [graphqlConfig, _localGraphqlConfig] = args;
-		localGraphqlConfig = _localGraphqlConfig;
+		const [graphqlConfig] = args;
 		Instantiator(config)(out)(graphqlConfig);
 	};
 };
