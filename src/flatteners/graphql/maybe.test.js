@@ -3,7 +3,7 @@
 import test from 'ava';
 
 import * as graphql from 'graphql';
-import { GraphQLString, GraphQLObjectType } from 'graphql';
+import { GraphQLString } from 'graphql';
 
 import createCombineReducers from '../../createCombineReducers';
 import { createMaybe } from '../../operators';
@@ -11,14 +11,6 @@ import GraphQLFlattener from './';
 import createStore from './createStore';
 
 const getValue = value => JSON.parse(JSON.stringify(value));
-
-const defaultVariation = {
-	createName: rawName => rawName,
-	/* eslint-disable flowtype/no-weak-types */
-	build: (config: any) => new GraphQLObjectType(config),
-	/* eslint-enable flowtype/no-weak-types */
-	getChildName: name => name,
-};
 
 const string = {
 	graphql: () => GraphQLString,
@@ -31,7 +23,6 @@ test('Base test', t => {
 	const flatteners = {
 		graphql: GraphQLFlattener({
 			graphql,
-			variations: [defaultVariation],
 			store,
 		}),
 	};
@@ -40,7 +31,7 @@ test('Base test', t => {
 
 	combineReducers({
 		key: maybe(string),
-	}).graphql({
+	}).graphql('output', {
 		name: NAME,
 	});
 
@@ -58,16 +49,15 @@ test('Base test', t => {
 	t.deepEqual(actual, expected);
 });
 
-test.only('Recursive data structures', t => {
+test('Recursive data structures', t => {
 	const NAME = 'Node';
 
 	const store = createStore();
 	const flatteners = {
 		graphql: GraphQLFlattener({
 			graphql,
-			variations: [defaultVariation],
 			store,
-		}),
+		}, 'output'),
 	};
 	const combineReducers = createCombineReducers(flatteners);
 	const maybe = createMaybe(flatteners);
@@ -76,7 +66,7 @@ test.only('Recursive data structures', t => {
 		value: string,
 		next: maybe(node),
 	}));
-	node.graphql({
+	node.graphql('output', {
 		name: NAME,
 	});
 

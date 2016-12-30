@@ -6,9 +6,9 @@ import type {
 	OutputType, 
 	ByValueType,
 	StoreType,
-	GetChildType,
 	InitialConfigType,
 	ConfigType,
+	VariationType,
 } from './types';
 import { normalizeInput } from './shared';
 import { mapObj } from '../../util/micro';
@@ -21,13 +21,13 @@ type NormalizeChildType = (arg: {
 	store: StoreType, 
 	child: OutputType, 
 	graphql: *, 
-	getChildName: GetChildType,
+	type: VariationType,
 }) => ByValueType;
 const normalizeChild: NormalizeChildType = ({
 	store, 
 	child, 
 	graphql: {GraphQLNonNull}, 
-	getChildName,
+	type,
 }) => {
 	let getValue;
 	const { wrappers } = child;
@@ -35,7 +35,7 @@ const normalizeChild: NormalizeChildType = ({
 	if (child.type === VALUE)
 		getValue = child.getValue;
 	else if (child.type === NAME)
-		getValue = () => store.get(getChildName(child.getName()));
+		getValue = () => store.get(child.getName(type));
 
 	return {
 		type: VALUE,
@@ -44,16 +44,25 @@ const normalizeChild: NormalizeChildType = ({
 	};
 };
 
-const getType = (store, child, graphql) => 
-	applyAll(normalizeChild(store, child, graphql));
+const getType = arg => 
+	applyAll(normalizeChild(arg));
 
-export default ({store, variations, graphql}: InitialConfigType) => 
-	(childNode: InputType) => 
-		({fields: configFields = {}, ...config}: ConfigType) => {
-			const normalized = normalizeInput(childNode);
-			normalized.register(config.name);
+export default ({store, graphql}: InitialConfigType) => 
+	(childNode: InputType) => {
+		const build = type =>
+			({fields: configFields = {}, ...config}: ConfigType) => {
+				const normalized = normalizeInput(childNode);
 
-			variations.forEach(({createName, build, getChildName}) => {
+				let classConstructor;
+				if (type === 'output')
+					classConstructor = graphql.GraphQLObjectType;
+				else if (type === 'input')
+					classConstructor = graphql.GraphQLInputObjectType;
+				else 
+					throw new Error(`Unsupported type ${type}`);
+
+				normalized.register(config.name, type);
+
 				const allConfig = {
 					...config,
 					fields: () => mapObj(normalized.getChildren(),
@@ -66,14 +75,15 @@ export default ({store, variations, graphql}: InitialConfigType) =>
 									store, 
 									child: normalizedChild, 
 									graphql, 
-									getChildName,
+									type,
 								}),
 							};
 						}
 					),
 				};
 
-				const name = createName(config.name);
-				store.set(name, () => build({...allConfig, name}));
-			});
-		};
+				store.set(config.name, () => new classConstructor(allConfig));
+			};
+		
+		return (type: VariationType, config: ConfigType) => build(type)(config);
+	};

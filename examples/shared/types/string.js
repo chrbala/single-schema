@@ -9,6 +9,12 @@ export const string = {
 	coerce: (value: *) => String(value),
 };
 
+export const longerThan = (minLength: number) => ({
+	validate: ({length}: string | Array<*>) => length > minLength
+		? null
+		: `Expected length greater than ${minLength}, got ${length}`,
+});
+
 export const shorterThan = (maxLength: number) => ({
 	validate: ({length}: string | Array<*>) => length < maxLength
 		? null

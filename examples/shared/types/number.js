@@ -14,7 +14,7 @@ export const nonNaN = {
 };
 
 export const int = {
-	validate: (value: *) => Math.floor(value) == value
+	validate: (value: *) => Number.parseInt(value, 10) == value
 		? null
 		: `Expected int, got ${value}`,
 	coerce: (value: *) => Number.parseInt(value, 10),

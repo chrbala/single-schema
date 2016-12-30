@@ -11,12 +11,14 @@ type AssertType = {
 	[key: string]: *,
 };
 
+export type VariationType = 'input' | 'output';
+
 type WrapperType = () => () => {};
 
 export type ByNameType = {
 	type: NameType,
-	getName: () => string,
-	register: (value: *) => void,
+	getName: (type: string) => string,
+	register: (value: string, type: string) => void,
 	getChildren: () => {},
 	wrappers: Array<WrapperType>,
 } & AssertType;
@@ -37,19 +39,11 @@ export type ConfigType = {
 	fields?: {},
 	[key: string]: *,
 };
-export type GetChildType = (name: string) => string;
-type GraphqlAnyType = *;
 export type StoreType = {
 	set: (name: string, graphQLObject: {}) => mixed,
 	get: (key: string) => () => {},
 };
-type VariationType = {
-	createName: (rawName: string) => string,
-	build: (GraphqlConfig: ConfigType) => GraphqlAnyType,
-	getChildName: GetChildType,
-};
 export type InitialConfigType = {|
 	store: StoreType,
-	variations: Array<VariationType>,
 	graphql: {[key: string]: *},
 |};

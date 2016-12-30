@@ -3,56 +3,43 @@
 import { 
 	GraphQLObjectType,
 	GraphQLSchema, 
-	GraphQLInt, 
 	GraphQLNonNull,
+	GraphQLString,
 } from 'graphql';
 
+import './schema';
 import { store } from '../../src/defaultSelection';
-import { person, family } from './schema';
-import { update, schema, getState } from '../database';
-import { deserialize } from '../shared/id';
-
-person.graphql({
-	name: 'person',
-});
-
-const resolveNode = serialized => {
-	const { id, table } = deserialize(serialized);
-	return {
-		id: serialized,
-		...getState()[table][id],
-	};
-};
-
-family.graphql({
-	name: 'family',
-	fields: {
-		adults: {
-			resolve: ({adults}) => adults.map(resolveNode),
-		},
-		children: {
-			resolve: ({children}) => children.map(resolveNode),
-		},
-	},
-});
+import { update, schema } from '../database';
+import { serialize } from '../shared/id';
+import * as node from '../shared/node';
 
 const query = new GraphQLObjectType({
 	name: 'query',
 	fields: {
-		family: {
-			type: store.get('family'),
+		node: {
 			args: {
-				id: { type: new GraphQLNonNull(GraphQLInt) },
+				id: { type: GraphQLString },
 			},
-			resolve: (_, {id}) => {
-				const value = getState().family[id];
-				if (!value)
-					throw new Error(`Family ${id} does not exist`);
-				return value;
-			},
+			type: store.get('node'),
+			resolve: (_, args) => node.resolve(args),
 		},
 	},
 });
+
+const tableInsert = (table: string) => (_, {input}) => {
+	const { coerce, validate } = schema[table];
+	input = coerce(input);
+
+	const error = validate(input);
+	if (error)
+		throw new Error(JSON.stringify(error));
+
+	const id = update(table).push(input);
+	return {
+		...input,
+		id: serialize({id, table}),
+	};
+};
 
 const mutation = new GraphQLObjectType({
 	name: 'mutation',
@@ -62,31 +49,14 @@ const mutation = new GraphQLObjectType({
 			args: {
 				input: { type: new GraphQLNonNull(store.get('personInput')) },
 			},
-			resolve: (_, {input}) => {
-				input = schema.person.coerce(input);
-				const error = schema.person.validate(input);
-				if (error)
-					throw new Error(JSON.stringify(error));
-
-				update('person').push(input);
-				return input;
-			},
+			resolve: tableInsert('person'),
 		},
 		insertFamily: {
 			type: store.get('family'),
 			args: {
 				input: { type: new GraphQLNonNull(store.get('familyInput')) },
 			},
-			resolve: (_, {input}) => {
-				input = schema.family.coerced(input);
-
-				const error = schema.family.validate(input);
-				if (error)
-					throw new Error(error);
-
-				update('family').push(input);
-				return input;
-			},
+			resolve: tableInsert('family'),
 		},
 	},
 });

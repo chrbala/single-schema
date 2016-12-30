@@ -1,18 +1,13 @@
 // @flow
 
 import { combineReducers, array } from '../../src';
-import { name, index, string } from '../shared/leaves';
+import { pointer, name } from '../shared/types';
 
 export const person = combineReducers({
-	id: string, // this is bogus
 	name,
 });
 
-export const node = combineReducers({
-	id: index,
-});
-
-export const people = array(node);
+export const people = array(pointer);
 
 export const family = combineReducers({
 	adults: people,
