@@ -10,7 +10,7 @@ import type {
 	ConfigType,
 	VariationType,
 } from './types';
-import { normalizeInput } from './shared';
+import { normalizeInput, variationToStored } from './shared';
 import { mapObj } from '../../util/micro';
 
 const applyAll = ({getValue, wrappers}) => wrappers.reduce(
@@ -49,18 +49,21 @@ const getType = arg =>
 
 export default ({store, graphql}: InitialConfigType) => 
 	(childNode: InputType) => {
-		const build = type =>
+		const build = variation =>
 			({fields: configFields = {}, ...config}: ConfigType) => {
 				const normalized = normalizeInput(childNode);
 
 				let classConstructor;
-				if (type === 'output')
+				if (variation === 'output')
 					classConstructor = graphql.GraphQLObjectType;
-				else if (type === 'input')
+				else if (variation === 'input')
 					classConstructor = graphql.GraphQLInputObjectType;
+				else if (variation === 'interface')
+					classConstructor = graphql.GraphQLInterfaceType;
 				else 
-					throw new Error(`Unsupported type ${type}`);
+					throw new Error(`Unsupported variation ${variation}`);
 
+				const type = variationToStored(variation);
 				normalized.register(config.name, type);
 
 				const allConfig = {

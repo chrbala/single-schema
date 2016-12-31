@@ -13,7 +13,7 @@ const serializeAllPeople = (people: Array<IdType>) =>
 	})
 );
 
-let state = {
+const getInitialState = () => ({
 	person: [
 		{name: 'Bob'}, 
 		{name: 'Susan'},
@@ -25,11 +25,16 @@ let state = {
 		adults: serializeAllPeople([0, 1]),
 		children: serializeAllPeople([2, 3, 4]),
 	}],
+});
+
+export const create = () => {
+	const { createUpdate } = database;
+
+	let state = getInitialState();
+
+	const getState = () => state;
+	const subscribe = newState => state = newState;
+
+	const update = createUpdate({getState, subscribe});
+	return { getState, update };
 };
-
-const { createUpdate } = database;
-
-export const getState = () => state;
-const subscribe = newState => state = newState;
-
-export const update = createUpdate({getState, subscribe});

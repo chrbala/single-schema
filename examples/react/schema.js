@@ -1,7 +1,7 @@
 // @flow
 
 import { combineReducers, array } from '../../src';
-import { string } from '../shared/types';
+import { string } from '../shared/schema';
 
 export const person = combineReducers({
 	name: string,

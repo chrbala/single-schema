@@ -1,25 +1,33 @@
 // @flow
 
 import { NAME } from './types';
-import type { ByNameType, InitialConfigType, VariationType } from './types';
+import type { 
+	ByNameType, 
+	InitialConfigType, 
+	VariationType,
+	StoredTypesType,
+} from './types';
+import { variationToStored } from './shared';
 import type { AllReducerType } from '../../shared/types';
 import Instantiator from './instantiator';
 
 export default (config: InitialConfigType) => 
 	(children: AllReducerType, context: *) => {
-		const names: {[key: VariationType]: ?string} = {
+		const names: {[key: StoredTypesType]: ?string} = {
 			input: undefined,
 			output: undefined,
 		};
 
-		const getName = (type: VariationType) => {
+		const getName = (variation: VariationType) => {
+			const type = variationToStored(variation);
 			if (!names[type])
-				throw new Error('Value has not been set');
+				throw new Error(`${type} type has not been set`);
 			return names[type];
 		};
-		const register = (name: string, type: VariationType) => {
+		const register = (name: string, variation: VariationType) => {
+			const type = variationToStored(variation);
 			if (names[type])
-				throw new Error('Can only set register graphql objects once');
+				throw new Error(`Can not set ${type} type multiple times on ${name}`);
 
 			names[type] = name;
 		};

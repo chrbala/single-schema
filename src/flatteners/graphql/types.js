@@ -11,14 +11,15 @@ type AssertType = {
 	[key: string]: *,
 };
 
-export type VariationType = 'input' | 'output';
+export type StoredTypesType = 'input' | 'output';
+export type VariationType = StoredTypesType | 'interface';
 
 type WrapperType = () => () => {};
 
 export type ByNameType = {
 	type: NameType,
-	getName: (type: string) => string,
-	register: (value: string, type: string) => void,
+	getName: (type: VariationType) => string,
+	register: (value: string, type: VariationType) => void,
 	getChildren: () => {},
 	wrappers: Array<WrapperType>,
 } & AssertType;

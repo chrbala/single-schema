@@ -1,7 +1,19 @@
 // @flow
 
-import type { InputType, OutputType } from './types';
+import type { 
+	InputType, 
+	OutputType, 
+	VariationType, 
+	StoredTypesType,
+} from './types';
 import { VALUE } from './types';
+
+type VariationToStoredType = (variation: VariationType) => StoredTypesType;
+export const variationToStored: VariationToStoredType = variation => {
+	if (variation === 'interface')
+		return 'output';
+	return variation;
+};
 
 export const normalizeInput: (input: InputType) => OutputType = input => {
 	// graphql objects are class instances

@@ -1,16 +1,16 @@
 // @flow
 
 import { combineReducers, array } from '../../../src';
-import { pointer, name } from '../../shared/types';
+import { name, pointer } from '../../shared/schema';
+
+pointer.graphql('input', {
+	name: 'pointer',
+});
 
 combineReducers({
 	name,
 }).graphql('input', {
 	name: 'personInput',
-});
-
-pointer.graphql('input', {
-	name: 'pointerInput',
 });
 
 const people = array(pointer);

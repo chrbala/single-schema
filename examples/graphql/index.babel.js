@@ -4,6 +4,9 @@ import graphqlHTTP from 'express-graphql';
 import express from 'express';
 
 import schema from './graphqlSchema';
+import * as database from '../database';
+
+import type { ContextType } from '../shared/types';
 
 const PORT = 4000;
 
@@ -13,6 +16,10 @@ const success = () => console.log(
 );
 
 express()
+	.use((req: ContextType, res, next) => {
+		req.database = database.create();
+		next();
+	})
 	.use('/graphql', graphqlHTTP({
 		schema,
 		pretty: true, 

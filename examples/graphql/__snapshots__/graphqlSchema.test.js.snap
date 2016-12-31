@@ -1,0 +1,44 @@
+exports[`Schema snapshot 1`] = `
+"schema {
+  query: query
+  mutation: mutation
+}
+
+type family implements node {
+  id: String!
+  adults: [person!]!
+  children: [person!]!
+}
+
+input familyInput {
+  adults: [pointer!]!
+  children: [pointer!]!
+}
+
+type mutation {
+  insertPerson(input: personInput!): person!
+  insertFamily(input: familyInput!): family!
+}
+
+interface node {
+  id: String!
+}
+
+type person implements node {
+  id: String!
+  name: String!
+}
+
+input personInput {
+  name: String!
+}
+
+input pointer {
+  id: String!
+}
+
+type query {
+  node(id: String!): node
+}
+"
+`;

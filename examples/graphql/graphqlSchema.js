@@ -9,50 +9,53 @@ import {
 
 import './schema';
 import { store } from '../../src/defaultSelection';
-import { update, schema } from '../database';
+import { schema } from '../database';
 import { serialize } from '../shared/id';
 import * as node from '../shared/node';
+
+import type { ContextType, TableNameType } from '../shared/types';
 
 const query = new GraphQLObjectType({
 	name: 'query',
 	fields: {
 		node: {
 			args: {
-				id: { type: GraphQLString },
+				id: { type: new GraphQLNonNull(GraphQLString) },
 			},
 			type: store.get('node'),
-			resolve: (_, args) => node.resolve(args),
+			resolve: (_, args, context) => node.resolve(args, context),
 		},
 	},
 });
 
-const tableInsert = (table: string) => (_, {input}) => {
-	const { coerce, validate } = schema[table];
-	input = coerce(input);
+const tableInsert = (table: TableNameType) => 
+	(_, {input}, {database}: ContextType) => {
+		const { coerce, validate } = schema[table];
+		input = coerce(input);
 
-	const error = validate(input);
-	if (error)
-		throw new Error(JSON.stringify(error));
+		const error = validate(input);
+		if (error)
+			throw new Error(JSON.stringify(error));
 
-	const id = update(table).push(input);
-	return {
-		...input,
-		id: serialize({id, table}),
+		const id = database.update(table).push(input);
+		return {
+			...input,
+			id: serialize({id, table}),
+		};
 	};
-};
 
 const mutation = new GraphQLObjectType({
 	name: 'mutation',
 	fields: {
 		insertPerson: {
-			type: store.get('person'),
+			type: new GraphQLNonNull(store.get('person')),
 			args: {
 				input: { type: new GraphQLNonNull(store.get('personInput')) },
 			},
 			resolve: tableInsert('person'),
 		},
 		insertFamily: {
-			type: store.get('family'),
+			type: new GraphQLNonNull(store.get('family')),
 			args: {
 				input: { type: new GraphQLNonNull(store.get('familyInput')) },
 			},
