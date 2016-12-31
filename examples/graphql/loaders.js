@@ -2,7 +2,7 @@
 
 import DataLoader from 'dataloader';
 
-import * as node from '../shared/node';
+import * as node from './node';
 import type { ContextType } from '../shared/types';
 
 export default (context: ContextType) => ({

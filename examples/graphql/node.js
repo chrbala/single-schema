@@ -1,6 +1,6 @@
 // @flow
 
-import { deserialize } from './id';
+import { deserialize } from '../shared/id';
 import type { ContextType, NodeType, TableNameType } from '../shared/types';
 
 type LoadType = (context: ContextType) => (id: string) => NodeType;

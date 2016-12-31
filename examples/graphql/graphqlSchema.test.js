@@ -18,6 +18,7 @@ const Context = () => {
 		const context = {};
 		Object.assign(context, {
 			database,
+			// $FlowFixMe
 			loaders: Loaders(context),
 		});
 		return context;
