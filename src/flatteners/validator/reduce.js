@@ -29,8 +29,6 @@ const reduce: () => ReducerType<*> = ({cache}: {cache: boolean} = {}) =>
 		const iterate = Iterator({cache});
 
 		return (data: GenericObjectType) => {
-			if (data === undefined || data === null)
-				return null;
 			if (!isObject(data))
 				return EXPECTED_OBJECT;
 

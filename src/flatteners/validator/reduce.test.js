@@ -53,26 +53,24 @@ test('Unexpected property', t => {
 	t.deepEqual(actual, expected);
 });
 
-test('Top level undefined passes', t => {
+test('Missing property fails', t => {
+	const actual = validate({
+
+	});
+	const expected = {
+		key: IS_STRING_ERROR,
+	};
+	t.deepEqual(actual, expected);
+});
+
+test('Top level undefined does not pass', t => {
 	const actual = validate(undefined);
-	const expected = null;
-	t.deepEqual(actual, expected);
-});
-
-test('Top level null passes', t => {
-	const actual = validate(null);
-	const expected = null;
-	t.deepEqual(actual, expected);
-});
-
-test('Top level 0 does not pass', t => {
-	const actual = validate(0);
 	const expected = EXPECTED_OBJECT;
 	t.deepEqual(actual, expected);
 });
 
-test('Top level empty string does not pass', t => {
-	const actual = validate('');
+test('Top level null does not pass', t => {
+	const actual = validate(null);
 	const expected = EXPECTED_OBJECT;
 	t.deepEqual(actual, expected);
 });
