@@ -31,11 +31,11 @@ combineReducers({
 	fields: {
 		adults: {
 			resolve: ({adults}, _, context) => 
-				adults.map(id => resolve({id}, context)),
+				adults.map(id => resolve(id, context)),
 		},
 		children: {
 			resolve: ({children}, _, context) => 
-				children.map(id => resolve({id}, context)),
+				children.map(id => resolve(id, context)),
 		},
 	},
 });

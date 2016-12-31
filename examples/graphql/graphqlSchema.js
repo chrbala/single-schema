@@ -37,7 +37,7 @@ const tableInsert = (table: TableNameType) =>
 		if (error)
 			throw new Error(JSON.stringify(error));
 
-		const id = database.update(table).push(input);
+		const id = database.update(table).push(input) - 1;
 		return {
 			...input,
 			id: serialize({id, table}),
