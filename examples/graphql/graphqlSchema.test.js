@@ -3,13 +3,26 @@
 
 import test from 'ava';
 import { graphql, printSchema } from 'graphql';
-import schema from './graphqlSchema';
 
-import * as database from '../database';
+import schema from './graphqlSchema';
+import * as Database from '../database';
+import Loaders from './loaders';
 
 test('Schema snapshot', t => {
 	t.snapshot(printSchema(schema));
 });
+
+const Context = () => {
+	const database = Database.create();
+	return () => {
+		const context = {};
+		Object.assign(context, {
+			database,
+			loaders: Loaders(context),
+		});
+		return context;
+	};
+};
 
 const throwErrors = res => res.errors ? Promise.reject(res.errors) : res;
 
@@ -80,16 +93,13 @@ const getFamily = getNode(`
 
 test('Person insertion and retrieval', async t => {
 	const NAME = 'NAME';
+	const context = Context();
 
-	const context = {
-		database: database.create(),
-	};
-
-	const insertionResult = await insertPerson({name: NAME}, context);
+	const insertionResult = await insertPerson({name: NAME}, context());
 
 	t.is(insertionResult.name, NAME);
 
-	const personNode = await getPerson(insertionResult.id, context);
+	const personNode = await getPerson(insertionResult.id, context());
 	
 	const actual = personNode;
 	const expected = {
@@ -102,12 +112,10 @@ test('Person insertion and retrieval', async t => {
 
 test('Family insertion and retrieval', async t => {
 	const NAMES = ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE'];
-	const context = {
-		database: database.create(),
-	};
+	const context = Context();
 
 	const people = await Promise.all(
-		NAMES.map(name => insertPerson({name}, context))
+		NAMES.map(name => insertPerson({name}, context()))
 	).then(res => res.map(({id}) => ({id})));
 
 	const familyInput = {
@@ -118,7 +126,7 @@ test('Family insertion and retrieval', async t => {
 	const { 
 		id, 
 		...familyInsertionResult 
-	} = await insertFamily(familyInput, context);
+	} = await insertFamily(familyInput, context());
 
 	const expected = {
 		adults: NAMES.slice(0, 2).map(name => ({name})),
@@ -127,7 +135,25 @@ test('Family insertion and retrieval', async t => {
 
 	t.deepEqual(familyInsertionResult, expected);
 
-	const { id: fetchedId, ...familyFetchResult } = await getFamily(id, context);
+	const { 
+		id: fetchedId, 
+		...familyFetchResult 
+	} = await getFamily(id, context());
 	t.is(id, fetchedId);
 	t.deepEqual(familyFetchResult, expected);
+});
+
+test('Bad person ID is rejected', async t => {
+	t.plan(1);
+	
+	const context = Context();
+
+	const familyInput = {
+		adults: [{id: 'bogus'}],
+		children: [],
+	};
+
+	return insertFamily(familyInput, context()).catch(e => {
+		t.regex(e[0].message, /^Error saving family.*/);
+	});
 });

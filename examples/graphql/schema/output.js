@@ -3,7 +3,7 @@
 import { store } from '../../../src/defaultSelection';
 import { combineReducers, array } from '../../../src';
 import { name, string, node } from '../../shared/schema';
-import { resolve, isTypeOf } from '../../shared/node';
+import { isTypeOf } from '../../shared/node';
 
 node.graphql('interface', {
 	name: 'node',
@@ -30,12 +30,12 @@ combineReducers({
 	isTypeOf: isTypeOf('family'),
 	fields: {
 		adults: {
-			resolve: ({adults}, _, context) => 
-				adults.map(id => resolve(id, context)),
+			resolve: ({adults}, _, {loaders}) => 
+				adults.map(({id}) => loaders.node.load(id)),
 		},
 		children: {
-			resolve: ({children}, _, context) => 
-				children.map(id => resolve(id, context)),
+			resolve: ({children}, _, {loaders}) => 
+				children.map(({id}) => loaders.node.load(id)),
 		},
 	},
 });

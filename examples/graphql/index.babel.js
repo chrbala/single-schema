@@ -4,7 +4,8 @@ import graphqlHTTP from 'express-graphql';
 import express from 'express';
 
 import schema from './graphqlSchema';
-import * as database from '../database';
+import * as Database from '../database';
+import Loaders from './loaders';
 
 import type { ContextType } from '../shared/types';
 
@@ -15,9 +16,14 @@ const success = () => console.log(
 	`GraphQL server running on http://localhost:${PORT}/graphql`
 );
 
+const database = Database.create();
+
 express()
 	.use((req: ContextType, res, next) => {
-		req.database = database.create();
+		Object.assign(req, {
+			database,
+			loaders: Loaders(req),
+		});
 		next();
 	})
 	.use('/graphql', graphqlHTTP({

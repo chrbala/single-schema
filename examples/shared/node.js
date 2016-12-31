@@ -3,11 +3,8 @@
 import { deserialize } from './id';
 import type { ContextType, NodeType, TableNameType } from '../shared/types';
 
-type ResolveType = (
-	pointer: {id: string}, 
-	context: ContextType
-) => NodeType;
-export const resolve: ResolveType = ({ id: serialized }, {database}) => {
+type LoadType = (context: ContextType) => (id: string) => NodeType;
+export const load: LoadType = ({database}) => serialized => {
 	try {
 		const { id, table } = deserialize(serialized);
 		const state = database.getState();

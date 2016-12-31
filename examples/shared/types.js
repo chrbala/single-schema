@@ -37,4 +37,7 @@ type DatabaseType = {
 
 export type ContextType = {
 	database: DatabaseType,
+	loaders: {
+		node: () => Promise<mixed>,
+	},
 };
