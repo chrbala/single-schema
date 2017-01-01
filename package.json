@@ -11,7 +11,7 @@
     "build-flow": "cp -r src lib && renamer --regex --find '.js$' --replace '.js.flow' 'lib/**/*'",
     "build": "babel src --out-dir lib",
     "prepublish": "rm -rf lib && npm run build-flow && npm run build",
-    "storybook": "start-storybook -p 9010",
+    "storybook": "GRAPHQL_PATH=./examples/graphql/graphqlSchema start-storybook -p 9010",
     "graphql": "nodemon examples/graphql"
   },
   "devDependencies": {
@@ -36,7 +36,10 @@
     "react": "^15.4.0",
     "react-dom": "^15.4.0",
     "react-scripts": "^0.7.0",
-    "renamer": "^0.6.1"
+    "renamer": "^0.6.1",
+    "babel-plugin-fetch-relay-schema": "file:../fetch-relay-schema/",
+    "babel-relay-plugin": "^0.10.0",
+    "react-relay": "^0.10.0"
   },
   "ava": {
     "require": [

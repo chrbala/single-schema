@@ -1,4 +1,4 @@
 {
   "presets": ["env", "stage-0", "react"],
-  "plugins": ["transform-flow-strip-types"]
+  "plugins": ["fetch-relay-schema", "transform-flow-strip-types"]
 }
