@@ -4,8 +4,8 @@
 import test from 'ava';
 import { graphql, printSchema } from 'graphql';
 
-import schema from './graphqlSchema';
-import * as Database from '../database';
+import schema from './graphqlSchema.babel';
+import * as Database from 'examples/full-stack/database';
 import Loaders from './loaders';
 
 test('Schema snapshot', t => {

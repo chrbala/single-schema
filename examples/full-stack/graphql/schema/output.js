@@ -1,9 +1,9 @@
 // @flow
 
-import { store } from '../../../src/defaultSelection';
-import { combineReducers, array } from '../../../src';
-import { name, string, node } from '../../shared/schema';
-import { isTypeOf } from '../node';
+import { store } from 'src/defaultSelection';
+import { combineReducers, array } from 'src/';
+import { name, string, node } from 'examples/schema';
+import { isTypeOf } from 'examples/full-stack/graphql/node';
 
 node.graphql('interface', {
 	name: 'node',

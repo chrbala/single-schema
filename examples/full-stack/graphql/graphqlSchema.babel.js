@@ -8,11 +8,11 @@ import {
 } from 'graphql';
 
 import './schema';
-import { store } from '../../src/defaultSelection';
-import { schema } from '../database';
-import { serialize } from '../shared/id';
+import { store } from 'src/defaultSelection';
+import { schema } from 'examples/full-stack/database';
+import { serialize } from 'examples/full-stack/shared/id';
 
-import type { ContextType, TableNameType } from '../shared/types';
+import type { ContextType, TableNameType } from 'examples/full-stack/shared/types';
 
 const query = new GraphQLObjectType({
 	name: 'query',

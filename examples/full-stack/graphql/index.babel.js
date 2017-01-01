@@ -3,11 +3,11 @@
 import graphqlHTTP from 'express-graphql';
 import express from 'express';
 
-import schema from './graphqlSchema';
-import * as Database from '../database';
+import schema from './graphqlSchema.babel';
+import * as Database from 'examples/full-stack/database';
 import Loaders from './loaders';
 
-import type { ContextType } from '../shared/types';
+import type { ContextType } from 'examples/full-stack/shared/types';
 
 const PORT = 4000;
 

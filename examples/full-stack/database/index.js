@@ -1,6 +1,6 @@
 // @flow
 
-import { serialize } from '../shared/id';
+import { serialize } from 'examples/full-stack/shared/id';
 
 import { database } from './schema';
 export * as schema from './schema';

@@ -2,7 +2,7 @@
 
 import { GraphQLInt } from 'graphql';
 
-import { combineReducers, and } from '../../../src';
+import { combineReducers, and } from 'src/';
 import { number, nonNaN, int, nonNegative } from './number';
 import { 
 	string as stringType, 

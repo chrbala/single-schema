@@ -1,7 +1,7 @@
 // @flow
 
-import { combineReducers, array } from '../../../src';
-import { name, pointer } from '../../shared/schema';
+import { combineReducers, array } from 'src/';
+import { name, pointer } from 'examples/schema';
 
 pointer.graphql('input', {
 	name: 'pointer',

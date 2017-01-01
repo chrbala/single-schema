@@ -1,9 +1,10 @@
 // @flow
 
-import { combineReducers, array } from '../../src';
-import { string } from '../shared/schema';
+import { combineReducers, array } from 'src/';
+import { string } from 'examples/schema';
 
 export const person = combineReducers({
+	id: string,
 	name: string,
 });
 

@@ -1,7 +1,7 @@
 // @flow
 
-import { combineReducers, array } from '../../src';
-import { pointer, name } from '../shared/schema';
+import { combineReducers, array } from 'src/';
+import { pointer, name } from 'examples/schema';
 
 export const person = combineReducers({
 	name,

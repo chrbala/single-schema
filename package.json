@@ -6,12 +6,12 @@
   "scripts": {
     "lint": "eslint src --fix",
     "flow": "flow",
-    "test": "ava",
+    "test": "NODE_PATH=./ ava",
     "validate": "npm run lint && npm run flow && npm run test",
     "build-flow": "cp -r src lib && renamer --regex --find '.js$' --replace '.js.flow' 'lib/**/*'",
     "build": "babel src --out-dir lib",
     "prepublish": "rm -rf lib && npm run build-flow && npm run build",
-    "storybook": "GRAPHQL_PATH=./examples/graphql/graphqlSchema start-storybook -p 9010",
+    "storybook": "NODE_PATH=./ GRAPHQL_PATH=./examples/graphql/graphqlSchema start-storybook -p 9010",
     "graphql": "nodemon examples/graphql"
   },
   "devDependencies": {
