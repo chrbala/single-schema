@@ -5,6 +5,6 @@ import { storiesOf, action } from '@kadira/storybook';
 
 import Family from './family';
 
-storiesOf('Family', module)
+storiesOf('react/family', module)
 	.add('Basic', () => <Family onChange={action('update')} />)
 ;

@@ -3,8 +3,8 @@
 import React from 'react';
 import { storiesOf, action } from '@kadira/storybook';
 
-import Family from './';
+import Family from './family';
 
-storiesOf('Family', module)
+storiesOf('full-stack/family', module)
 	.add('Basic', () => <Family onChange={action('update')} />)
 ;

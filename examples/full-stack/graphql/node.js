@@ -1,7 +1,11 @@
 // @flow
 
 import { deserialize } from 'examples/full-stack/shared/id';
-import type { ContextType, NodeType, TableNameType } from 'examples/full-stack/shared/types';
+import type { 
+	ContextType, 
+	NodeType, 
+	TableNameType,
+} from 'examples/full-stack/shared/types';
 
 type LoadType = (context: ContextType) => (id: string) => NodeType;
 export const load: LoadType = ({database}) => serialized => {

@@ -1,7 +1,11 @@
 // @flow
 
 import React, { Component } from 'react';
-import { family, people, person } from './schema';
+import { 
+	family, 
+	people, 
+	person,
+} from 'examples/full-stack/react/shared/schema';
 
 const Person = ({value, update}) =>
 	<div>

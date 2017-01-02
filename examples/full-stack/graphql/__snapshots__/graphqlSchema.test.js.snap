@@ -39,6 +39,8 @@ input pointer {
 
 type query {
   node(id: String!): node
+  personAll: [person!]!
+  familyAll: [family!]!
 }
 "
 `;

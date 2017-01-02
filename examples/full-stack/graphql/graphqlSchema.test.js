@@ -4,7 +4,7 @@
 import test from 'ava';
 import { graphql, printSchema } from 'graphql';
 
-import schema from './graphqlSchema.babel';
+import schema from './graphqlSchema';
 import * as Database from 'examples/full-stack/database';
 import Loaders from './loaders';
 
@@ -25,14 +25,15 @@ const Context = () => {
 	};
 };
 
-const throwErrors = res => res.errors ? Promise.reject(res.errors) : res;
+const throwErrors = res => res.errors 
+	? Promise.reject(res.errors)
+	: res
+;
 
 const insert = (name, query) => (input, context) => 
 	graphql(schema, query, {}, context, {input})
 		.then(throwErrors)
-		.then((res: any) => 
-			res.data[name]
-		)
+		.then((res: any) => res.data[name])
 	;
 
 const insertPerson = insert('insertPerson', `
@@ -58,39 +59,62 @@ const insertFamily = insert('insertFamily', `
 	}
 `);
 
-const getNode = fragment => (id, context) => {
-	const query = `
+const get = (queryName, {query, context, params}) =>
+	graphql(schema, query, {}, context, params)
+		.then(throwErrors)
+		.then((res: any) =>
+			res.data[queryName]
+		);
+
+const getNode = fragment => (id, context) => get('node', {
+	query: `
 		query($id:String!) {
 			node(id:$id) {
 		    id
 		    ${fragment}
 		  }
 		}
-	`;
+	`, 
+	context, 
+	params: {id},
+});
 
-	return graphql(schema, query, {}, context, {id})
-		.then(throwErrors)
-		.then((res: any) =>
-			res.data.node
-		);
-};
+const personFragment = `{
+	name
+}`;
 
 const getPerson = getNode(`
-	...on person {
-  	name
-  }
+	...on person ${personFragment}
 `);
 
+const familyFragment = `{
+	adults ${personFragment}
+	children ${personFragment}
+}`;
+
 const getFamily = getNode(`
-	...on family {
-  	adults {
-  		name
-  	}
-  	children {
-  		name
-  	}
-  }
+	...on family ${familyFragment}
 `);
+
+const getPersonAll = context => get('personAll', {
+	query: `
+		query {
+			personAll ${personFragment}
+		}
+	`,
+	context,
+	params: {},
+});
+
+const getFamilyAll = context => get('familyAll', {
+	query: `
+		query {
+			familyAll ${familyFragment}
+		}
+	`,
+	context,
+	params: {},
+});
 
 test('Person insertion and retrieval', async t => {
 	const NAME = 'NAME';
@@ -154,7 +178,7 @@ test('Bad person ID is rejected', async t => {
 		children: [],
 	};
 
-	return insertFamily(familyInput, context()).catch(e => {
-		t.regex(e[0].message, /^Error saving family.*/);
-	});
+	await t.throws(insertFamily(familyInput, context()));
+
+	console.log(await getFamilyAll(context));
 });

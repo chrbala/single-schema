@@ -7,10 +7,10 @@ export * as schema from './schema';
 
 type IdType = number;
 const serializeAllPeople = (people: Array<IdType>) => 
-	people.map(id => serialize({
+	people.map(id => ({id: serialize({
 		table: 'person',
 		id,
-	})
+	})})
 );
 
 const getInitialState = () => ({
