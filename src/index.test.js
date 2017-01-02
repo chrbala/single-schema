@@ -1,7 +1,5 @@
 // @flow
 
-import test from 'ava';
-
-test('Smoke test', () => {
+it('Smoke test', () => {
 	require('./');
 });

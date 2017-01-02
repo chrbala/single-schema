@@ -1,7 +1,5 @@
 // @flow
 
-import test from 'ava';
-
 import createCombineReducers from '../../createCombineReducers';
 import { createMaybe } from '../../operators';
 import Updater from './';
@@ -13,8 +11,8 @@ const flatteners = {
 const combineReducers = createCombineReducers(flatteners);
 const maybe = createMaybe(flatteners);
 
-test('Recursive data structure shallow update', t => {
-	t.plan(1);
+it('Recursive data structure shallow update', () => {
+	expect.assertions(1);
 
 	const node = combineReducers(() => ({
 		value: null,
@@ -34,7 +32,7 @@ test('Recursive data structure shallow update', t => {
 			},
 		};
 
-		t.deepEqual(actual, expected);
+		expect(actual).toEqual(expected);
 	};
 	const update = createUpdate({getState, subscribe});
 	update('next').set({
@@ -43,8 +41,8 @@ test('Recursive data structure shallow update', t => {
 	});
 });
 
-test('Recursive data structure deep update', t => {
-	t.plan(1);
+it('Recursive data structure deep update', () => {
+	expect.assertions(1);
 
 	const node = combineReducers(() => ({
 		value: null,
@@ -70,7 +68,7 @@ test('Recursive data structure deep update', t => {
 			},
 		};
 
-		t.deepEqual(actual, expected);
+		expect(actual).toEqual(expected);
 	};
 	const update = createUpdate({getState, subscribe});
 	update('next')('next').set({
@@ -79,8 +77,8 @@ test('Recursive data structure deep update', t => {
 	});
 });
 
-test('Can deep update on missing tree fragment', t => {
-	t.plan(1);
+it('Can deep update on missing tree fragment', () => {
+	expect.assertions(1);
 
 	const node = combineReducers(() => ({
 		value: null,
@@ -103,7 +101,7 @@ test('Can deep update on missing tree fragment', t => {
 			},
 		};
 
-		t.deepEqual(actual, expected);
+		expect(actual).toEqual(expected);
 	};
 	const update = createUpdate({getState, subscribe});
 	update('next')('next').set({

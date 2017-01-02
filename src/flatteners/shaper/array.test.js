@@ -1,7 +1,5 @@
 // @flow
 
-import test from 'ava';
-
 import { createArray } from '../../operators';
 import Shaper from './';
 
@@ -11,8 +9,8 @@ const array = createArray({
 
 const { shape } = array({});
 
-test('Coerce existing array', t => {
+it('Coerce existing array', () => {
 	const actual = shape();
 	const expected = [];
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });

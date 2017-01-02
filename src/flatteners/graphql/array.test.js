@@ -1,7 +1,5 @@
 // @flow
 
-import test from 'ava';
-
 import * as graphqlLib from 'graphql';
 import { GraphQLString } from 'graphql';
 
@@ -16,7 +14,7 @@ const string = {
 	graphql: () => GraphQLString,
 };
 
-test('Base test', t => {
+it('Base test', () => {
 	const NAME = 'ArrayExample';
 
 	const store = createStore();
@@ -46,5 +44,5 @@ test('Base test', t => {
 			args: [],
 		}, 
 	};
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });

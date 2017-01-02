@@ -1,7 +1,5 @@
 // @flow
 
-import test from 'ava';
-
 import createCombineReducers from '../../createCombineReducers';
 import Updater from './';
 
@@ -9,8 +7,8 @@ const combineReducers = createCombineReducers({
 	createUpdate: Updater(),
 });
 
-test('Can run a shallow update', t => {
-	t.plan(1);
+it('Can run a shallow update', () => {
+	expect.assertions(1);
 
 	const { createUpdate } = combineReducers({
 		key: null,
@@ -20,12 +18,12 @@ test('Can run a shallow update', t => {
 	const data = {
 		key: 'value',
 	};
-	const subscribe = actual => t.is(actual, data);
+	const subscribe = actual => expect(actual).toBe(data);
 	const update = createUpdate({getState, subscribe});
 	update.set(data);
 });
 
-test('Can get keys', t => {
+it('Can get keys', () => {
 	const { createUpdate } = combineReducers({
 		key: null,
 	});
@@ -35,11 +33,11 @@ test('Can get keys', t => {
 	const update = createUpdate({getState, subscribe});
 	const actual = update.keys();
 	const expected = ['key'];
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });
 
-test('Can delete a key', t => {
-	t.plan(1);
+it('Can delete a key', () => {
+	expect.assertions(1);
 
 	const { createUpdate } = combineReducers({
 		key: null,
@@ -48,13 +46,13 @@ test('Can delete a key', t => {
 	const getState = () => ({
 		key: 'value',
 	});
-	const subscribe = actual => t.deepEqual(actual, {});
+	const subscribe = actual => expect(actual).toEqual({});
 	const update = createUpdate({getState, subscribe});
 	update.delete('key');
 });
 
-test('Can set a key value', t => {
-	t.plan(1);
+it('Can set a key value', () => {
+	expect.assertions(1);
 
 	const { createUpdate } = combineReducers({
 		key: null,
@@ -65,14 +63,14 @@ test('Can set a key value', t => {
 		const expected = {
 			key: 'hello',
 		};
-		t.deepEqual(actual, expected);
+		expect(actual).toEqual(expected);
 	};
 	const update = createUpdate({getState, subscribe});
 	update('key').set('hello');
 });
 
-test('Setting keys immutably updates objects', t => {
-	t.plan(1);
+it('Setting keys immutably updates objects', () => {
+	expect.assertions(1);
 
 	const { createUpdate } = combineReducers({
 		key: null,
@@ -81,14 +79,14 @@ test('Setting keys immutably updates objects', t => {
 	const state = {};
 	const getState = () => state;
 	const subscribe = actual => {
-		t.not(actual, state);
+		expect(actual).not.toBe(state);
 	};
 	const update = createUpdate({getState, subscribe});
 	update('key').set('hello');
 });
 
-test('Can set deep keys', t => {
-	t.plan(1);
+it('Can set deep keys', () => {
+	expect.assertions(1);
 
 	const { createUpdate } = combineReducers({
 		key: combineReducers({
@@ -103,14 +101,14 @@ test('Can set deep keys', t => {
 				deep: 'hello',
 			},
 		};
-		t.deepEqual(actual, expected);
+		expect(actual).toEqual(expected);
 	};
 	const update = createUpdate({getState, subscribe});
 	update('key')('deep').set('hello');
 });
 
-test('Setting deep keys immutably updates objects', t => {
-	t.plan(1);
+it('Setting deep keys immutably updates objects', () => {
+	expect.assertions(1);
 
 	const { createUpdate } = combineReducers({
 		key: combineReducers({
@@ -120,13 +118,13 @@ test('Setting deep keys immutably updates objects', t => {
 
 	const state = {};
 	const getState = () => state;
-	const subscribe = actual => t.not(actual, state);
+	const subscribe = actual => expect(actual).not.toBe(state);
 	const update = createUpdate({getState, subscribe});
 	update('key')('deep').set('hello');
 });
 
-test('Deep changes can be performed on missing object fragments', t => {
-	t.plan(1);
+it('Deep changes can be performed on missing object fragments', () => {
+	expect.assertions(1);
 
 	const { createUpdate } = combineReducers({
 		key: combineReducers({
@@ -142,17 +140,17 @@ test('Deep changes can be performed on missing object fragments', t => {
 				deep: 'hello',
 			},
 		};
-		t.deepEqual(actual, expected);
+		expect(actual).toEqual(expected);
 	};
 	const update = createUpdate({getState, subscribe});
 	update('key')('deep').set('hello');
 });
 
-test('Throws when unused key is accessed', t => {
+it('Throws when unused key is accessed', () => {
 	const { createUpdate } = combineReducers({});
 
 	const getState = () => ({});
 	const subscribe = () => null;
 	const update = createUpdate({getState, subscribe});
-	t.throws(() => update('key'));
+	expect(() => update('key')).toThrow();
 });

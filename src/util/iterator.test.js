@@ -1,11 +1,10 @@
 // @flow
 
-import test from 'ava';
 import Spy from '../helpers/spy';
 
 import Iterator from './iterator';
 
-test('Caches simple results when called with identical data', t => {
+it('Caches simple results when called with identical data', () => {
 	const spy = Spy();
 	const iterate = Iterator({cache: true});
 	const data = {
@@ -15,16 +14,16 @@ test('Caches simple results when called with identical data', t => {
 		key: spy,
 	};
 	
-	t.is(spy.timesRun(), 0);
+	expect(spy.timesRun()).toBe(0);
 
 	iterate(callbacks, data, child => child());
-	t.is(spy.timesRun(), 1);
+	expect(spy.timesRun()).toBe(1);
 
 	iterate(callbacks, data, child => child());
-	t.is(spy.timesRun(), 1);
+	expect(spy.timesRun()).toBe(1);
 });
 
-test('Invalidate cache when data changes', t => {
+it('Invalidate cache when data changes', () => {
 	const spy = Spy();
 	const iterate = Iterator({cache: true});
 	let data = {
@@ -34,18 +33,18 @@ test('Invalidate cache when data changes', t => {
 		key: spy,
 	};
 	
-	t.is(spy.timesRun(), 0);
+	expect(spy.timesRun()).toBe(0);
 
 	iterate(callbacks, data, child => child());
-	t.is(spy.timesRun(), 1);
+	expect(spy.timesRun()).toBe(1);
 
 	data = { ...data, key: 'newValue' };
 
 	iterate(callbacks, data, child => child());
-	t.is(spy.timesRun(), 2);
+	expect(spy.timesRun()).toBe(2);
 });
 
-test('Reruns fragments of data types when data changes', t => {
+it('Reruns fragments of data types when data changes', () => {
 	const spy1 = Spy();
 	const spy2 = Spy();
 	const iterate = Iterator({cache: true});
@@ -58,16 +57,16 @@ test('Reruns fragments of data types when data changes', t => {
 		key2: spy2,
 	};
 	
-	t.is(spy1.timesRun(), 0);
-	t.is(spy2.timesRun(), 0);
+	expect(spy1.timesRun()).toBe(0);
+	expect(spy2.timesRun()).toBe(0);
 
 	iterate(callbacks, data, child => child());
-	t.is(spy1.timesRun(), 1);
-	t.is(spy2.timesRun(), 1);
+	expect(spy1.timesRun()).toBe(1);
+	expect(spy2.timesRun()).toBe(1);
 
 	data = { ...data, key1: 'newValue' };
 
 	iterate(callbacks, data, child => child());
-	t.is(spy1.timesRun(), 2);
-	t.is(spy2.timesRun(), 1);
+	expect(spy1.timesRun()).toBe(2);
+	expect(spy2.timesRun()).toBe(1);
 });

@@ -1,7 +1,5 @@
 // @flow
 
-import test from 'ava';
-
 import createCombineReducers from '../../createCombineReducers';
 import Shaper from './';
 
@@ -11,7 +9,7 @@ const combineReducers = createCombineReducers({
 
 const empty = null;
 
-test('Basic shape', t => {
+it('Basic shape', () => {
 	const { shape } = combineReducers({
 		key: empty,
 		key2: empty,
@@ -23,10 +21,10 @@ test('Basic shape', t => {
 		key2: true,
 	};
 
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });
 
-test('Shape removes undefined keys', t => {
+it('Shape removes undefined keys', () => {
 	const { shape } = combineReducers({
 		key: {
 			shape: () => undefined,
@@ -39,10 +37,10 @@ test('Shape removes undefined keys', t => {
 		key2: true,
 	};
 
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });
 
-test('Deep shape', t => {
+it('Deep shape', () => {
 	const { shape } = combineReducers({
 		key: empty,
 		key2: combineReducers({
@@ -66,5 +64,5 @@ test('Deep shape', t => {
 		},
 	};
 
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });

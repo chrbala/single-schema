@@ -1,7 +1,5 @@
 // @flow
 
-import test from 'ava';
-
 import createCombineReducers from '../../createCombineReducers';
 import { createMaybe } from '../../operators';
 import Coercer from './';
@@ -18,19 +16,19 @@ const isString = {
 	coerce: data => String(data),
 };
 
-test('Can use maybe with existing data', t => {
+it('Can use maybe with existing data', () => {
 	const { coerce } = maybe(isString);
-	t.is(coerce(123), '123');
+	expect(coerce(123)).toBe('123');
 });
 
-test('Can use maybe with missing data', t => {
+it('Can use maybe with missing data', () => {
 	const { coerce } = maybe(isString);
-	t.is(coerce(null), null);
-	t.is(coerce(undefined), undefined);
-	t.is(coerce(), undefined);
+	expect(coerce(null)).toBe(null);
+	expect(coerce(undefined)).toBe(undefined);
+	expect(coerce()).toBe(undefined);
 });
 
-test('Maybe leaves existing keys', t => {
+it('Maybe leaves existing keys', () => {
 	const { coerce } = combineReducers({
 		key: maybe({}),
 	});
@@ -40,10 +38,10 @@ test('Maybe leaves existing keys', t => {
 	const expected = {
 		key: undefined,
 	};
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });
 
-test('Maybe does not add new keys', t => {
+it('Maybe does not add new keys', () => {
 	const { coerce } = combineReducers({
 		key: maybe({}),
 		somethingElse: {},
@@ -54,10 +52,10 @@ test('Maybe does not add new keys', t => {
 	const expected = {
 		somethingElse: 'hi',
 	};
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });
 
-test('Recursive data structures', t => {
+it('Recursive data structures', () => {
 	const node = combineReducers(() => ({
 		value: isString,
 		next: maybe(node),
@@ -83,5 +81,5 @@ test('Recursive data structures', t => {
 			},
 		},
 	};
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });

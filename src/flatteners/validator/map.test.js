@@ -1,7 +1,5 @@
 // @flow
 
-import test from 'ava';
-
 import { createMap } from '../../operators';
 import { EXPECTED_OBJECT } from './strings';
 import Validator from './';
@@ -19,22 +17,22 @@ const isString = {
 
 const { validate } = array(isString);
 
-test('Object pass', t => {
+it('Object pass', () => {
 	const actual = validate({key: '123'});
 	const expected = null;
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });
 
-test('Object type fail', t => {
+it('Object type fail', () => {
 	const actual = validate('something');
 	const expected = EXPECTED_OBJECT;
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });
 
-test('Object datum fail', t => {
+it('Object datum fail', () => {
 	const actual = validate({key: 123});
 	const expected = {
 		key: IS_STRING_ERROR,
 	};
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });

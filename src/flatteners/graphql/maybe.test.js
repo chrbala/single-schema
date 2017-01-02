@@ -1,7 +1,5 @@
 // @flow
 
-import test from 'ava';
-
 import * as graphql from 'graphql';
 import { GraphQLString } from 'graphql';
 
@@ -16,7 +14,7 @@ const string = {
 	graphql: () => GraphQLString,
 };
 
-test('Base test', t => {
+it('Base test', () => {
 	const NAME = 'ArrayExample';
 
 	const store = createStore();
@@ -46,10 +44,10 @@ test('Base test', t => {
 			args: [],
 		}, 
 	};
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });
 
-test('Recursive data structures', t => {
+it('Recursive data structures', () => {
 	const NAME = 'Node';
 
 	const store = createStore();
@@ -86,5 +84,5 @@ test('Recursive data structures', t => {
 	  },
 	};
 
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });

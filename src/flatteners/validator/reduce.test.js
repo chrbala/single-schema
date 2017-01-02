@@ -1,7 +1,5 @@
 // @flow
 
-import test from 'ava';
-
 import createCombineReducers from '../../createCombineReducers';
 import Validator from './';
 import { 
@@ -24,25 +22,25 @@ const { validate } = combineReducers({
 	key: isString,
 });
 
-test('Basic passing validation', t => {
+it('Basic passing validation', () => {
 	const actual = validate({
 		key: 'value',
 	});
 	const expected = null;
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });
 
-test('Basic failing validation', t => {
+it('Basic failing validation', () => {
 	const actual = validate({
 		key: 123,
 	});
 	const expected = {
 		key: IS_STRING_ERROR,
 	};
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });
 
-test('Unexpected property', t => {
+it('Unexpected property', () => {
 	const actual = validate({
 		key: 'value',
 		key2: 'value',
@@ -50,27 +48,27 @@ test('Unexpected property', t => {
 	const expected = {
 		key2: EXTRA_KEY_TEXT,
 	};
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });
 
-test('Missing property fails', t => {
+it('Missing property fails', () => {
 	const actual = validate({
 
 	});
 	const expected = {
 		key: IS_STRING_ERROR,
 	};
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });
 
-test('Top level undefined does not pass', t => {
+it('Top level undefined does not pass', () => {
 	const actual = validate(undefined);
 	const expected = EXPECTED_OBJECT;
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });
 
-test('Top level null does not pass', t => {
+it('Top level null does not pass', () => {
 	const actual = validate(null);
 	const expected = EXPECTED_OBJECT;
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });

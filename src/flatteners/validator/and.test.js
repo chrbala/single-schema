@@ -1,7 +1,5 @@
 // @flow
 
-import test from 'ava';
-
 import { createAnd } from '../../operators';
 import Validator from './';
 
@@ -23,9 +21,9 @@ const maxLength = length => ({
 		: TOO_LONG_ERROR,
 });
 
-test('Can validate with multiple reducers', t => {
+it('Can validate with multiple reducers', () => {
 	const { validate } = and(isString, maxLength(3));
-	t.is(validate(12345), IS_STRING_ERROR);
-	t.is(validate('12345'), TOO_LONG_ERROR);
-	t.is(validate('123'), null);
+	expect(validate(12345)).toBe(IS_STRING_ERROR);
+	expect(validate('12345')).toBe(TOO_LONG_ERROR);
+	expect(validate('123')).toBe(null);
 });

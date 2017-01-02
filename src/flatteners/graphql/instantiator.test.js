@@ -1,7 +1,5 @@
 // @flow
 
-import test from 'ava';
-
 import * as graphql from 'graphql';
 import { GraphQLString } from 'graphql';
 
@@ -15,7 +13,7 @@ const string = {
 
 const getValue = value => JSON.parse(JSON.stringify(value));
 
-test('Output test', t => {
+it('Output test', () => {
 	const store = createStore();
 	const combineReducers = createCombineReducers({
 		graphql: GraphQLFlattener({
@@ -33,7 +31,7 @@ test('Output test', t => {
 	});
 
 	const grahpqlObject = store.get(NAME);
-	t.is(NAME, grahpqlObject.name);
+	expect(NAME).toBe(grahpqlObject.name);
 
 	const actual = getValue(grahpqlObject.getFields());
 	const expected = { 
@@ -44,10 +42,10 @@ test('Output test', t => {
 			args: [],
 		}, 
 	};
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });
 
-test('Input test', t => {
+it('Input test', () => {
 	const store = createStore();
 	const combineReducers = createCombineReducers({
 		graphql: GraphQLFlattener({
@@ -65,7 +63,7 @@ test('Input test', t => {
 	});
 
 	const grahpqlObject = store.get(NAME);
-	t.is(NAME, grahpqlObject.name);
+	expect(NAME).toBe(grahpqlObject.name);
 
 	const actual = getValue(grahpqlObject.getFields());
 	const expected = { 
@@ -74,10 +72,10 @@ test('Input test', t => {
 			name: 'label', 
 		}, 
 	};
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });
 
-test('Shared input and output test', t => {
+it('Shared input and output test', () => {
 	const OUTPUT_NAME = 'Output';
 	const INPUT_NAME = 'Input';
 
@@ -97,13 +95,13 @@ test('Shared input and output test', t => {
 		name: INPUT_NAME,
 	});
 
-	t.notThrows(() => {
+	expect(() => {
 		store.get(OUTPUT_NAME);
 		store.get(INPUT_NAME);
-	});
+	}).not.toThrow();
 });
 
-test('Depth test', t => {
+it('Depth test', () => {
 	const PARENT_NAME = 'PARENT';
 	const CHILD_NAME = 'CHILD';
 	const store = createStore();
@@ -139,5 +137,5 @@ test('Depth test', t => {
 			args: [],
 		}, 
 	};
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });

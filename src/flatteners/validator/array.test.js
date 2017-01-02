@@ -1,7 +1,5 @@
 // @flow
 
-import test from 'ava';
-
 import { createArray } from '../../operators';
 import { EXPECTED_ARRAY } from './strings';
 import Validator from './';
@@ -19,20 +17,20 @@ const isString = {
 
 const { validate } = array(isString);
 
-test('Array pass', t => {
+it('Array pass', () => {
 	const actual = validate(['hello', 'whatever']);
 	const expected = null;
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });
 
-test('Array type fail', t => {
+it('Array type fail', () => {
 	const actual = validate('something');
 	const expected = EXPECTED_ARRAY;
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });
 
-test('Array datum fail', t => {
+it('Array datum fail', () => {
 	const actual = validate(['hello', 123]);
 	const expected = [null, IS_STRING_ERROR];
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });

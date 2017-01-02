@@ -1,6 +1,5 @@
 // @flow
 
-import test from 'ava';
 import Spy from './helpers/spy';
 
 import createOperator from './createOperator';
@@ -8,10 +7,10 @@ import createOperator from './createOperator';
 (() => {
 	const warn = console.warn;
 	// $FlowFixMe
-	test.afterEach(() => console.warn = warn);
+	afterEach(() => console.warn = warn);
 })();
 
-test('Can create an operator', t => {
+it('Can create an operator', () => {
 	const VALUE = 'VALUE';
 	const operator = createOperator('operator')({
 		flattener: {
@@ -19,11 +18,11 @@ test('Can create an operator', t => {
 		},
 	});
 	const { flattener } = operator();
-	t.is(flattener(), VALUE);
+	expect(flattener()).toBe(VALUE);
 });
 
-test('Can create an operator with multiple reducers', t => {
-	t.plan(1);
+it('Can create an operator with multiple reducers', () => {
+	expect.assertions(1);
 
 	const reduce = () => () => null;
 	const reducer = {
@@ -32,7 +31,7 @@ test('Can create an operator with multiple reducers', t => {
 	const operator = createOperator('operator')({
 		flattener: {
 			operator: (...reducers) => () => () => () =>
-				t.deepEqual(reducers, [reduce, reduce, reduce])
+				expect(reducers).toEqual([reduce, reduce, reduce])
 			,
 		},
 	});
@@ -40,8 +39,8 @@ test('Can create an operator with multiple reducers', t => {
 	flattener();
 });
 
-test('Operators are provided reducer context', t => {
-	t.plan(1);
+it('Operators are provided reducer context', () => {
+	expect.assertions(1);
 
 	const reducer = {
 		flattener: () => () => null,	
@@ -49,7 +48,7 @@ test('Operators are provided reducer context', t => {
 	const operator = createOperator('operator')({
 		flattener: {
 			operator: () => (...context) => () => () =>
-				t.deepEqual(context, [reducer, reducer])
+				expect(context).toEqual([reducer, reducer])
 			,
 		},
 	});
@@ -57,8 +56,8 @@ test('Operators are provided reducer context', t => {
 	flattener();
 });
 
-test('Operators warn when missing implementation on flattener', t => {
-	t.plan(2);
+it('Operators warn when missing implementation on flattener', () => {
+	expect.assertions(2);
 
 	const spy = Spy();
 	// $FlowFixMe
@@ -73,7 +72,7 @@ test('Operators warn when missing implementation on flattener', t => {
 		},
 	});
 	const { flattener } = operator(reducer, reducer);
-	t.is(spy.timesRun(), 0);
+	expect(spy.timesRun()).toBe(0);
 	flattener();
-	t.is(spy.timesRun(), 1);
+	expect(spy.timesRun()).toBe(1);
 });

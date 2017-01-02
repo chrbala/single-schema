@@ -1,11 +1,10 @@
 // @flow
 
-import test from 'ava';
 import Spy from './helpers/spy';
 
 import createCombineReducers from './createCombineReducers';
 
-test('createCombineReducers returns fn that creates the proper keys', t => {
+it('createCombineReducers returns fn that creates the proper keys', () => {
 	const combineReducers = createCombineReducers({
 		doSomething: {
 			reduce: () => () => null,
@@ -17,11 +16,11 @@ test('createCombineReducers returns fn that creates the proper keys', t => {
 	const actual = Object.keys(reducers);
 	const expected = ['doSomething'];
 
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });
 
-test('Reducer is passed in all the data', t => {
-	t.plan(1);
+it('Reducer is passed in all the data', () => {
+	expect.assertions(1);
 
 	const inputData = {
 		key: 'hi',
@@ -29,7 +28,7 @@ test('Reducer is passed in all the data', t => {
 
 	const combineReducers = createCombineReducers({
 		doSomething: {
-			reduce: () => data => t.deepEqual(data, inputData),
+			reduce: () => data => expect(data).toEqual(inputData),
 		},
 	});
 
@@ -37,7 +36,7 @@ test('Reducer is passed in all the data', t => {
 	doSomething(inputData);
 });
 
-test('Only the relevant reducer is run', t => {
+it('Only the relevant reducer is run', () => {
 	const spy1 = Spy();
 	const spy2 = Spy();
 
@@ -54,24 +53,24 @@ test('Only the relevant reducer is run', t => {
 		},
 	});
 
-	t.is(spy1.timesRun(), 0);
-	t.is(spy2.timesRun(), 0);
+	expect(spy1.timesRun()).toBe(0);
+	expect(spy2.timesRun()).toBe(0);
 
 	const { doSomething } = combineReducers({});
 	doSomething(inputData);
 
-	t.is(spy1.timesRun(), 1);
-	t.is(spy2.timesRun(), 0);
+	expect(spy1.timesRun()).toBe(1);
+	expect(spy2.timesRun()).toBe(0);
 });
 
-test('Reducer is provided with its children when run', t => {
-	t.plan(1);
+it('Reducer is provided with its children when run', () => {
+	expect.assertions(1);
 
 	const child = () => () => null;
 
 	const combineReducers = createCombineReducers({
 		doSomething: {
-			reduce: ({key}) => () => t.is(key, child),
+			reduce: ({key}) => () => expect(key).toBe(child),
 		},
 	});
 
@@ -83,14 +82,14 @@ test('Reducer is provided with its children when run', t => {
 	doSomething();
 });
 
-test('defaultFlattener assigns a function child to a flattener', t => {
-	t.plan(1);
+it('defaultFlattener assigns a function child to a flattener', () => {
+	expect.assertions(1);
 
 	const child = () => () => null;
 
 	const combineReducers = createCombineReducers({
 		doSomething: {
-			reduce: ({key}) => () => t.is(key, child),
+			reduce: ({key}) => () => expect(key).toBe(child),
 		},
 	});
 
@@ -102,12 +101,12 @@ test('defaultFlattener assigns a function child to a flattener', t => {
 	doSomething();
 });
 
-test('Reducer is still run when child is missing a matching reducer', t => {
-	t.plan(1);
+it('Reducer is still run when child is missing a matching reducer', () => {
+	expect.assertions(1);
 
 	const combineReducers = createCombineReducers({
 		doSomething: {
-			reduce: ({key}) => () => t.is(key, undefined),
+			reduce: ({key}) => () => expect(key).toBe(undefined),
 		},
 	});
 
@@ -119,12 +118,12 @@ test('Reducer is still run when child is missing a matching reducer', t => {
 	doSomething();
 });
 
-test('Reducer is still run when child is null', t => {
-	t.plan(1);
+it('Reducer is still run when child is null', () => {
+	expect.assertions(1);
 
 	const combineReducers = createCombineReducers({
 		doSomething: {
-			reduce: ({key}) => () => t.is(key, null),
+			reduce: ({key}) => () => expect(key).toBe(null),
 		},
 	});
 
@@ -134,14 +133,14 @@ test('Reducer is still run when child is null', t => {
 	doSomething();
 });
 
-test('Reducer can have state', t => {
+it('Reducer can have state', () => {
 	let i = 0;
 
 	const combineReducers = createCombineReducers({
 		doSomething: {
 			reduce: ({key}) => {
 				i++;
-				return () => t.is(key, null);
+				return () => expect(key).toBe(null);
 			},
 		},
 	});
@@ -153,19 +152,19 @@ test('Reducer can have state', t => {
 	doSomething();
 	doSomething();
 
-	t.is(i, 1);
+	expect(i).toBe(1);
 });
 
-test.todo('Can create cyclic types');
+// todo('Can create cyclic types');
 
-test('Reducer is provided the context of other reducers', t => {
-	t.plan(2);
+it('Reducer is provided the context of other reducers', () => {
+	expect.assertions(2);
 
 	const combineReducers = createCombineReducers({
 		doSomething: {
 			reduce: (_, context: {doSomethingElse: () => *}) => () => {
-				t.deepEqual(Object.keys(context), ['doSomething', 'doSomethingElse']);
-				t.is(context.doSomethingElse(), 5);
+				expect(Object.keys(context)).toEqual(['doSomething', 'doSomethingElse']);
+				expect(context.doSomethingElse()).toBe(5);
 			},
 		},
 		doSomethingElse: {

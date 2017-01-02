@@ -1,7 +1,5 @@
 // @flow
 
-import test from 'ava';
-
 import createCombineReducers from '../../createCombineReducers';
 import { createMaybe } from '../../operators';
 import Validator from './';
@@ -20,21 +18,21 @@ const isString = {
 	: IS_STRING_ERROR,
 };
 
-test('Can use maybe with existing data', t => {
+it('Can use maybe with existing data', () => {
 	const { validate } = maybe(isString);
 	const actual = validate(12345);
 	const expected = IS_STRING_ERROR;
-	t.is(actual, expected);
+	expect(actual).toBe(expected);
 });
 
-test('Can use maybe with missing data', t => {
+it('Can use maybe with missing data', () => {
 	const { validate } = maybe(isString);
-	t.is(validate(null), null);
-	t.is(validate(undefined), null);
-	t.is(validate(), null);
+	expect(validate(null)).toBe(null);
+	expect(validate(undefined)).toBe(null);
+	expect(validate()).toBe(null);
 });
 
-test('Recursive data structure positive test', t => {
+it('Recursive data structure positive test', () => {
 	const node = combineReducers(() => ({
 		value: isString,
 		next: maybe(node),
@@ -51,10 +49,10 @@ test('Recursive data structure positive test', t => {
 		},
 	});
 	const expected = null;
-	t.is(actual, expected);
+	expect(actual).toBe(expected);
 });
 
-test('Recursive data structure negative test', t => {
+it('Recursive data structure negative test', () => {
 	const node = combineReducers(() => ({
 		value: isString,
 		next: maybe(node),
@@ -77,5 +75,5 @@ test('Recursive data structure negative test', t => {
 			},
 		},
 	};
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });

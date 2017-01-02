@@ -1,7 +1,5 @@
 // @flow
 
-import test from 'ava';
-
 import React from 'react';
 
 import createCombineReducers from '../../createCombineReducers';
@@ -25,7 +23,7 @@ console.error = error => {
 	throw error;
 };
 
-test('Passing validation', t => {
+it('Passing validation', () => {
 	const { proptype } = combineReducers({
 		key: isString,
 	});
@@ -39,10 +37,10 @@ test('Passing validation', t => {
 		key: 'hello',
 	};
 
-	t.notThrows(() => <Component test={data} />);
+	expect(() => <Component test={data} />).not.toThrow();
 });
 
-test('Failing validation', t => {
+it('Failing validation', () => {
 	const { proptype } = combineReducers({
 		key: isString,
 	});
@@ -56,6 +54,5 @@ test('Failing validation', t => {
 		key: 123,
 	};
 
-	const error = t.throws(() => <Component test={data} />);
-	t.truthy(error.match(IS_STRING_ERROR));
+	expect(() => <Component test={data} />).toThrowError(IS_STRING_ERROR);
 });

@@ -1,7 +1,5 @@
 // @flow
 
-import test from 'ava';
-
 import { createArray } from '../../operators';
 import Coercer from './';
 
@@ -15,32 +13,32 @@ const isString = {
 
 const { coerce } = array(isString);
 
-test('Coerce existing array', t => {
+it('Coerce existing array', () => {
 	const actual = coerce([123, 'whatever', null, undefined]);
 	const expected = ['123', 'whatever', 'null', 'undefined'];
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });
 
-test('Coerce non-array', t => {
+it('Coerce non-array', () => {
 	const actual = coerce(undefined);
 	const expected = [];
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });
 
 /* eslint-disable quote-props, no-sparse-arrays */
-test('Coerce array-ish object', t => {
+it('Coerce array-ish object', () => {
 	const actual = coerce({
 		'1': 'hello',
 		length: 2,
 	});
 	const expected = [, 'hello'];
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });
 /* eslint-enable quote-props, no-sparse-arrays */
 
-test('Array of reducers with no coercion', t => {
+it('Array of reducers with no coercion', () => {
 	const { coerce: emptyCoerce } = array({});
 	const actual = emptyCoerce(['hi']);
 	const expected = ['hi'];
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });

@@ -1,7 +1,5 @@
 // @flow
 
-import test from 'ava';
-
 import * as graphqlLib from 'graphql';
 import { GraphQLString } from 'graphql';
 
@@ -9,7 +7,7 @@ import createCombineReducers from '../../createCombineReducers';
 import GraphQLFlattener from './';
 import createStore from './createStore';
 
-test('Base test', t => {
+it('Base test', () => {
 	const combineReducers = createCombineReducers({
 		graphql: GraphQLFlattener({
 			graphql: graphqlLib,
@@ -28,5 +26,5 @@ test('Base test', t => {
 	const actual = graphql().getChildren().key();
 	const expected = GraphQLString;
 
-	t.is(actual, expected);
+	expect(actual).toBe(expected);
 });

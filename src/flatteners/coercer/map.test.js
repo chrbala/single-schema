@@ -1,7 +1,5 @@
 // @flow
 
-import test from 'ava';
-
 import { createMap } from '../../operators';
 import Coercer from './';
 
@@ -15,23 +13,23 @@ const string = {
 
 const { coerce } = map(string);
 
-test('Coerce existing array', t => {
+it('Coerce existing array', () => {
 	const actual = coerce({
 		key: 123,
 	});
 	const expected = {
 		key: '123',
 	};
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });
 
-test('Coerce non-array', t => {
+it('Coerce non-array', () => {
 	const actual = coerce(undefined);
 	const expected = {};
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });
 
-test('Coerce object-ish object', t => {
+it('Coerce object-ish object', () => {
 	const expected = {
 		key: 'hello',
 		anotherKey: 'hi',
@@ -41,12 +39,12 @@ test('Coerce object-ish object', t => {
 	const toCoerce = Object.assign(123, expected);
 
 	const actual = coerce(toCoerce);
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });
 
-test('Object of reducers with no coercion', t => {
+it('Object of reducers with no coercion', () => {
 	const { coerce: emptyCoerce } = map({});
 	const actual = emptyCoerce({key: 'value'});
 	const expected = {key: 'value'};
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });

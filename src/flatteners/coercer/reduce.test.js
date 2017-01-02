@@ -1,7 +1,5 @@
 // @flow
 
-import test from 'ava';
-
 import createCombineReducers from '../../createCombineReducers';
 import Coercer from './';
 
@@ -13,7 +11,7 @@ const coerceString = {
 	coerce: data => String(data),
 };
 
-test('Basic coercion', t => {
+it('Basic coercion', () => {
 	const { coerce } = combineReducers({
 		key: coerceString,
 	});
@@ -25,5 +23,5 @@ test('Basic coercion', t => {
 		key: '123',
 	};
 
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });

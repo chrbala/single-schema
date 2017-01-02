@@ -1,7 +1,5 @@
 // @flow
 
-import test from 'ava';
-
 import createCombineReducers from '../../createCombineReducers';
 import { createMaybe } from '../../operators';
 import Shaper from './';
@@ -14,12 +12,12 @@ const maybe = createMaybe({
 	shape: Shaper(),
 });
 
-test('Maybe defaults to undefined', t => {
+it('Maybe defaults to undefined', () => {
 	const { shape } = maybe({});
-	t.is(shape(), undefined);
+	expect(shape()).toBe(undefined);
 });
 
-test('Maybe drops keys', t => {
+it('Maybe drops keys', () => {
 	const { shape } = combineReducers({
 		key: maybe({}),
 		somethingElse: {},
@@ -28,5 +26,5 @@ test('Maybe drops keys', t => {
 	const expected = {
 		somethingElse: true,
 	};
-	t.deepEqual(actual, expected);
+	expect(actual).toEqual(expected);
 });
