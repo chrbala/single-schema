@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint src --fix",
     "flow": "flow",
-    "test": "jest",
+    "test": "NODE_PATH=./ jest",
     "validate": "npm run lint && npm run flow && npm run test",
     "build-flow": "cp -r src lib && renamer --regex --find '.js$' --replace '.js.flow' 'lib/**/*'",
     "build": "babel src --out-dir lib",
@@ -39,13 +39,6 @@
     "react-relay": "^0.10.0",
     "react-scripts": "^0.7.0",
     "renamer": "^0.6.1"
-  },
-  "ava": {
-    "require": [
-      "babel-register",
-      "babel-polyfill"
-    ],
-    "babel": "inherit"
   },
   "dependencies": {
     "app-module-path": "^2.1.0",

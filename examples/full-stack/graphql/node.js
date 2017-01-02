@@ -2,12 +2,12 @@
 
 import { deserialize } from 'examples/full-stack/shared/id';
 import type { 
-	ContextType, 
+	ContextLoaderType, 
 	NodeType, 
 	TableNameType,
 } from 'examples/full-stack/shared/types';
 
-type LoadType = (context: ContextType) => (id: string) => NodeType;
+type LoadType = (context: ContextLoaderType) => (id: string) => NodeType;
 export const load: LoadType = ({database}) => serialized => {
 	try {
 		const { id, table } = deserialize(serialized);

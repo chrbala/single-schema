@@ -1,6 +1,6 @@
 // @flow
 
-import { combineReducers, array } from 'src/';
+import { combineReducers, array } from 'examples/setup';
 import { pointer, name } from 'examples/schema';
 
 export const person = combineReducers({

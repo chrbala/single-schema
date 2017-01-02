@@ -1,7 +1,7 @@
 // @flow
 
-import { store } from 'src/defaultSelection';
-import { combineReducers, array } from 'src/';
+import { store } from 'examples/setup';
+import { combineReducers, array } from 'examples/setup';
 import { name, string, node } from 'examples/schema';
 import { isTypeOf } from 'examples/full-stack/graphql/node';
 
@@ -14,7 +14,7 @@ const person = combineReducers({
 	name,
 }).graphql('output', {
 	name: 'person',
-	interfaces: [ store.get('node') ],
+	interfaces: () => [ store.get('node') ],
 	isTypeOf: isTypeOf('person'),
 });
 
@@ -26,7 +26,7 @@ combineReducers({
 	children: people,
 }).graphql('output', {
 	name: 'family',
-	interfaces: [ store.get('node') ],
+	interfaces: () => [ store.get('node') ],
 	isTypeOf: isTypeOf('family'),
 	fields: {
 		adults: {

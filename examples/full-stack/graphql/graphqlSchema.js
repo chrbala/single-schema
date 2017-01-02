@@ -9,7 +9,7 @@ import {
 } from 'graphql';
 
 import './schema';
-import { store } from 'src/defaultSelection';
+import { store } from 'examples/setup';
 import { schema } from 'examples/full-stack/database';
 import { serialize } from 'examples/full-stack/shared/id';
 
@@ -22,13 +22,12 @@ const queryAll = table => ({
 	type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(
 		store.get(table)
 	))),
-	resolve: (_1, _2, {loaders}) => loaders[`${table}All`].load('*')
-		.then(r => console.log(r) || r),
+	resolve: (_1, _2, {loaders}) => loaders[`${table}All`].load('*'),
 });
 
 const query = new GraphQLObjectType({
 	name: 'query',
-	fields: {
+	fields: () => ({
 		node: {
 			args: {
 				id: { type: new GraphQLNonNull(GraphQLString) },
@@ -38,7 +37,7 @@ const query = new GraphQLObjectType({
 		},
 		personAll: queryAll('person'),
 		familyAll: queryAll('family'),
-	},
+	}),
 });
 
 const tableInsert = (
@@ -67,7 +66,7 @@ const tableInsert = (
 
 const mutation = new GraphQLObjectType({
 	name: 'mutation',
-	fields: {
+	fields: () => ({
 		insertPerson: {
 			type: new GraphQLNonNull(store.get('person')),
 			args: {
@@ -87,7 +86,7 @@ const mutation = new GraphQLObjectType({
 					)
 			),
 		},
-	},
+	}),
 });
 
 export default new GraphQLSchema({

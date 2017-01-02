@@ -4,24 +4,11 @@ export interface NodeType {
 	id: string,
 };
 
-export type PointerType = string;
-
-type PersonType = {
-	name: string,
-};
-
-type PeopleType = Array<PointerType>;
-type FamilyType = {
-	adults: PeopleType,
-	children: PeopleType,
-};
+export type PointerType = {id: string};
 
 export type TableNameType = 'person' | 'family';
 
 type StateType = {
-	person: Array<PersonType>,
-	family: Array<FamilyType>,
-} & {
 	[key: TableNameType]: *,
 };
 
@@ -35,8 +22,11 @@ type DatabaseType = {
 	update: UpdateType<TableNameType>,
 };
 
-export type ContextType = {
+export type ContextLoaderType = {
 	database: DatabaseType,
+};
+
+export type ContextType = ContextLoaderType & {
 	loaders: {
 		node: () => Promise<mixed>,
 	},

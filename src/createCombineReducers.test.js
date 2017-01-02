@@ -155,15 +155,15 @@ it('Reducer can have state', () => {
 	expect(i).toBe(1);
 });
 
-// todo('Can create cyclic types');
-
+type InferredType = *;
 it('Reducer is provided the context of other reducers', () => {
 	expect.assertions(2);
 
 	const combineReducers = createCombineReducers({
 		doSomething: {
-			reduce: (_, context: {doSomethingElse: () => *}) => () => {
-				expect(Object.keys(context)).toEqual(['doSomething', 'doSomethingElse']);
+			reduce: (_, context: {doSomethingElse: () => InferredType}) => () => {
+				expect(Object.keys(context))
+					.toEqual(['doSomething', 'doSomethingElse']);
 				expect(context.doSomethingElse()).toBe(5);
 			},
 		},
