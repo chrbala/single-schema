@@ -6,30 +6,7 @@ import State from '../shared/state';
 import { combineReducers } from 'examples/setup';
 import { boolean } from 'examples/schema';
 import Relay, { createContainer } from 'react-relay';
-
-import { 
-	person as personSchema,
-} from '../shared/schema';
-
-const Edit = ({state, update, onSave, onCancel}) =>
-	<div>
-		<label>name</label>
-		<input 
-			value={state.name} 
-			onChange={e => update('name').set(e.target.value)} 
-		/>
-		<button onClick={onCancel}>cancel</button>
-		<button onClick={onSave}>save</button>
-		<br />
-	</div>
-;
-
-const StatefulEdit = props => <State
-	children={Edit}
-	schema={personSchema}
-	initialState={props.person}
-	{...props}
-/>;
+import Edit from './editPerson';
 
 const View = ({person, onEdit}) => 
 	<div>
@@ -49,10 +26,11 @@ type PropsType = {
 	relay: {},
 };
 const Integration = ({person, state, update}: PropsType) => state.editMode
-	? <StatefulEdit 
+	? <Edit 
 			person={person} 
 			onSave={() => update('editMode').set(false)}
 			onCancel={() => update('editMode').set(false)}
+			mutateText='update'
 		/>
 	: <View 
 			person={person} 

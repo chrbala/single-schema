@@ -1,13 +1,31 @@
 // @flow
 
 import React from 'react';
-import Relay, { RelayGraphQLMutation } from 'react-relay';
+import Relay, { GraphQLMutation } from 'react-relay';
 
 import Person from './person';
-import getEnvironment from '../shared/environment';
 import State from '../shared/state';
 import { combineReducers } from 'examples/setup';
 import { boolean } from 'examples/schema';
+import EditPerson from './editPerson';
+import { 
+	person as personSchema,
+} from '../shared/schema';
+
+const insertPersonQuery = Relay.QL`
+	mutation($input:personMutation!) {
+	  insertPerson(input:$input) {
+	  	clientMutationId
+			person {
+				id
+				name
+			}
+  	}
+	}
+`;
+
+const insertPerson = input => 
+	GraphQLMutation.create(insertPersonQuery, {input}, Relay.Store).commit();
 
 const People = ({viewer, state, update}) => 
 	<div>
@@ -19,7 +37,15 @@ const People = ({viewer, state, update}) =>
 		)}
 
 		{state.insertMode 
-			? <div>insert!</div>
+			? <EditPerson
+					onCancel={() => update('insertMode').set(false)}
+					onSave={person => {
+						update('insertMode').set(false);
+						insertPerson({person});
+					}}
+					person={personSchema.shape()}
+					mutateText='save'
+				/>
 			: <button onClick={() => update('insertMode').set(true)}>
 					add person
 				</button>

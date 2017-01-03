@@ -7,19 +7,31 @@ pointer.graphql('input', {
 	name: 'pointer',
 });
 
-combineReducers({
-	clientMutationId: maybe(string),
+const person = combineReducers({
 	name,
 }).graphql('input', {
 	name: 'personInput',
 });
 
-const people = array(pointer);
-
 combineReducers({
 	clientMutationId: maybe(string),
+	person,
+}).graphql('input', {
+	name: 'personMutation',
+});
+
+const people = array(pointer);
+
+const family = combineReducers({
 	adults: people,
 	children: people,
 }).graphql('input', {
 	name: 'familyInput',
+});
+
+combineReducers({
+	clientMutationId: maybe(string),
+	family,
+}).graphql('input', {
+	name: 'familyMutation',
 });

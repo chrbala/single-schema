@@ -15,7 +15,7 @@ type StateType = {
 type UpdateLeafType = {
 	[key: string]: () => mixed,
 };
-export type UpdateType<T> = (propName: T) => 
+type UpdateType<T> = (propName: T) => 
 	UpdateType<string> & UpdateLeafType
 ;
 

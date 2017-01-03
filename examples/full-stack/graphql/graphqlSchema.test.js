@@ -31,7 +31,7 @@ const insert = (name, query) => (input, context, fragment) =>
 	;
 
 const insertPerson = insert('insertPerson', fragment => `
-	mutation($input:personInput!) {
+	mutation($input:personMutation!) {
 	  insertPerson(input:$input) {
 	  	${fragment}
   	}
@@ -39,7 +39,7 @@ const insertPerson = insert('insertPerson', fragment => `
 `);
 
 const insertFamily = insert('insertFamily', fragment => `
-	mutation($input:familyInput!) {
+	mutation($input:familyMutation!) {
 	  insertFamily(input:$input) {
 	  	${fragment}
   	}
@@ -107,7 +107,7 @@ it('Person insertion and retrieval', async () => {
 			id,
 			name, 
 		} } = await insertPerson(
-		{name: NAME, clientMutationId: MUTATION_ID}, context, `
+		{ person: {name: NAME}, clientMutationId: MUTATION_ID}, context, `
 			clientMutationId
 			person {
 				id
@@ -140,7 +140,7 @@ it('Family insertion and retrieval', async () => {
 	const context = Context();
 
 	const people = await Promise.all(
-		NAMES.map(name => insertPerson({name}, context, `
+		NAMES.map(name => insertPerson({person: {name}}, context, `
 			person {
 				id
 			}
@@ -149,8 +149,10 @@ it('Family insertion and retrieval', async () => {
 
 	const familyInput = {
 		clientMutationId: MUTATION_ID,
-		adults: people.slice(0, 2),
-		children: people.slice(2, 4),
+		family: {
+			adults: people.slice(0, 2),
+			children: people.slice(2, 4),
+		},
 	};
 
 	const { 
@@ -201,7 +203,7 @@ it('personAll works', async () => {
 	const NAME = 'asdf';
 	const context = Context();
 		
-	const { person: { id } } = await insertPerson({name: NAME}, context, `
+	const { person: { id } } = await insertPerson({person: {name: NAME}}, context, `
 		person {
 			id
 		}
@@ -223,7 +225,7 @@ it('familyAll works', async () => {
 		adults: [],
 		children: [],
 	};
-	const { family: { id } } = await insertFamily(family, context, `
+	const { family: { id } } = await insertFamily({family}, context, `
 		family {
 			id
 			adults {
@@ -253,7 +255,7 @@ it('familyAll works', async () => {
 it('Bad person ID is rejected before it is persisted', async () => {
 	const context = Context();
 
-	const familyInput = {
+	const family = {
 		adults: [{id: 'bogus'}],
 		children: [],
 	};
@@ -264,7 +266,7 @@ it('Bad person ID is rejected before it is persisted', async () => {
 	const before = (await getFamilyAll(context, fragment)).length;
 
 	try {
-		await insertFamily(familyInput, context, `
+		await insertFamily({family}, context, `
 			family {
 				id
 			}

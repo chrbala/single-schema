@@ -11,8 +11,13 @@ import type {
 
 const subset = (obj1, obj2) => {
 	const out = {};
+	if (!obj1)
+		return out;
+	
 	for (const key in obj2) 
-		out[key] = obj1[key];
+		if (key in obj1)
+			out[key] = obj1[key];
+
 	return out;
 };
 

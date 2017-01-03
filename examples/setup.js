@@ -16,9 +16,9 @@ import createStore from 'src/flatteners/graphql/createStore';
 export const store = createStore();
 
 const flatteners = {
-	validate: Validator({cache: true, allowedExtraKeys: ['__dataID__']}),
+	validate: Validator({cache: true}),
 	coerce: Coercer({cache: true}),
-	shape: Shaper({leafNode: undefined}),
+	shape: Shaper(),
 	createUpdate: Updater(),
 	proptype: PropType(),
 	graphql: GraphqlFlattener({

@@ -11,9 +11,13 @@ type family implements node {
 }
 
 input familyInput {
-  clientMutationId: String
   adults: [pointer!]!
   children: [pointer!]!
+}
+
+input familyMutation {
+  clientMutationId: String
+  family: familyInput!
 }
 
 type familyPayload {
@@ -22,8 +26,8 @@ type familyPayload {
 }
 
 type mutation {
-  insertPerson(input: personInput!): personPayload!
-  insertFamily(input: familyInput!): familyPayload!
+  insertPerson(input: personMutation!): personPayload!
+  insertFamily(input: familyMutation!): familyPayload!
 }
 
 interface node {
@@ -36,8 +40,12 @@ type person implements node {
 }
 
 input personInput {
-  clientMutationId: String
   name: String!
+}
+
+input personMutation {
+  clientMutationId: String
+  person: personInput!
 }
 
 type personPayload {

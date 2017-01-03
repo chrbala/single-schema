@@ -21,24 +21,26 @@ const tableInsert = (
 	validatePointers: (value: *, context: ContextType) => mixed = () => null,
 ) => 
 	async (_, {input}, context: ContextType) => {
+		const { clientMutationId } = input;
+		let value = input[table];
 		const { database } = context;
 		const { coerce, validate } = schema[table];
-		const { clientMutationId } = input;
-		input = coerce(input);
 
-		const error = validate(input);
+		value = coerce(value);
+
+		const error = validate(value);
 		if (error)
 			throw new Error(JSON.stringify(error));
 
 		// this is important so invalid pointers are not put into
 		// the database, resulting in an invalid state
-		await validatePointers(input, context);
+		await validatePointers(value, context);
 
-		const id = database.update(table).push(input) - 1;
+		const id = database.update(table).push(value) - 1;
 		return {
 			clientMutationId,
 			[table]: {
-				...input,
+				...value,
 				id: serialize({id, table}),
 			},
 		};
@@ -50,14 +52,14 @@ const mutation = new GraphQLObjectType({
 		insertPerson: {
 			type: new GraphQLNonNull(store.get('personPayload')),
 			args: {
-				input: { type: new GraphQLNonNull(store.get('personInput')) },
+				input: { type: new GraphQLNonNull(store.get('personMutation')) },
 			},
 			resolve: tableInsert('person'),
 		},
 		insertFamily: {
 			type: new GraphQLNonNull(store.get('familyPayload')),
 			args: {
-				input: { type: new GraphQLNonNull(store.get('familyInput')) },
+				input: { type: new GraphQLNonNull(store.get('familyMutation')) },
 			},
 			resolve: tableInsert('family', ({adults, children}, {loaders}) => 
 				loaders.node.loadMany(adults.concat(children).map(({id}) => id))

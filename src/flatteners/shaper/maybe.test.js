@@ -5,7 +5,7 @@ import { createMaybe } from '../../operators';
 import Shaper from './';
 
 const combineReducers = createCombineReducers({
-	shape: Shaper({leafNode: true}),
+	shape: Shaper(),
 });
 
 const maybe = createMaybe({
@@ -19,8 +19,12 @@ it('Maybe defaults to undefined', () => {
 
 it('Maybe drops keys', () => {
 	const { shape } = combineReducers({
-		key: maybe({}),
-		somethingElse: {},
+		key: maybe({
+			shape: () => true,
+		}),
+		somethingElse: {
+			shape: () => true,
+		},
 	});
 	const actual = shape();
 	const expected = {

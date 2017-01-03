@@ -4,10 +4,12 @@ import createCombineReducers from '../../createCombineReducers';
 import Shaper from './';
 
 const combineReducers = createCombineReducers({
-	shape: Shaper({leafNode: true}),
+	shape: Shaper(),
 });
 
-const empty = null;
+const empty = {
+	shape: () => true,
+};
 
 it('Basic shape', () => {
 	const { shape } = combineReducers({

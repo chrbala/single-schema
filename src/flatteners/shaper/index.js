@@ -8,13 +8,13 @@ import maybe from './maybe';
 import type { FlattenerType } from '../../shared/types';
 
 type OptionsType = {
-	leafNode: *,
+	leafNode?: *,
 };
 
 type ShaperType = (options: *) => FlattenerType<*>;
 
-const Shaper: ShaperType = ({leafNode = undefined}: OptionsType = {}) => ({
-	reduce: reduce({leafNode}),
+const Shaper: ShaperType = (options: OptionsType = {}) => ({
+	reduce: reduce(options),
 	array,
 	map,
 	maybe,
