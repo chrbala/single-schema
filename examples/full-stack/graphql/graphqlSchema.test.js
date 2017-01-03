@@ -34,7 +34,7 @@ const insertPerson = insert('insertPerson', fragment => `
 	mutation($input:personInput!) {
 	  insertPerson(input:$input) {
 	  	${fragment}
-	  }
+  	}
 	}
 `);
 
@@ -49,9 +49,12 @@ const insertFamily = insert('insertFamily', fragment => `
 const get = (queryName, {query, context, params}) =>
 	graphql(schema, query, {}, context, params)
 		.then(throwErrors)
-		.then((res: any) => 
+		.then((res: any) =>
 			res.data[queryName]
 		);
+
+const getViewer = (queryName, ...args) => get('viewer', ...args)
+	.then(res => res[queryName]);
 
 const getNode = (id, context, fragment) => get('node', {
 	query: `
@@ -65,11 +68,13 @@ const getNode = (id, context, fragment) => get('node', {
 	params: {id},
 });
 
-const getPersonAll = (context, fragment) => get('personAll', {
+const getPersonAll = (context, fragment) => getViewer('personAll', {
 	query: `
 		query {
-			personAll {
-				${fragment}
+			viewer {
+				personAll {
+					${fragment}
+				}
 			}
 		}
 	`,
@@ -77,11 +82,13 @@ const getPersonAll = (context, fragment) => get('personAll', {
 	params: {},
 });
 
-const getFamilyAll = (context, fragment) => get('familyAll', {
+const getFamilyAll = (context, fragment) => getViewer('familyAll', {
 	query: `
 		query {
-			familyAll {
-				${fragment}
+			viewer {
+				familyAll {
+					${fragment}
+				}
 			}
 		}
 	`,
@@ -91,15 +98,25 @@ const getFamilyAll = (context, fragment) => get('familyAll', {
 
 it('Person insertion and retrieval', async () => {
 	const NAME = 'NAME';
+	const MUTATION_ID = 'MUTATION_ID';
 	const context = Context();
 
-	const { name, id } = await insertPerson({name: NAME}, context, `
-		... on person {
-			id
-			name
-		}
-	`);
+	const {
+		clientMutationId,
+		person: {
+			id,
+			name, 
+		} } = await insertPerson(
+		{name: NAME, clientMutationId: MUTATION_ID}, context, `
+			clientMutationId
+			person {
+				id
+				name
+			}
+		`
+	);
 	expect(name).toBe(NAME);
+	expect(clientMutationId).toBe(MUTATION_ID);
 
 	const personNode = await getNode(id, context, `
 		... on person {
@@ -119,32 +136,43 @@ it('Person insertion and retrieval', async () => {
 
 it('Family insertion and retrieval', async () => {
 	const NAMES = ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE'];
+	const MUTATION_ID = 'MUTATION_ID';
 	const context = Context();
 
 	const people = await Promise.all(
-		NAMES.map(name => insertPerson({name}, context, `...on person {
-			id
-		}`))
-	).then(res => res.map(({id}) => ({id})));
+		NAMES.map(name => insertPerson({name}, context, `
+			person {
+				id
+			}
+		`))
+	).then(res => res.map(({person: {id}}) => ({id})));
 
 	const familyInput = {
+		clientMutationId: MUTATION_ID,
 		adults: people.slice(0, 2),
 		children: people.slice(2, 4),
 	};
 
 	const { 
-		id, 
-		...familyInsertionResult 
-	} = await insertFamily(familyInput, context, `...on family {
-		id
-		adults {
-			name
+		clientMutationId,
+		family: {
+			id, 
+			...familyInsertionResult 
+		},
+	} = await insertFamily(familyInput, context, `
+		clientMutationId
+		family {
+			id
+			adults {
+				name
+			}
+			children {
+				name
+			}
 		}
-		children {
-			name
-		}
-	}`);
+	`);
 	expect(id).toBeTruthy();
+	expect(clientMutationId).toBe(MUTATION_ID);
 
 	const expected = {
 		adults: NAMES.slice(0, 2).map(name => ({name})),
@@ -173,8 +201,10 @@ it('personAll works', async () => {
 	const NAME = 'asdf';
 	const context = Context();
 		
-	const { id } = await insertPerson({name: NAME}, context, `
-		id
+	const { person: { id } } = await insertPerson({name: NAME}, context, `
+		person {
+			id
+		}
 	`);
 	expect(id).toBeTruthy();
 
@@ -193,13 +223,15 @@ it('familyAll works', async () => {
 		adults: [],
 		children: [],
 	};
-	const { id } = await insertFamily(family, context, `
-		id
-		adults {
-			name
-		}
-		children {
-			name
+	const { family: { id } } = await insertFamily(family, context, `
+		family {
+			id
+			adults {
+				name
+			}
+			children {
+				name
+			}
 		}
 	`);
 	expect(id).toBeTruthy();
@@ -233,9 +265,13 @@ it('Bad person ID is rejected before it is persisted', async () => {
 
 	try {
 		await insertFamily(familyInput, context, `
-			id
+			family {
+				id
+			}
 		`);
-	} catch (e) {}
+	} catch (errors) {
+		expect(errors[0].message).toMatch(/Invalid id/);
+	}
 
 	const after = (await getFamilyAll(context, fragment)).length;
 	expect(typeof before).toBe('number');

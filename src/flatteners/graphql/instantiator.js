@@ -71,9 +71,13 @@ export default ({store, graphql}: InitialConfigType) =>
 					fields: () => mapObj(normalized.getChildren(),
 						(child, key) => {
 							const normalizedChild = normalizeInput(child());
+							const fields = typeof configFields === 'function'
+								? configFields()
+								: configFields
+							;
 
 							return {
-								...configFields[key],
+								...fields[key],
 								type: getType({
 									store, 
 									child: normalizedChild, 

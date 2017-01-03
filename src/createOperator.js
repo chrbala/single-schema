@@ -15,11 +15,9 @@ export default (operator: string) =>
 				const reducerContexts = reducers;
 				
 				const create = flatteners[flattenerName][operator];
-				out[flattenerName] = create
-					? create(...scopedReducers)(...reducerContexts)(out)
-					: () => console.warn(
-							new Error(`${flattenerName}/${operator} was not found`)
-						)
+				if (create)
+					out[flattenerName] = 
+						create(...scopedReducers)(...reducerContexts)(out);
 				;		
 			}
 			return out;

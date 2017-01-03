@@ -4,8 +4,6 @@ import {
 	GraphQLObjectType,
 	GraphQLSchema, 
 	GraphQLNonNull,
-	GraphQLString,
-	GraphQLList,
 } from 'graphql';
 
 import './schema';
@@ -18,28 +16,6 @@ import type {
 	TableNameType,
 } from 'examples/full-stack/shared/types';
 
-const queryAll = table => ({
-	type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(
-		store.get(table)
-	))),
-	resolve: (_1, _2, {loaders}) => loaders[`${table}All`].load('*'),
-});
-
-const query = new GraphQLObjectType({
-	name: 'query',
-	fields: () => ({
-		node: {
-			args: {
-				id: { type: new GraphQLNonNull(GraphQLString) },
-			},
-			type: store.get('node'),
-			resolve: (_, {id}, {loaders}) => loaders.node.load(id),
-		},
-		personAll: queryAll('person'),
-		familyAll: queryAll('family'),
-	}),
-});
-
 const tableInsert = (
 	table: TableNameType, 
 	validatePointers: (value: *, context: ContextType) => mixed = () => null,
@@ -47,6 +23,7 @@ const tableInsert = (
 	async (_, {input}, context: ContextType) => {
 		const { database } = context;
 		const { coerce, validate } = schema[table];
+		const { clientMutationId } = input;
 		input = coerce(input);
 
 		const error = validate(input);
@@ -59,8 +36,11 @@ const tableInsert = (
 
 		const id = database.update(table).push(input) - 1;
 		return {
-			...input,
-			id: serialize({id, table}),
+			clientMutationId,
+			[table]: {
+				...input,
+				id: serialize({id, table}),
+			},
 		};
 	};
 
@@ -68,14 +48,14 @@ const mutation = new GraphQLObjectType({
 	name: 'mutation',
 	fields: () => ({
 		insertPerson: {
-			type: new GraphQLNonNull(store.get('person')),
+			type: new GraphQLNonNull(store.get('personPayload')),
 			args: {
 				input: { type: new GraphQLNonNull(store.get('personInput')) },
 			},
 			resolve: tableInsert('person'),
 		},
 		insertFamily: {
-			type: new GraphQLNonNull(store.get('family')),
+			type: new GraphQLNonNull(store.get('familyPayload')),
 			args: {
 				input: { type: new GraphQLNonNull(store.get('familyInput')) },
 			},
@@ -90,6 +70,6 @@ const mutation = new GraphQLObjectType({
 });
 
 export default new GraphQLSchema({
-	query,
+	query: store.get('query'),
 	mutation,
 });

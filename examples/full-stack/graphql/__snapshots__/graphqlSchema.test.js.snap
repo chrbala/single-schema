@@ -11,13 +11,19 @@ type family implements node {
 }
 
 input familyInput {
+  clientMutationId: String
   adults: [pointer!]!
   children: [pointer!]!
 }
 
+type familyPayload {
+  clientMutationId: String!
+  family: family!
+}
+
 type mutation {
-  insertPerson(input: personInput!): person!
-  insertFamily(input: familyInput!): family!
+  insertPerson(input: personInput!): personPayload!
+  insertFamily(input: familyInput!): familyPayload!
 }
 
 interface node {
@@ -30,7 +36,13 @@ type person implements node {
 }
 
 input personInput {
+  clientMutationId: String
   name: String!
+}
+
+type personPayload {
+  clientMutationId: String!
+  person: person!
 }
 
 input pointer {
@@ -38,7 +50,11 @@ input pointer {
 }
 
 type query {
-  node(id: String!): node
+  node(id: String!): node!
+  viewer: viewer!
+}
+
+type viewer {
   personAll: [person!]!
   familyAll: [family!]!
 }

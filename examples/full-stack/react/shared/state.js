@@ -12,7 +12,7 @@ type SchemaType = {
 
 type ComponentType = InferType;
 type PropsType = {
-	onChange: OnChangeType,
+	onChange?: OnChangeType,
 	schema: SchemaType,
 	children: ComponentType,
 	initialState?: *,
@@ -39,7 +39,7 @@ export default class State extends Component {
 		super(props);
 		const { 
 			onChange, 
-			schema: { shape, createUpdate },
+			schema: { shape, createUpdate, coerce },
 			initialState = shape(),
 		} = this.props;
 
@@ -50,8 +50,8 @@ export default class State extends Component {
 		this.update = createUpdate({
 			getState: () => this.state.childState,
 			subscribe: childState => this.setState(
-				{childState}, 
-				() => onChange(childState)
+				{childState: coerce(childState)}, 
+				() => onChange && onChange(childState)
 			),
 		});
 	}
@@ -65,7 +65,7 @@ export default class State extends Component {
 		const { update } = this;
 
 		return <div>
-			<Child update={update} value={childState} {...rest} />
+			<Child update={update} state={childState} {...rest} />
 		</div>;
 	}
 };

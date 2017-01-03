@@ -29,3 +29,5 @@ export const pointer = combineReducers({
 	id: string,
 });
 export const node = pointer;
+
+export { boolean } from './boolean';

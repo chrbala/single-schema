@@ -21,9 +21,9 @@ const reduce: () => ReducerType<*> = ({cache}: {cache: boolean} = {}) =>
 		const iterate = Iterator({cache});
 
 		return (data: GenericObjectType) => freeze(
-			iterate(subset(children, data), data, 
+			subset(iterate(subset(children, data), data, 
 				(child, datum) => child ? child(datum) : datum
-			)
+			), children)
 		);
 	}
 ;

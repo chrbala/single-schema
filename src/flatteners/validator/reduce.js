@@ -24,20 +24,34 @@ const clean = obj => {
 	return out;
 };
 
-const reduce: () => ReducerType<*> = ({cache}: {cache: boolean} = {}) => 
+export type OptionsType = {
+	cache: boolean,
+};
+type LocalOptionsType = {
+	ignore?: Array<string> | {[key: string]: boolean},
+};
+type ReduceType = (options: OptionsType) => ReducerType<*>;
+const reduce: ReduceType = ({cache}) => 
 	(children: AllReducerType) => {
 		const iterate = Iterator({cache});
 
-		return (data: GenericObjectType) => {
+		return (data: GenericObjectType, options: LocalOptionsType = {}) => {
+			let { ignore = {} } = options;
+			ignore = Array.isArray(ignore)
+				? ignore.reduce(
+						(acc, prop) => (acc[prop] = true, acc)
+					, {})
+				: ignore
+			;
 			if (!isObject(data))
 				return EXPECTED_OBJECT;
 
 			const out = clean(iterate(children, data, 
-				(child, datum) => child(datum)
+				(child, datum) => child(datum, {ignore})
 			));
 
 			for (const key in data)
-				if (!children[key])
+				if (!children[key] && !ignore[key])
 					out[key] = EXTRA_KEY_TEXT;
 
 			return Object.keys(out).length ? freeze(out) : null;

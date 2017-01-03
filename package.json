@@ -6,12 +6,12 @@
   "scripts": {
     "lint": "eslint src --fix",
     "flow": "flow",
-    "test": "NODE_PATH=./ jest",
+    "test": "NODE_PATH=./ GRAPHQL_SCHEMA_CACHE_TTL=1000 jest",
     "validate": "npm run lint && npm run flow && npm run test",
     "build-flow": "cp -r src lib && renamer --regex --find '.js$' --replace '.js.flow' 'lib/**/*'",
     "build": "babel src --out-dir lib",
     "prepublish": "rm -rf lib && npm run build-flow && npm run build",
-    "storybook": "NODE_PATH=./ GRAPHQL_PATH=./examples/full-stack/graphql/graphqlSchema.entry start-storybook -p 9010",
+    "storybook": "NODE_PATH=./ GRAPHQL_PATH=./examples/full-stack/graphql/graphqlSchema.entry GRAPHQL_SCHEMA_CACHE_TTL=1000 start-storybook -p 9010",
     "graphql": "NODE_PATH=./ nodemon examples/full-stack/graphql/index.entry"
   },
   "devDependencies": {

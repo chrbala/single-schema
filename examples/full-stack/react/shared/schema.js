@@ -1,11 +1,11 @@
 // @flow
 
 import { combineReducers, array, maybe } from 'examples/setup';
-import { string } from 'examples/schema';
+import { string, name } from 'examples/schema';
 
 export const person = combineReducers({
 	id: maybe(string),
-	name: string,
+	name,
 });
 
 export const people = array(person);

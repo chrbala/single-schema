@@ -51,6 +51,35 @@ it('Unexpected property', () => {
 	expect(actual).toEqual(expected);
 });
 
+it('Unexpected property does not fail when set as ignored', () => {
+	const IGNORE_KEY = 'IGNORE_KEY';
+	const actual = validate({
+		key: 'value',
+		[IGNORE_KEY]: 'this will be skipped',
+	}, {ignore: [IGNORE_KEY]});
+	const expected = null;
+	expect(actual).toEqual(expected);
+});
+
+it('Unexpected deep property does not fail when set as ignored', () => {
+	const IGNORE_KEY = 'IGNORE_KEY';
+
+	const { validate: validateDeep } = combineReducers({
+		key: combineReducers({
+			deep: isString,
+		}),
+	});
+
+	const actual = validateDeep({
+		key: {
+			deep: 'value',
+			[IGNORE_KEY]: 'this will be skipped',
+		},
+	}, {ignore: [IGNORE_KEY]});
+	const expected = null;
+	expect(actual).toEqual(expected);
+});
+
 it('Missing property fails', () => {
 	const actual = validate({
 

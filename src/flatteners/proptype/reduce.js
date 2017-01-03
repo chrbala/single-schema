@@ -4,8 +4,12 @@ import { createPropType } from './shared';
 
 import type { ReducerType } from '../../shared/types';
 
-const reduce: ReducerType<*> = (_, {validate}) => () => 
-	createPropType(validate)
-;
+type LocalOptionsType = {
+	ignore?: Array<string>,
+};
+const reduce: ReducerType<*> = (_, {validate}) => 
+	(options: LocalOptionsType) => 
+		createPropType(validate, options)
+	;
 
 export default reduce;

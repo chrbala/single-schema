@@ -55,24 +55,3 @@ it('Operators are provided reducer context', () => {
 	const { flattener } = operator(reducer, reducer);
 	flattener();
 });
-
-it('Operators warn when missing implementation on flattener', () => {
-	expect.assertions(2);
-
-	const spy = Spy();
-	// $FlowFixMe
-	console.warn = spy;
-
-	const reducer = {
-		flattener: () => () => null,	
-	};
-	const operator = createOperator('operator')({
-		flattener: {
-
-		},
-	});
-	const { flattener } = operator(reducer, reducer);
-	expect(spy.timesRun()).toBe(0);
-	flattener();
-	expect(spy.timesRun()).toBe(1);
-});
