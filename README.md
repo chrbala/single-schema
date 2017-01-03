@@ -23,6 +23,12 @@ It should be apparent from this file that this is a work in progress. Don't expe
   * key1 AND key2 must exist
   * key1 XOR key2 must exist
 * Build out relay example
+  * personAll and familyAll should return connections
+  * properly update personAll with a RANGE_ADD upon insertion
+  * add update mutations for person and family
+  * display validation errors when the user saves a person
+  * add family UI
+* Add real database as a drop-in option for the current in-memory one
 * Figure out if there is a good way to share input/output graphql schemas
 
 # Candidates for cross-flattener use
