@@ -34,7 +34,7 @@ export default (flatteners: ArgType) => {
 					const reducers = mapObj(unThunk(children),
 						child => child && child[name]
 					);
-					cache = reducerFlatters[name](reducers, out);
+					cache = reducerFlatters[name](reducers)(out);
 				}
 
 				return cache(...args);

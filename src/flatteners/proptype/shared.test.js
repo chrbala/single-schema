@@ -56,3 +56,19 @@ it('Failing validation', () => {
 
 	expect(() => <Component test={data} />).toThrowError(IS_STRING_ERROR);
 });
+
+it('Correctly passes options object to validate', () => {
+	expect.assertions(1);
+	const OPTIONS = {};
+
+	const combineWithMockedValidate = createCombineReducers({
+		proptype: PropType(),
+		validate: {
+			reduce: () => () => (data, options) => expect(options).toBe(OPTIONS),
+		},
+	});
+
+	const { proptype } = combineWithMockedValidate({});
+
+	proptype(OPTIONS)({});
+});

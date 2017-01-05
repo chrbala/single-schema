@@ -2,7 +2,7 @@
 
 import { GraphQLNonNull, GraphQLString } from 'graphql';
 import { store } from 'examples/setup';
-import { combineReducers, array } from 'examples/setup';
+import { combine, array } from 'examples/setup';
 import { name, string, node } from 'examples/schema';
 import { isTypeOf } from 'examples/full-stack/graphql/node';
 
@@ -10,7 +10,7 @@ node.graphql('interface', {
 	name: 'node',
 });
 
-const person = combineReducers({
+const person = combine({
 	id: string,
 	name,
 }).graphql('output', {
@@ -19,7 +19,7 @@ const person = combineReducers({
 	isTypeOf: isTypeOf('person'),
 });
 
-combineReducers({
+combine({
 	clientMutationId: string,
 	person,
 }).graphql('output', {
@@ -28,7 +28,7 @@ combineReducers({
 
 const people = array(person);
 
-const family = combineReducers({
+const family = combine({
 	id: string,
 	adults: people,
 	children: people,
@@ -48,7 +48,7 @@ const family = combineReducers({
 	},
 });
 
-combineReducers({
+combine({
 	clientMutationId: string,
 	family,
 }).graphql('output', {
@@ -59,7 +59,7 @@ const queryAll = table => ({
 	resolve: (_1, _2, {loaders}) => loaders[`${table}All`].load('*'),
 });
 
-const viewer = combineReducers({
+const viewer = combine({
 	personAll: array(person),
 	familyAll: array(family),
 }).graphql('output', {
@@ -70,7 +70,7 @@ const viewer = combineReducers({
 	},
 });
 
-combineReducers({
+combine({
 	node,
 	viewer,
 }).graphql('output', {

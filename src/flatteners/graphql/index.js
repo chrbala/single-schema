@@ -13,3 +13,6 @@ const GraphQLFlattener = (config: InitialConfigType) => ({
 });
 
 export default GraphQLFlattener;
+
+import createStore from './createStore';
+export { createStore };

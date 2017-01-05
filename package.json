@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "@kadira/storybook": "^2.5.2",
+    "app-module-path": "^2.1.0",
     "babel-cli": "^6.18.0",
     "babel-core": "^6.18.2",
     "babel-plugin-fetch-relay-schema": "file:../fetch-relay-schema/",
@@ -32,17 +33,19 @@
     "express": "^4.14.0",
     "express-graphql": "^0.6.1",
     "flow-bin": "^0.36.0",
-    "graphql": "^0.8.2",
+    "graphql": "<1.0.0",
+    "jest": "^18.1.0",
     "nodemon": "^1.11.0",
     "react": "^15.4.0",
     "react-dom": "^15.4.0",
     "react-relay": "^0.10.0",
     "react-scripts": "^0.7.0",
+    "relay-local-schema": "^0.5.5",
     "renamer": "^0.6.1"
   },
+  "optionalDependencies": {
+    "graphql": "<1.0.0"
+  },
   "dependencies": {
-    "app-module-path": "^2.1.0",
-    "jest": "^18.1.0",
-    "relay-local-schema": "^0.5.5"
   }
 }

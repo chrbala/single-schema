@@ -7,7 +7,7 @@ import createCombineReducers from './createCombineReducers';
 it('createCombineReducers returns fn that creates the proper keys', () => {
 	const combineReducers = createCombineReducers({
 		doSomething: {
-			reduce: () => () => null,
+			reduce: () => () => () => null,
 		},
 	});
 
@@ -28,7 +28,7 @@ it('Reducer is passed in all the data', () => {
 
 	const combineReducers = createCombineReducers({
 		doSomething: {
-			reduce: () => data => expect(data).toEqual(inputData),
+			reduce: () => () => data => expect(data).toEqual(inputData),
 		},
 	});
 
@@ -46,10 +46,10 @@ it('Only the relevant reducer is run', () => {
 
 	const combineReducers = createCombineReducers({
 		doSomething: {
-			reduce: () => spy1,
+			reduce: () => () => spy1,
 		},
 		doSomethingElse: {
-			reduce: () => spy2,
+			reduce: () => () => spy2,
 		},
 	});
 
@@ -70,7 +70,7 @@ it('Reducer is provided with its children when run', () => {
 
 	const combineReducers = createCombineReducers({
 		doSomething: {
-			reduce: ({key}) => () => expect(key).toBe(child),
+			reduce: ({key}) => () => () => expect(key).toBe(child),
 		},
 	});
 
@@ -89,7 +89,7 @@ it('defaultFlattener assigns a function child to a flattener', () => {
 
 	const combineReducers = createCombineReducers({
 		doSomething: {
-			reduce: ({key}) => () => expect(key).toBe(child),
+			reduce: ({key}) => () => () => expect(key).toBe(child),
 		},
 	});
 
@@ -106,7 +106,7 @@ it('Reducer is still run when child is missing a matching reducer', () => {
 
 	const combineReducers = createCombineReducers({
 		doSomething: {
-			reduce: ({key}) => () => expect(key).toBe(undefined),
+			reduce: ({key}) => () => () => expect(key).toBe(undefined),
 		},
 	});
 
@@ -123,7 +123,7 @@ it('Reducer is still run when child is null', () => {
 
 	const combineReducers = createCombineReducers({
 		doSomething: {
-			reduce: ({key}) => () => expect(key).toBe(null),
+			reduce: ({key}) => () => () => expect(key).toBe(null),
 		},
 	});
 
@@ -140,7 +140,7 @@ it('Reducer can have state', () => {
 		doSomething: {
 			reduce: ({key}) => {
 				i++;
-				return () => expect(key).toBe(null);
+				return () => () => expect(key).toBe(null);
 			},
 		},
 	});
@@ -161,14 +161,14 @@ it('Reducer is provided the context of other reducers', () => {
 
 	const combineReducers = createCombineReducers({
 		doSomething: {
-			reduce: (_, context: {doSomethingElse: () => InferredType}) => () => {
+			reduce: () => (context: {doSomethingElse: () => InferredType}) => () => {
 				expect(Object.keys(context))
 					.toEqual(['doSomething', 'doSomethingElse']);
 				expect(context.doSomethingElse()).toBe(5);
 			},
 		},
 		doSomethingElse: {
-			reduce: () => () => 5,
+			reduce: () => () => () => 5,
 		},
 	});
 

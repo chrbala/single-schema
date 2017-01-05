@@ -1,15 +1,15 @@
 // @flow
 
-import { combineReducers, array } from 'examples/setup';
+import { combine, array } from 'examples/setup';
 import { string } from 'examples/schema';
 
-export const person = combineReducers({
+export const person = combine({
 	name: string,
 });
 
 export const people = array(person);
 
-export const family = combineReducers({
+export const family = combine({
 	adults: people,
 	children: people,
 });

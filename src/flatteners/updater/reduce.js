@@ -8,7 +8,7 @@ import type { ScopeType } from './types';
 const MISSING_KEY_ERROR = key => 
 	`Attempted to access nonexistant key ${key}`;
 
-const reduce: ReducerType<*> = (children: AllReducerType) => 
+const reduce: ReducerType<*> = (children: AllReducerType) => () =>
 	({subscribe: scopedSubscribe, getState: scopedGetstate}: ScopeType) => {
 		const getState = key => () => {
 			const scopedState = scopedGetstate();
@@ -26,7 +26,7 @@ const reduce: ReducerType<*> = (children: AllReducerType) =>
 
 			const childStore = children[key] 
 				? children[key] 
-				: reduce({}, {})
+				: reduce({})({})
 			;
 
 			return childStore({

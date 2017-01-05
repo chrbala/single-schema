@@ -1,7 +1,6 @@
 // @flow
 
-import createCombineReducers from 'src/createCombineReducers';
-import { createArray, createAnd, createMaybe, createMap } from 'src/operators';
+import create from 'src/';
 
 import Coercer from 'src/flatteners/coercer';
 import Shaper from 'src/flatteners/shaper';
@@ -10,8 +9,7 @@ import Validator from 'src/flatteners/validator';
 import PropType from 'src/flatteners/proptype';
 
 import * as graphql from 'graphql';
-import GraphqlFlattener from 'src/flatteners/graphql';
-import createStore from 'src/flatteners/graphql/createStore';
+import GraphqlFlattener, { createStore } from 'src/flatteners/graphql';
 
 export const store = createStore();
 
@@ -27,8 +25,12 @@ const flatteners = {
 	}),
 };
 
-export const combineReducers = createCombineReducers(flatteners);
-export const array = createArray(flatteners);
-export const map = createMap(flatteners);
-export const and = createAnd(flatteners);
-export const maybe = createMaybe(flatteners);
+const { combine, array, map, and, maybe } = create(flatteners);
+
+export {
+	combine,
+	array, 
+	map, 
+	and, 
+	maybe,
+};

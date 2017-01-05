@@ -14,7 +14,6 @@ It should be apparent from this file that this is a work in progress. Don't expe
 * Really needs better typing
 * Write operators: or, exact/permissive
 * Better cross-flattener use (?)
-* Figure out what should be public API on launch and organize files accordingly
 * More examples
 * Actual docs
 * Metadata annotations (name, description, etc)
@@ -23,6 +22,7 @@ It should be apparent from this file that this is a work in progress. Don't expe
   * key1 AND key2 must exist
   * key1 XOR key2 must exist
 * Build out relay example
+  * UI integration testing
   * personAll and familyAll should return connections
   * properly update personAll with a RANGE_ADD upon insertion
   * add update mutations for person and family

@@ -1,7 +1,5 @@
 // @flow
 
-import Spy from './helpers/spy';
-
 import createOperator from './createOperator';
 
 (() => {

@@ -1,19 +1,19 @@
 // @flow
 
-import { combineReducers, array, maybe } from 'examples/setup';
+import { combine, array, maybe } from 'examples/setup';
 import { name, pointer, string } from 'examples/schema';
 
 pointer.graphql('input', {
 	name: 'pointer',
 });
 
-const person = combineReducers({
+const person = combine({
 	name,
 }).graphql('input', {
 	name: 'personInput',
 });
 
-combineReducers({
+combine({
 	clientMutationId: maybe(string),
 	person,
 }).graphql('input', {
@@ -22,14 +22,14 @@ combineReducers({
 
 const people = array(pointer);
 
-const family = combineReducers({
+const family = combine({
 	adults: people,
 	children: people,
 }).graphql('input', {
 	name: 'familyInput',
 });
 
-combineReducers({
+combine({
 	clientMutationId: maybe(string),
 	family,
 }).graphql('input', {

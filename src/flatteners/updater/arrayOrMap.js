@@ -49,7 +49,7 @@ export default (kind: AllowedType) => (scope: *) =>
 		const childScope = {getState, subscribe};
 		return child
 			? child(childScope)
-			: reduce({}, {})(childScope)
+			: reduce({})({})(childScope)
 		;
 	}
 ;

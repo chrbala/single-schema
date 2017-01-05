@@ -2,7 +2,7 @@
 
 import { GraphQLInt } from 'graphql';
 
-import { combineReducers, and } from 'examples/setup';
+import { combine, and } from 'examples/setup';
 import { number, nonNaN, int, nonNegative } from './number';
 import { 
 	string as stringType, 
@@ -25,7 +25,7 @@ export const name = Object.assign(
 	and(string, longerThan(0), shorterThan(15)
 ), common);
 
-export const pointer = combineReducers({
+export const pointer = combine({
 	id: string,
 });
 export const node = pointer;

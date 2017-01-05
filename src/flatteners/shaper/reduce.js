@@ -5,7 +5,7 @@ import { freeze } from '../../util/micro';
 import type { AllReducerType } from '../../shared/types';
 
 export default () => 
-	(children: AllReducerType) => () => {
+	(children: AllReducerType) => () => () => {
 		const out = {};
 		for (const key in children) {
 			const child = children[key];

@@ -12,7 +12,7 @@ import type { AllReducerType } from '../../shared/types';
 import Instantiator from './instantiator';
 
 export default (config: InitialConfigType) => 
-	(children: AllReducerType, context: *) => {
+	(children: AllReducerType) => (context: *) => {
 		const names: {[key: StoredTypesType]: ?string} = {
 			input: undefined,
 			output: undefined,

@@ -3,7 +3,7 @@
 import Relay, { createContainer } from 'react-relay';
 
 import People from './people';
-import Person from './person';
+import Person from 'examples/full-stack/react/person';
 
 export default createContainer(People, {
 	fragments: {

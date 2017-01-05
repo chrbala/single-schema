@@ -2,11 +2,14 @@
 
 import React from 'react';
 
-import State from '../shared/state';
-import { combineReducers } from 'examples/setup';
+import State from 'examples/full-stack/react/shared/state';
+import { combine } from 'examples/setup';
 import { boolean } from 'examples/schema';
-import Relay, { createContainer } from 'react-relay';
-import Edit from './editPerson';
+
+import Edit from 'examples/full-stack/react/editPerson';
+import { 
+	person as personSchema,
+} from 'examples/full-stack/react/shared/schema';
 
 const View = ({person, onEdit}) => 
 	<div>
@@ -37,24 +40,18 @@ const Integration = ({person, state, update}: PropsType) => state.editMode
 			onEdit={() => update('editMode').set(true)}
 		/>
 ;
+Integration.propTypes = {
+	person: personSchema.proptype({ignore: ['__dataID__']}),
+};
 
-const integrationSchema = combineReducers({
+const integrationSchema = combine({
 	editMode: boolean,
 });
 
-const StatefulIntegration = props => <State
+const StatefulIntegration = (props: *) => <State
 	children={Integration}
 	schema={integrationSchema}
 	{...props}
 />;
 
-export default createContainer(StatefulIntegration, {
-	fragments: {
-		person: () => Relay.QL`
-			fragment on person {
-				id
-				name
-			}
-		`,
-	},
-});
+export default StatefulIntegration;

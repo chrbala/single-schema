@@ -2,10 +2,10 @@
 
 import React from 'react';
 
-import State from '../shared/state';
+import State from 'examples/full-stack/react/shared/state';
 import { 
 	person as personSchema,
-} from '../shared/schema';
+} from 'examples/full-stack/react/shared/schema';
 
 const Edit = ({state, update, onSave, onCancel, mutateText}) =>
 	<div>
@@ -28,9 +28,15 @@ type PropsType = {
 	onCancel: () => mixed,
 	mutateText: string,
 };
-export default (props: PropsType) => <State
+const StatefulEdit = (props: PropsType) => <State
 	children={Edit}
 	schema={personSchema}
 	initialState={props.person}
 	{...props}
 />;
+
+StatefulEdit.propTypes = {
+	person: personSchema.proptype({ignore: ['__dataID__']}),
+};
+
+export default StatefulEdit;

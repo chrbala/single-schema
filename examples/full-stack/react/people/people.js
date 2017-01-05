@@ -3,11 +3,11 @@
 import React from 'react';
 import Relay, { GraphQLMutation } from 'react-relay';
 
-import Person from './person';
-import State from '../shared/state';
-import { combineReducers } from 'examples/setup';
+import Person from 'examples/full-stack/react/person';
+import State from 'examples/full-stack/react/shared/state';
+import { combine } from 'examples/setup';
 import { boolean } from 'examples/schema';
-import EditPerson from './editPerson';
+import EditPerson from 'examples/full-stack/react/editPerson';
 import { 
 	person as personSchema,
 } from '../shared/schema';
@@ -59,7 +59,7 @@ type PropsType = {
 	},
 };
 
-const peopleState = combineReducers({
+const peopleState = combine({
 	insertMode: boolean,
 });
 

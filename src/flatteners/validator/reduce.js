@@ -32,7 +32,7 @@ type LocalOptionsType = {
 };
 type ReduceType = (options: OptionsType) => ReducerType<*>;
 const reduce: ReduceType = ({cache}) => 
-	(children: AllReducerType) => {
+	(children: AllReducerType) => () => {
 		const iterate = Iterator({cache});
 
 		return (data: GenericObjectType, options: LocalOptionsType = {}) => {
