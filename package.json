@@ -6,20 +6,21 @@
   "scripts": {
     "lint": "eslint src --fix",
     "flow": "flow",
-    "test": "NODE_PATH=./ GRAPHQL_SCHEMA_CACHE_TTL=1000 jest",
+    "test": "NODE_PATH=./ GRAPHQL_PATH=./examples/full-stack/graphql/graphqlSchema.entry GRAPHQL_SCHEMA_CACHE_TTL=1000 jest",
     "validate": "npm run lint && npm run flow && npm run test",
     "build-flow": "cp -r src lib && renamer --regex --find '.js$' --replace '.js.flow' 'lib/**/*'",
     "build": "babel src --out-dir lib",
     "prepublish": "rm -rf lib && npm run build-flow && npm run build",
     "storybook": "NODE_PATH=./ GRAPHQL_PATH=./examples/full-stack/graphql/graphqlSchema.entry GRAPHQL_SCHEMA_CACHE_TTL=1000 start-storybook -p 9010",
-    "graphql": "NODE_PATH=./ nodemon examples/full-stack/graphql/index.entry"
+    "graphql": "NODE_PATH=./ GRAPHQL_PATH=./examples/full-stack/graphql/graphqlSchema.entry nodemon examples/full-stack/graphql/index.entry",
+    "generate": "node node_modules/babel-plugin-fetch-relay-schema/src/generateSchema /Users/Chris/input-change/examples/full-stack/graphql/graphqlSchema.entry",
+    "fetch": "node node_modules/babel-plugin-fetch-relay-schema/src/index /Users/Chris/input-change/examples/full-stack/graphql/graphqlSchema.entry"
   },
   "devDependencies": {
     "@kadira/storybook": "^2.5.2",
     "app-module-path": "^2.1.0",
     "babel-cli": "^6.18.0",
     "babel-core": "^6.18.2",
-    "babel-plugin-fetch-relay-schema": "file:../fetch-relay-schema/",
     "babel-plugin-syntax-flow": "^6.18.0",
     "babel-plugin-transform-flow-strip-types": "^6.18.0",
     "babel-polyfill": "^6.16.0",
@@ -29,6 +30,7 @@
     "babel-relay-plugin": "^0.10.0",
     "chrbala-linter": "^1.0.5",
     "dataloader": "^1.2.0",
+    "enzyme": "^2.7.0",
     "eslint": "^3.11.1",
     "express": "^4.14.0",
     "express-graphql": "^0.6.1",
@@ -41,11 +43,11 @@
     "react-relay": "^0.10.0",
     "react-scripts": "^0.7.0",
     "relay-local-schema": "^0.5.5",
-    "renamer": "^0.6.1"
+    "renamer": "^0.6.1",
+    "babel-plugin-fetch-relay-schema": "file:../fetch-relay-schema/",
+    "react-addons-test-utils": "^15.4.1"
   },
   "optionalDependencies": {
     "graphql": "<1.0.0"
-  },
-  "dependencies": {
   }
 }

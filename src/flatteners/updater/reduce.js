@@ -25,7 +25,7 @@ const reduce: ReducerType<*> = (children: AllReducerType) => () =>
 				throw new Error(MISSING_KEY_ERROR(key));
 
 			const childStore = children[key] 
-				? children[key] 
+				? children[key]
 				: reduce({})({})
 			;
 

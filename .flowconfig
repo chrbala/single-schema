@@ -8,5 +8,6 @@
 [options]
 module.name_mapper='^src/\(.*\)'->'<PROJECT_ROOT>/src/\1'
 module.name_mapper='^examples/\(.*\)'->'<PROJECT_ROOT>/examples/\1'
+module.name_mapper='^mocks/\(.*\)'->'<PROJECT_ROOT>/mocks/\1'
 suppress_comment= \\(.\\|\n\\)*\\$FlowFixMe
 esproposal.export_star_as=enable
