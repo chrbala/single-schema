@@ -10,6 +10,15 @@ type family implements node {
   children: [person!]!
 }
 
+type familyConnection {
+  edges: [familyEdge!]!
+  pageInfo: PageInfo!
+}
+
+type familyEdge {
+  node: family!
+}
+
 input familyInput {
   adults: [pointer!]!
   children: [pointer!]!
@@ -34,9 +43,23 @@ interface node {
   id: String!
 }
 
+type PageInfo {
+  hasPreviousPage: Boolean!
+  hasNextPage: Boolean!
+}
+
 type person implements node {
   id: String!
   name: String!
+}
+
+type personConnection {
+  edges: [personEdge!]!
+  pageInfo: PageInfo!
+}
+
+type personEdge {
+  node: person!
 }
 
 input personInput {
@@ -63,8 +86,8 @@ type query {
 }
 
 type viewer {
-  personAll: [person!]!
-  familyAll: [family!]!
+  personAll(first: Int, last: Int, before: String, after: String): personConnection!
+  familyAll(first: Int, last: Int, before: String, after: String): familyConnection!
 }
 "
 `;

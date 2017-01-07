@@ -203,18 +203,25 @@ it('personAll works', async () => {
 	const NAME = 'asdf';
 	const context = Context();
 		
-	const { person: { id } } = await insertPerson({person: {name: NAME}}, context, `
+	const {person: { id }} = await insertPerson({person: {name: NAME}}, context, `
 		person {
 			id
 		}
 	`);
 	expect(id).toBeTruthy();
 
-	const allPeople = await getPersonAll(context, `
-		id
-		name
+	const { edges } = await getPersonAll(context, `
+		edges {
+			node {
+				id
+				name
+			}
+		}
 	`);
-	const insertedPerson = allPeople.find(({id: _id}) => id == _id);
+	const insertedPerson = edges
+		.map(({node}) => node)
+		.find(({id: _id}) => id == _id)
+	;
 	expect(insertedPerson.name).toBe(NAME);
 });
 
@@ -238,16 +245,23 @@ it('familyAll works', async () => {
 	`);
 	expect(id).toBeTruthy();
 
-	const allFamilies = await getFamilyAll(context, `
-		id
-		adults {
-			name
-		}
-		children {
-			name
+	const { edges } = await getFamilyAll(context, `
+		edges {
+			node {
+				id
+				adults {
+					name
+				}
+				children {
+					name
+				}
+			}
 		}
 	`);
-	const insertedFamily = allFamilies.find(({id: _id}) => id == _id);
+	const insertedFamily = edges
+		.map(({node}) => node)
+		.find(({id: _id}) => id == _id)
+	;
 	expect(insertedFamily.adults).toEqual([]);
 	expect(insertedFamily.children).toEqual([]);
 });
@@ -261,9 +275,13 @@ it('Bad person ID is rejected before it is persisted', async () => {
 	};
 
 	const fragment = `
-		id
+		edges {
+			node {
+				id
+			}
+		}
 	`;
-	const before = (await getFamilyAll(context, fragment)).length;
+	const before = (await getFamilyAll(context, fragment)).edges.length;
 
 	try {
 		await insertFamily({family}, context, `
@@ -275,7 +293,7 @@ it('Bad person ID is rejected before it is persisted', async () => {
 		expect(errors[0].message).toMatch(/Invalid id/);
 	}
 
-	const after = (await getFamilyAll(context, fragment)).length;
+	const after = (await getFamilyAll(context, fragment)).edges.length;
 	expect(typeof before).toBe('number');
 	expect(before).toBe(after);
 });
