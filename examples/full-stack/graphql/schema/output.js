@@ -42,13 +42,6 @@ const family = combine({
 	},
 });
 
-combine({
-	clientMutationId: string,
-	family,
-}).graphql('output', {
-	name: 'familyPayload',
-});
-
 const pageInfo = combine({
 	hasPreviousPage: boolean,
 	hasNextPage: boolean,
@@ -57,6 +50,7 @@ const pageInfo = combine({
 });
 
 const personEdge = combine({
+	cursor: string,
 	node: person,
 }).graphql('output', {
 	name: 'personEdge',
@@ -70,6 +64,7 @@ const personConnection = combine({
 });
 
 const familyEdge = combine({
+	cursor: string,
 	node: family,
 }).graphql('output', {
 	name: 'familyEdge',
@@ -84,7 +79,14 @@ const familyConnection = combine({
 
 combine({
 	clientMutationId: string,
-	person,
+	edge: familyEdge,
+}).graphql('output', {
+	name: 'familyPayload',
+});
+
+combine({
+	clientMutationId: string,
+	edge: personEdge,
 }).graphql('output', {
 	name: 'personPayload',
 });
@@ -101,6 +103,7 @@ const queryAll = table => ({
 		last: {type: GraphQLInt },
 		before: {type: GraphQLString },
 		after: {type: GraphQLString },
+		filter: { type: GraphQLString },  
 	},
 	resolve: (_, {first, last, before, after}: PaginationArgType, {database}) => {
 		if (first < 0 || last < 0 || (first && last))
@@ -124,18 +127,23 @@ const queryAll = table => ({
 		const state = database.getState()[table];
 		const edges = state
 			.slice(min, max)
-			.map((_person, i) => ({node: {
-				..._person,
-				id: serialize({id: min + i, table}),
-			}}))
+			.map((_person, i) => {
+				const id = serialize({id: min + i, table});
+				return {
+					cursor: id,
+					node: {
+						..._person,
+						id,
+					},
+				};
+			})
 		;
-		const PageInfo = {
-			hasNextPage: !!first && max < state.length,
-			hasPreviousPage: !!last && min > 0,
-		};
 		return {
 			edges,
-			PageInfo,
+			pageInfo: {
+				hasNextPage: !!first && max < state.length,
+				hasPreviousPage: !!last && min > 0,
+			},
 		};
 	},
 });

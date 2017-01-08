@@ -11,8 +11,10 @@ const insertPersonQuery = Relay.QL`
 	mutation($input:personMutation!) {
 	  insertPerson(input:$input) {
 	  	clientMutationId
-	  	person {
-	  		id
+		  edge {
+		  	node {
+		  		${Person.getFragment('person')}
+	  		}
   		}
   	}
 	}
@@ -46,7 +48,8 @@ it('does not warn or error when rendered', async () => {
 	console.error = jest.genMockFunction();
 
 	const person = {name: 'asdf'};
-	const { person: { id }} = await insertPerson({person});
+	const { edge } = await insertPerson({person});
+	const id = edge.node.id;
 
 	await new Promise((resolve, reject) => mount(<RootContainer
 		Component={Person}

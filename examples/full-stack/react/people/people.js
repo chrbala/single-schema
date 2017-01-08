@@ -14,25 +14,42 @@ import {
 
 const insertPersonQuery = Relay.QL`
 	mutation($input:personMutation!) {
-	  insertPerson(input:$input) {
-	  	clientMutationId
-			person {
-				id
-				name
+		insertPerson(input:$input) {
+			clientMutationId
+			edge {
+				node {
+					id
+					name
+				}
 			}
-  	}
+		}
 	}
 `;
 
-const insertPerson = input => 
-	GraphQLMutation.create(insertPersonQuery, {input}, Relay.Store).commit();
+const insertPersonConfigs = parentID => [{
+	type: 'RANGE_ADD',
+	parentName: 'viewer',
+	parentID,
+	connectionName: 'personAll',
+	edgeName: 'edge',
+	rangeBehaviors: {
+		'': 'append',
+	},
+}];
+
+const insertPerson = (input, configs) =>  
+	GraphQLMutation.create(
+		insertPersonQuery, 
+		{input}, 
+		Relay.Store
+	).commit(configs);
 
 const People = ({viewer, state, update}) => 
 	<div>
-		{viewer.personAll.map(person => 
+		{viewer.personAll.edges.map(({node}) => 
 			<Person 
-				key={person.id} 
-				person={person} 
+				key={node.id} 
+				person={node} 
 			/>
 		)}
 
@@ -41,7 +58,7 @@ const People = ({viewer, state, update}) =>
 					onCancel={() => update('insertMode').set(false)}
 					onSave={person => {
 						update('insertMode').set(false);
-						insertPerson({person});
+						insertPerson({person}, insertPersonConfigs(viewer.__dataID__));
 					}}
 					person={personSchema.shape()}
 					mutateText='save'

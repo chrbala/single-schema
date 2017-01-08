@@ -7,12 +7,18 @@ import localContext from 'examples/full-stack/graphql/localContext';
 
 type OptionsType = {
 	onError?: (error: mixed) => mixed,
+	integration: boolean,
 };
-export default ({onError = () => null}: OptionsType = {}) => 
-	Relay.injectNetworkLayer(
-		new RelayLocalSchema.NetworkLayer({
-			schema,
-			onError,
-			contextValue: localContext(),
-		})
-	);
+export default 
+	({onError = () => null, integration = false}: OptionsType = {}) => 
+		integration 
+			? Relay.injectNetworkLayer(
+			  new Relay.DefaultNetworkLayer('http://localhost:4000/graphql')
+			) : Relay.injectNetworkLayer(
+				new RelayLocalSchema.NetworkLayer({
+					schema,
+					onError,
+					contextValue: localContext(),
+				})
+			)
+		;	

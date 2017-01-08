@@ -7,7 +7,7 @@ import {
 	person as personSchema,
 } from 'examples/full-stack/react/shared/schema';
 
-const Edit = ({state, update, onSave, onCancel, mutateText}) =>
+const Edit = ({state, update, onSave, onCancel, mutateText}) => 
 	<div>
 		<label>name</label>
 		<input 

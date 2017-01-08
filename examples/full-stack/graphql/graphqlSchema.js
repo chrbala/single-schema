@@ -36,12 +36,16 @@ const tableInsert = (
 		// the database, resulting in an invalid state
 		await validatePointers(value, context);
 
-		const id = database.update(table).push(value) - 1;
+		const index = database.update(table).push(value) - 1;
+		const id = serialize({id: index, table});
 		return {
 			clientMutationId,
-			[table]: {
-				...value,
-				id: serialize({id, table}),
+			edge: {
+				cursor: id,
+				node: {
+					...value,
+					id,
+				},
 			},
 		};
 	};

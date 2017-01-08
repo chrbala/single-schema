@@ -9,9 +9,13 @@ export default createContainer(People, {
 	fragments: {
 		viewer: () => Relay.QL`
 			fragment on viewer {
-				personAll {
-					id
-					${Person.getFragment('person')}
+				personAll(first:100) {
+					edges {
+						node {
+							id
+							${Person.getFragment('person')}
+						}
+					}
 				}
 			}
 		`,

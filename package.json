@@ -11,7 +11,8 @@
     "build-flow": "cp -r src lib && renamer --regex --find '.js$' --replace '.js.flow' 'lib/**/*'",
     "build": "babel src --out-dir lib",
     "prepublish": "rm -rf lib && npm run build-flow && npm run build",
-    "storybook": "NODE_PATH=./ GRAPHQL_PATH=./examples/full-stack/graphql/graphqlSchema.entry GRAPHQL_SCHEMA_CACHE_TTL=1000 start-storybook -p 9010",
+    "storybook": "NODE_PATH=./ GRAPHQL_PATH=./examples/full-stack/graphql/graphqlSchema.entry start-storybook -p 9010",
+    "storybook-integ": "NODE_PATH=./ STORYBOOK_INTEGRATION=true GRAPHQL_URL=http://localhost:4000/graphql start-storybook -p 9011",
     "graphql": "NODE_PATH=./ GRAPHQL_PATH=./examples/full-stack/graphql/graphqlSchema.entry nodemon examples/full-stack/graphql/index.entry",
     "generate": "node node_modules/babel-plugin-fetch-relay-schema/src/generateSchema /Users/Chris/input-change/examples/full-stack/graphql/graphqlSchema.entry",
     "fetch": "node node_modules/babel-plugin-fetch-relay-schema/src/index /Users/Chris/input-change/examples/full-stack/graphql/graphqlSchema.entry"

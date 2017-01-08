@@ -103,15 +103,19 @@ it('Person insertion and retrieval', async () => {
 
 	const {
 		clientMutationId,
-		person: {
-			id,
-			name, 
+		edge: {
+			node: {
+				id,
+				name,
+			},
 		} } = await insertPerson(
 		{ person: {name: NAME}, clientMutationId: MUTATION_ID}, context, `
 			clientMutationId
-			person {
-				id
-				name
+			edge {
+				node {
+					id
+					name
+				}
 			}
 		`
 	);
@@ -141,11 +145,13 @@ it('Family insertion and retrieval', async () => {
 
 	const people = await Promise.all(
 		NAMES.map(name => insertPerson({person: {name}}, context, `
-			person {
-				id
+			edge {
+				node {
+					id
+				}
 			}
 		`))
-	).then(res => res.map(({person: {id}}) => ({id})));
+	).then(res => res.map(({edge}) => ({id: edge.node.id})));
 
 	const familyInput = {
 		clientMutationId: MUTATION_ID,
@@ -157,19 +163,23 @@ it('Family insertion and retrieval', async () => {
 
 	const { 
 		clientMutationId,
-		family: {
-			id, 
-			...familyInsertionResult 
+		edge: {
+			node: {
+				id, 
+				...familyInsertionResult 
+			},
 		},
 	} = await insertFamily(familyInput, context, `
 		clientMutationId
-		family {
-			id
-			adults {
-				name
-			}
-			children {
-				name
+		edge {
+			node {
+				id
+				adults {
+					name
+				}
+				children {
+					name
+				}
 			}
 		}
 	`);
@@ -203,11 +213,15 @@ it('personAll works', async () => {
 	const NAME = 'asdf';
 	const context = Context();
 		
-	const {person: { id }} = await insertPerson({person: {name: NAME}}, context, `
-		person {
-			id
+	const { edge } = await insertPerson({person: {name: NAME}}, context, `
+		edge {
+			node {
+				id
+			}
 		}
 	`);
+
+	const id = edge.node.id;
 	expect(id).toBeTruthy();
 
 	const { edges } = await getPersonAll(context, `
@@ -232,17 +246,21 @@ it('familyAll works', async () => {
 		adults: [],
 		children: [],
 	};
-	const { family: { id } } = await insertFamily({family}, context, `
-		family {
-			id
-			adults {
-				name
-			}
-			children {
-				name
+	const { edge } = await insertFamily({family}, context, `
+		edge {
+			node {
+				id
+				adults {
+					name
+				}
+				children {
+					name
+				}
 			}
 		}
 	`);
+
+	const id = edge.node.id;
 	expect(id).toBeTruthy();
 
 	const { edges } = await getFamilyAll(context, `
@@ -285,8 +303,10 @@ it('Bad person ID is rejected before it is persisted', async () => {
 
 	try {
 		await insertFamily({family}, context, `
-			family {
-				id
+			edge {
+				node {
+					id
+				}
 			}
 		`);
 	} catch (errors) {

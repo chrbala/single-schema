@@ -16,6 +16,7 @@ type familyConnection {
 }
 
 type familyEdge {
+  cursor: String!
   node: family!
 }
 
@@ -31,7 +32,7 @@ input familyMutation {
 
 type familyPayload {
   clientMutationId: String!
-  family: family!
+  edge: familyEdge!
 }
 
 type mutation {
@@ -59,6 +60,7 @@ type personConnection {
 }
 
 type personEdge {
+  cursor: String!
   node: person!
 }
 
@@ -73,7 +75,7 @@ input personMutation {
 
 type personPayload {
   clientMutationId: String!
-  person: person!
+  edge: personEdge!
 }
 
 input pointer {
@@ -86,8 +88,8 @@ type query {
 }
 
 type viewer {
-  personAll(first: Int, last: Int, before: String, after: String): personConnection!
-  familyAll(first: Int, last: Int, before: String, after: String): familyConnection!
+  personAll(first: Int, last: Int, before: String, after: String, filter: String): personConnection!
+  familyAll(first: Int, last: Int, before: String, after: String, filter: String): familyConnection!
 }
 "
 `;
