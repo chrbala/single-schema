@@ -13,7 +13,7 @@ import {
 } from '../shared/schema';
 
 const insertPersonQuery = Relay.QL`
-	mutation($input:personMutation!) {
+	mutation($input:insertPersonMutation!) {
 		insertPerson(input:$input) {
 			clientMutationId
 			edge {

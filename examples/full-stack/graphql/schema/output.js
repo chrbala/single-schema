@@ -79,16 +79,30 @@ const familyConnection = combine({
 
 combine({
 	clientMutationId: string,
+	node: family,
+}).graphql('output', {
+	name: 'updateFamilyPayload',
+});
+
+combine({
+	clientMutationId: string,
+	node: person,
+}).graphql('output', {
+	name: 'updatePersonPayload',
+});
+
+combine({
+	clientMutationId: string,
 	edge: familyEdge,
 }).graphql('output', {
-	name: 'familyPayload',
+	name: 'insertFamilyPayload',
 });
 
 combine({
 	clientMutationId: string,
 	edge: personEdge,
 }).graphql('output', {
-	name: 'personPayload',
+	name: 'insertPersonPayload',
 });
 
 type PaginationArgType = {
