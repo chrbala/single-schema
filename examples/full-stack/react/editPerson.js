@@ -7,7 +7,8 @@ import {
 	person as personSchema,
 } from 'examples/full-stack/react/shared/schema';
 
-const Edit = ({state, update, onSave, onCancel, mutateText}) => 
+const { validate, coerce } = personSchema;
+const Edit = ({state, update, onSave, onCancel, mutateText}) =>
 	<div>
 		<label>name</label>
 		<input 
@@ -15,7 +16,9 @@ const Edit = ({state, update, onSave, onCancel, mutateText}) =>
 			onChange={e => update('name').set(e.target.value)} 
 		/>
 		<button onClick={onCancel}>cancel</button>
-		<button onClick={() => onSave(state)}>{mutateText}</button>
+		<button onClick={() => onSave(state)} disabled={validate(coerce(state))}>
+			{mutateText}
+		</button>
 		<br />
 	</div>
 ;
