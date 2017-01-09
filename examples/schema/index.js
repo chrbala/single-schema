@@ -22,11 +22,16 @@ export const string = {
 };
 
 export const name = Object.assign(
-	and(string, longerThan(0), shorterThan(15)
-), common);
+	and(string, longerThan(0), shorterThan(15)), 
+	common,
+);
 
+const id = Object.assign(
+	and(string, longerThan(0)),
+	common,
+);
 export const pointer = combine({
-	id: string,
+	id,
 });
 export const node = pointer;
 

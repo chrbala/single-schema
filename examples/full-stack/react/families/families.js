@@ -10,6 +10,7 @@ import { boolean } from 'examples/schema';
 import EditFamily from 'examples/full-stack/react/editFamily';
 import { 
 	family as familySchema,
+	familyInput as familyInputSchema,
 } from '../shared/schema';
 
 const insertFamilyQuery = Relay.QL`
@@ -33,11 +34,11 @@ const insertFamilyQuery = Relay.QL`
 	}
 `;
 
-const insertPersonConfigs = parentID => [{
+const insertFamilyConfigs = parentID => [{
 	type: 'RANGE_ADD',
 	parentName: 'viewer',
 	parentID,
-	connectionName: 'personAll',
+	connectionName: 'familyAll',
 	edgeName: 'edge',
 	rangeBehaviors: {
 		'': 'append',
@@ -54,20 +55,25 @@ const insertFamily = (input, configs) =>
 const Families = ({viewer, state, update}) => 
 	<div>
 		{viewer.familyAll.edges.map(({node}) => 
-			<Family 
-				key={node.id} 
-				family={node} 
-				viewer={viewer}
-			/>
+			<div key={node.id}>
+				<Family 
+					family={node} 
+					viewer={viewer}
+				/>
+				<br />
+			</div>
 		)}
 
 		{state.insertMode 
 			? <EditFamily
 					viewer={viewer}
 					onCancel={() => update('insertMode').set(false)}
-					onSave={person => {
+					onSave={family => {
 						update('insertMode').set(false);
-						insertFamily({person}, insertPersonConfigs(viewer.__dataID__));
+						insertFamily(
+							{family: familyInputSchema.coerce(family)}, 
+							insertFamilyConfigs(viewer.__dataID__)
+						);
 					}}
 					family={familySchema.shape()}
 					mutateText='save'

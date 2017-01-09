@@ -5,40 +5,45 @@ import React from 'react';
 import State from 'examples/full-stack/react/shared/state';
 import { 
 	family as familySchema,
+	familyInput as familyInputSchema,
 } from 'examples/full-stack/react/shared/schema';
 import SelectPerson from 'examples/full-stack/react/selectPerson';
-
-const EditPerson = ({state, viewer, update}) => 
-	<div>
-		<SelectPerson viewer={viewer} state={state} update={update} />
-	</div>
-;
 
 const EditPeople = ({type, viewer, state, update}) =>
 	<div>
 		<b>{type}: </b>
 		{state.map((person, i) => 
-			<EditPerson key={i} viewer={viewer} state={state[i]} update={update(i)} />
+			<SelectPerson 
+				key={i} 
+				viewer={viewer} 
+				state={state[i]} 
+				update={update(i)} 
+			/>
 		)}
+		<button onClick={() => update.push()}>Add {type}</button>
 	</div>
 ;
+
+const { coerce, validate } = familyInputSchema;
 
 const Edit = ({viewer, state, update, onSave, onCancel, mutateText}) => 
 	<div>
 		<EditPeople 
-			type='Adults' 
+			type='adults' 
 			viewer={viewer}
 			state={state.adults} 
 			update={update('adults')} 
 		/>
 		<EditPeople 
-			type='Children'
+			type='children'
 			viewer={viewer} 
 			state={state.children} 
 			update={update('children')} 
 		/>
 		<button onClick={onCancel}>cancel</button>
-		<button onClick={() => onSave(state)}>{mutateText}</button>
+		<button onClick={() => onSave(state)} disabled={!!validate(coerce(state))}>
+			{mutateText}
+		</button>
 		<br />
 	</div>
 ;

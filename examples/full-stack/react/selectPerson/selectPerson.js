@@ -20,7 +20,7 @@ type PropsType = {
 export default ({state: {id}, viewer, update}: PropsType) =>
 	<div>
 		<select value={id} onChange={({target}) => update('id').set(target.value)} >
-			<option value='' disabled />
+			<option value='' />
 			{viewer.personAll.edges.map(({node}) => node).map(person =>
 				<option key={person.id} value={person.id}>{person.name}</option>
 			)}

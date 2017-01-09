@@ -10,8 +10,8 @@ import { boolean } from 'examples/schema';
 import Edit from 'examples/full-stack/react/editFamily';
 import { 
 	family as familySchema,
+	familyInput as familyInputSchema,
 } from 'examples/full-stack/react/shared/schema';
-import { familyInput as familyInputSchema } from './inputSchema';
 
 const updateFamilyConfigs = node => [{
 	type: 'FIELDS_CHANGE',
@@ -54,8 +54,8 @@ const PeopleView = ({people, type}) =>
 
 const View = ({family, onEdit}) => 
 	<div>
-		<PeopleView people={family.adults} type='Adults' />
-		<PeopleView people={family.children} type='Children' />
+		<PeopleView people={family.adults} type='adults' />
+		<PeopleView people={family.children} type='children' />
 		<button onClick={onEdit}>edit</button>
 	</div>
 ;
@@ -77,7 +77,7 @@ type PropsType = {
 	update: () => mixed & *,
 	relay: {},
 };
-const Integration = ({viewer, family, state, update}: PropsType) => 
+const Integration = ({viewer, family, state, update}: PropsType) =>
 	state.editMode
 		? <Edit 
 				viewer={viewer}
