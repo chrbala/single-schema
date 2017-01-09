@@ -19,9 +19,8 @@ It should be apparent from this file that this is a work in progress. Don't expe
   * key1 AND key2 must exist
   * key1 XOR key2 must exist
 * Figure out if there is a good way to share input/output graphql schemas
+* Add another function in reducers to allow state that exists before children are registered
+* Async support
 
 # Candidates for cross-flattener use
 * use validate to determine which reducer to pick with an OR operator
-
-# Possible features
-* Async support

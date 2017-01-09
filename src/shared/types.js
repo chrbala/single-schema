@@ -17,7 +17,7 @@ export type AllReducerType = {
 };
 
 export type FlattenerType<T> = {
-	reduce?: ReducerType<T>,
+	reduce: ReducerType<T>,
 	[key: string]: (...reducers: Array<?AnyFnType>) => 
 		(...context: Array<AllReducerType>) => *,
 };
