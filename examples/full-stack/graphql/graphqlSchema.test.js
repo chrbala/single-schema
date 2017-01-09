@@ -31,16 +31,32 @@ const insert = (name, query) => (input, context, fragment) =>
 	;
 
 const insertPerson = insert('insertPerson', fragment => `
-	mutation($input:personMutation!) {
+	mutation($input:insertPersonMutation!) {
 	  insertPerson(input:$input) {
 	  	${fragment}
   	}
 	}
 `);
 
+const updatePerson = insert('updatePerson', fragment => `
+	mutation($input:updatePersonMutation!) {
+	  updatePerson(input:$input) {
+	  	${fragment}
+  	}
+	}
+`);
+
 const insertFamily = insert('insertFamily', fragment => `
-	mutation($input:familyMutation!) {
+	mutation($input:insertFamilyMutation!) {
 	  insertFamily(input:$input) {
+	  	${fragment}
+  	}
+	}
+`);
+
+const updateFamily = insert('updateFamily', fragment => `
+	mutation($input:updateFamilyMutation!) {
+	  updateFamily(input:$input) {
 	  	${fragment}
   	}
 	}
@@ -138,6 +154,72 @@ it('Person insertion and retrieval', async () => {
 	expect(actual).toEqual(expected);
 });
 
+it('Person mutation', async () => {
+	const NAME_1 = 'NAME';
+	const NAME_2 = 'NAME_2';
+	const MUTATION_ID = 'MUTATION_ID';
+	const context = Context();
+
+	const {
+		edge: {
+			node: {
+				id,
+			},
+		},
+	} = await insertPerson(
+		{person: {name: NAME_1}, clientMutationId: MUTATION_ID}, 
+		context, `
+			edge {
+				node {
+					id
+					name
+				}
+			}
+		`
+	);
+
+	const updated = {
+		id,
+		name: NAME_2,
+	};
+
+	const {
+		clientMutationId,
+		node: {
+			id: updatedId,
+			name: updatedName,
+		},
+	} = await updatePerson(
+		{person: updated, clientMutationId: MUTATION_ID}, 
+		context, `
+			clientMutationId
+			node {
+				id
+				name
+			}
+		`
+	);
+
+	expect(clientMutationId).toBe(MUTATION_ID);
+	expect(updatedName).toBe(NAME_2);
+	expect(updatedId).toBe(id);
+
+	const personNode = await getNode(id, context, `
+		... on person {
+			id
+			name
+		}
+	`);
+	
+	const actual = personNode;
+	const expected = {
+		id,
+		name: NAME_2,
+	};
+
+	expect(actual).toEqual(expected);
+});
+
 it('Family insertion and retrieval', async () => {
 	const NAMES = ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE'];
 	const MUTATION_ID = 'MUTATION_ID';
@@ -207,6 +289,72 @@ it('Family insertion and retrieval', async () => {
 	}`);
 	expect(id).toBe(fetchedId);
 	expect(familyFetchResult).toEqual(expected);
+});
+
+it('Family mutation', async () => {
+	const MUTATION_ID = 'MUTATION_ID';
+	const context = Context();
+
+	const familyInsertInput = {
+		family: {
+			adults: [],
+			children: [],
+		},
+	};
+
+	const id = (await insertFamily(familyInsertInput, context, `
+		edge {
+			node {
+				id
+			}
+		}
+	`)).edge.node.id;
+	
+	const personId = (await insertPerson({person: {name: 'asdf'}}, context, `
+		edge {
+			node {
+				id
+			}
+		}
+	`)).edge.node.id;
+
+	const familyUpdateInput = {
+		clientMutationId: MUTATION_ID,
+		family: {
+			id,
+			adults: [{id: personId}],
+			children: [],
+		},
+	};
+
+	const updateResult = await updateFamily(familyUpdateInput, context, `
+		clientMutationId
+		node {
+			id
+			adults {
+				id
+			}
+			children {
+				id
+			}
+		}
+	`);
+
+	expect(updateResult).toEqual({
+		clientMutationId: familyUpdateInput.clientMutationId,
+		node: familyUpdateInput.family,
+	});
+
+	const persistedResult = await getNode(id, context, `...on family {
+		id
+		adults {
+			id
+		}
+		children {
+			id
+		}
+	}`);
+	expect(persistedResult).toEqual(familyUpdateInput.family);
 });
 
 it('personAll works', async () => {

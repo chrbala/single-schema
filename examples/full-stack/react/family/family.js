@@ -1,69 +1,116 @@
 // @flow
 
-import React, { Component } from 'react';
+import React from 'react';
+import Relay, { GraphQLMutation } from 'react-relay';
+
+import State from 'examples/full-stack/react/shared/state';
+import { combine } from 'examples/setup';
+import { boolean } from 'examples/schema';
+
+import Edit from 'examples/full-stack/react/editFamily';
 import { 
-	family, 
-	people, 
-	person,
+	family as familySchema,
 } from 'examples/full-stack/react/shared/schema';
+import { familyInput as familyInputSchema } from './inputSchema';
 
-const Person = ({value, update}) =>
-	<div>
-		<label>name</label>
-		<input 
-			value={value.name} 
-			onChange={e => update('name').set(e.target.value)} 
-		/>
-		<br />
-	</div>
-;
+const updateFamilyConfigs = node => [{
+	type: 'FIELDS_CHANGE',
+	fieldIDs: {
+		node,
+	},
+}];
 
-Person.propTypes = {
-	value: person.proptype(),
-};
-
-const People = ({kind, value, update}) =>
-	<div>
-		{value.map((_, i) => 
-			<Person key={i} value={value[i]} update={update(i)} />
-		)}
-		<button onClick={() => update.push()}>Add {kind}</button>
-	</div>
-;
-
-People.propTypes = {
-	value: people.proptype(),
-};
-
-export default class Family extends Component {
-	state = {
-		familyState: family.shape(),
-	};
-
-	update = family.createUpdate({
-		getState: () => this.state.familyState,
-		subscribe: familyState => this.setState(
-			{familyState}, 
-			() => this.props.onChange(familyState)
-		),
-	});
-
-	render() {
-		const { familyState } = this.state;
-		const { update } = this;
-
-		return <div>
-			<People 
-				kind="adults" 
-				value={familyState.adults} 
-				update={update('adults')} 
-			/>
-			<br />
-			<People 
-				kind="children" 
-				value={familyState.children} 
-				update={update('children')} 
-			/>
-		</div>;
+const updateFamilyQuery = Relay.QL`
+	mutation($input:updateFamilyMutation!) {
+		updateFamily(input:$input) {
+			clientMutationId
+			node {
+				id
+				adults {
+					id
+					name
+				}
+				children {
+					id
+					name
+				}
+			}
+		}
 	}
-}
+`;
+
+const insertFamily = (input, configs) =>  
+	GraphQLMutation.create(
+		updateFamilyQuery, 
+		{input}, 
+		Relay.Store
+	).commit(configs);
+
+const PeopleView = ({people, type}) => 
+	<div>
+		<b>{type}</b>: {people.map(({name}) => name).join(', ')}
+	</div>
+;
+
+const View = ({family, onEdit}) => 
+	<div>
+		<PeopleView people={family.adults} type='Adults' />
+		<PeopleView people={family.children} type='Children' />
+		<button onClick={onEdit}>edit</button>
+	</div>
+;
+
+type PersonType = {
+	id: string,
+	name: string,
+};
+type PropsType = {
+	viewer: {},
+	family: {
+		id: string,
+		adults: Array<PersonType>,
+		children: Array<PersonType>,
+	},
+	state: {
+		editMode: boolean,
+	},
+	update: () => mixed & *,
+	relay: {},
+};
+const Integration = ({viewer, family, state, update}: PropsType) => 
+	state.editMode
+		? <Edit 
+				viewer={viewer}
+				family={family} 
+				onSave={_family => {
+					update('editMode').set(false);
+					const { coerce } = familyInputSchema;
+					insertFamily(
+						{family: coerce(_family)}, 
+						updateFamilyConfigs(family.id)
+					);
+				}}
+				onCancel={() => update('editMode').set(false)}
+				mutateText='update'
+			/>
+		: <View 
+				family={family} 
+				onEdit={() => update('editMode').set(true)}
+			/>
+	;
+
+Integration.propTypes = {
+	family: familySchema.proptype({ignore: ['__dataID__']}),
+};
+
+const integrationSchema = combine({
+	editMode: boolean,
+});
+
+const StatefulIntegration = (props: *) => <State
+	children={Integration}
+	schema={integrationSchema}
+	{...props}
+/>;
+
+export default StatefulIntegration;

@@ -17,7 +17,7 @@ import type {
 } from 'examples/full-stack/shared/types';
 
 type MutationType = 'update' | 'insert';
-const tableInsert = (
+const tableMutation = (
 	table: TableNameType, 
 	type: MutationType,
 	validatePointers: (value: *, context: ContextType) => mixed = () => null,
@@ -73,23 +73,38 @@ const mutation = new GraphQLObjectType({
 			args: {
 				input: { type: new GraphQLNonNull(store.get('insertPersonMutation')) },
 			},
-			resolve: tableInsert('person', 'insert'),
+			resolve: tableMutation('person', 'insert'),
 		},
 		updatePerson: {
 			type: new GraphQLNonNull(store.get('updatePersonPayload')),
 			args: {
 				input: { type: new GraphQLNonNull(store.get('updatePersonMutation')) },
 			},
-			resolve: tableInsert('person', 'update'),
+			resolve: tableMutation('person', 'update'),
 		},
 		insertFamily: {
 			type: new GraphQLNonNull(store.get('insertFamilyPayload')),
 			args: {
-				input: { type: new GraphQLNonNull(store.get('familyMutation')) },
+				input: { type: new GraphQLNonNull(store.get('insertFamilyMutation')) },
 			},
-			resolve: tableInsert(
+			resolve: tableMutation(
 				'family', 
 				'insert', 
+				({adults, children}, {loaders}) => 
+					loaders.node.loadMany(adults.concat(children).map(({id}) => id))
+						.catch(e =>
+							Promise.reject(`Error saving family: ${e.message}`)
+						)
+			),
+		},
+		updateFamily: {
+			type: new GraphQLNonNull(store.get('updateFamilyPayload')),
+			args: {
+				input: { type: new GraphQLNonNull(store.get('updateFamilyMutation')) },
+			},
+			resolve: tableMutation(
+				'family', 
+				'update', 
 				({adults, children}, {loaders}) => 
 					loaders.node.loadMany(adults.concat(children).map(({id}) => id))
 						.catch(e =>

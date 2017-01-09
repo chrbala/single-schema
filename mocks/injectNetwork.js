@@ -18,6 +18,11 @@ export default
 				new RelayLocalSchema.NetworkLayer({
 					schema,
 					onError,
+
+					// note that using a context singleton here WILL create issues
+					// with DataLoader caching permanently, so a PR to 
+					// relay-local-schema requesting a context getter function
+					// is in order
 					contextValue: localContext(),
 				})
 			)

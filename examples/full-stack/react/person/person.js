@@ -61,7 +61,8 @@ const Integration = ({person, state, update}: PropsType) => state.editMode
 			person={person} 
 			onSave={_person => {
 				update('editMode').set(false);
-				insertPerson({person: _person}, updatePersonConfigs(person.id));
+				const { coerce } = personSchema;
+				insertPerson({person: coerce(_person)}, updatePersonConfigs(person.id));
 			}}
 			onCancel={() => update('editMode').set(false)}
 			mutateText='update'

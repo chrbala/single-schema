@@ -20,24 +20,40 @@ type familyEdge {
   node: family!
 }
 
-input familyInput {
+input insertFamilyInput {
   adults: [pointer!]!
   children: [pointer!]!
 }
 
-input familyMutation {
+input insertFamilyMutation {
   clientMutationId: String
-  family: familyInput!
+  family: insertFamilyInput!
 }
 
-type familyPayload {
+type insertFamilyPayload {
   clientMutationId: String!
   edge: familyEdge!
 }
 
+input insertPersonInput {
+  name: String!
+}
+
+input insertPersonMutation {
+  clientMutationId: String
+  person: insertPersonInput!
+}
+
+type insertPersonPayload {
+  clientMutationId: String!
+  edge: personEdge!
+}
+
 type mutation {
-  insertPerson(input: personMutation!): personPayload!
-  insertFamily(input: familyMutation!): familyPayload!
+  insertPerson(input: insertPersonMutation!): insertPersonPayload!
+  updatePerson(input: updatePersonMutation!): updatePersonPayload!
+  insertFamily(input: insertFamilyMutation!): insertFamilyPayload!
+  updateFamily(input: updateFamilyMutation!): updateFamilyPayload!
 }
 
 interface node {
@@ -64,20 +80,6 @@ type personEdge {
   node: person!
 }
 
-input personInput {
-  name: String!
-}
-
-input personMutation {
-  clientMutationId: String
-  person: personInput!
-}
-
-type personPayload {
-  clientMutationId: String!
-  edge: personEdge!
-}
-
 input pointer {
   id: String!
 }
@@ -85,6 +87,37 @@ input pointer {
 type query {
   node(id: String!): node!
   viewer: viewer!
+}
+
+input updateFamilyInput {
+  id: String!
+  adults: [pointer!]!
+  children: [pointer!]!
+}
+
+input updateFamilyMutation {
+  clientMutationId: String
+  family: updateFamilyInput!
+}
+
+type updateFamilyPayload {
+  clientMutationId: String!
+  node: family!
+}
+
+input updatePersonInput {
+  id: String!
+  name: String!
+}
+
+input updatePersonMutation {
+  clientMutationId: String
+  person: updatePersonInput!
+}
+
+type updatePersonPayload {
+  clientMutationId: String!
+  node: person!
 }
 
 type viewer {

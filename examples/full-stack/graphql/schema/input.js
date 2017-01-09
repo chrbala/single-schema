@@ -36,17 +36,31 @@ combine({
 
 const people = array(pointer);
 
-const family = combine({
-	id: maybe(string),
+const insertFamily = combine({
 	adults: people,
 	children: people,
 }).graphql('input', {
-	name: 'familyInput',
+	name: 'insertFamilyInput',
+});
+
+const updateFamily = combine({
+	id: string,
+	adults: people,
+	children: people,
+}).graphql('input', {
+	name: 'updateFamilyInput',
 });
 
 combine({
 	clientMutationId: maybe(string),
-	family,
+	family: insertFamily,
 }).graphql('input', {
-	name: 'familyMutation',
+	name: 'insertFamilyMutation',
+});
+
+combine({
+	clientMutationId: maybe(string),
+	family: updateFamily,
+}).graphql('input', {
+	name: 'updateFamilyMutation',
 });

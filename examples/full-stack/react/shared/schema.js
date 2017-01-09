@@ -11,6 +11,7 @@ export const person = combine({
 export const people = array(person);
 
 export const family = combine({
+	id: maybe(string),
 	adults: people,
 	children: people,
 });

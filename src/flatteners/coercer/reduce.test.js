@@ -25,3 +25,19 @@ it('Basic coercion', () => {
 
 	expect(actual).toEqual(expected);
 });
+
+it('Removes extra keys', () => {
+	const { coerce } = combineReducers({
+		key: coerceString,
+	});
+
+	const actual = coerce({
+		key: 123,
+		extraKey: 456,
+	});
+	const expected = {
+		key: '123',
+	};
+
+	expect(actual).toEqual(expected);
+});
