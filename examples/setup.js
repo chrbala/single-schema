@@ -11,11 +11,15 @@ import PropType from 'src/flatteners/proptype';
 import * as graphql from 'graphql';
 import GraphqlFlattener, { createStore } from 'src/flatteners/graphql';
 
+import Async from 'src/metaFlatteners/async';
+
 export const store = createStore();
 
 const flatteners = {
 	validate: Validator({cache: true}),
+	validateAsync: Async(Validator()),
 	coerce: Coercer({cache: true}),
+	coerceAsync: Async(Coercer()),
 	shape: Shaper(),
 	createUpdate: Updater(),
 	proptype: PropType(),

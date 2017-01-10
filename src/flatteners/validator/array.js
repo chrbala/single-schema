@@ -4,7 +4,7 @@ import { freeze } from '../../util/micro';
 import { EXPECTED_ARRAY } from './strings';
 
 export default (validate: ?(data: *) => mixed) => () => () => 
-	(data: *, options: *) => {
+	(data: *, options: *, context: *) => {
 		if (!validate)
 			return null;
 
@@ -13,7 +13,7 @@ export default (validate: ?(data: *) => mixed) => () => () =>
 
 		let hasErrors = false;
 		const errors = data.map(datum => {
-			const error = validate && validate(datum, options);
+			const error = validate && validate(datum, options, context);
 			if (error)
 				hasErrors = true;
 			return error;

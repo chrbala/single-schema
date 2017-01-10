@@ -28,8 +28,12 @@ const reduce: ReduceType = ({cache}) =>
 	(children: AllReducerType) => () => {
 		const iterate = Iterator({cache});
 
-		return (data: GenericObjectType, options: LocalOptionsType = {}) => {
-			let { ignore = {} } = options;
+		return (
+			data: GenericObjectType, 
+			options: LocalOptionsType = {}, 
+			context: *,
+		) => {
+			let ignore = options && options.ignore || {};
 			ignore = Array.isArray(ignore)
 				? ignore.reduce(
 						(acc, prop) => (acc[prop] = true, acc)
@@ -40,11 +44,11 @@ const reduce: ReduceType = ({cache}) =>
 				return EXPECTED_OBJECT;
 
 			const out = clean(iterate(children, data, 
-				(child, datum) => child(datum, {ignore})
+				(child, datum) => child ? child(datum, {ignore}, context) : null
 			));
 
 			for (const key in data)
-				if (!children[key] && !ignore[key])
+				if (!(key in children) && !ignore[key])
 					out[key] = EXTRA_KEY_TEXT;
 
 			return Object.keys(out).length ? freeze(out) : null;

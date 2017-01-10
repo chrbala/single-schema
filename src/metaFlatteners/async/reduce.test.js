@@ -19,39 +19,73 @@ const isStringAsync = {
 	),
 };
 
-const { validate } = combineReducers({
-	key1: isStringAsync,
-	key2: isStringAsync,
-});
-
-it('async positive test', async () => {
-	const actual = await validate({
-		key1: 'hello',
-		key2: 'hi',
+describe('Single level of depth', () => {
+	const { validate } = combineReducers({
+		key1: isStringAsync,
+		key2: isStringAsync,
 	});
-	const expected = null;
-	expect(actual).toBe(expected);
+
+	it('async positive test', async () => {
+		const actual = await validate({
+			key1: 'hello',
+			key2: 'hi',
+		});
+		const expected = null;
+		expect(actual).toBe(expected);
+	});
+
+	it('async positive test', async () => {
+		const actual = await validate({
+			key1: 'hello',
+			key2: 123,
+		});
+		const expected = {
+			key2: IS_STRING_ERROR,
+		};
+		expect(actual).toEqual(expected);
+	});
+
+	it('async unexpected key', async () => {
+		const actual = await validate({
+			key1: 'hello',
+			key2: 'hi',
+			extra: 'something',
+		});
+		const expected = {
+			extra: EXTRA_KEY_TEXT,
+		};
+		expect(actual).toEqual(expected);
+	});
 });
 
-it('async positive test', async () => {
+it('async deep keys', async () => {
+	const { validate } = combineReducers({
+		key: combineReducers({
+			deep: isStringAsync,
+		}),
+	});
+
 	const actual = await validate({
-		key1: 'hello',
-		key2: 123,
+		key: {
+			deep: 123,
+		},
 	});
 	const expected = {
-		key2: IS_STRING_ERROR,
+		key: {
+			deep: IS_STRING_ERROR,
+		},
 	};
 	expect(actual).toEqual(expected);
 });
 
-it('async unexpected key', async () => {
-	const actual = await validate({
-		key1: 'hello',
-		key2: 'hi',
-		extra: 'something',
+it('async no validator', async () => {
+	const { validate } = combineReducers({
+		key: {},
 	});
-	const expected = {
-		extra: EXTRA_KEY_TEXT,
-	};
+
+	const actual = await validate({
+		key: 'hello',
+	});
+	const expected = null;
 	expect(actual).toEqual(expected);
 });

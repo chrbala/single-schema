@@ -1,7 +1,14 @@
 // @flow
 
 import { combine, array } from 'examples/setup';
-import { pointer, name } from 'examples/schema';
+import { name, pointer as genericPointer } from 'examples/schema';
+
+export const pointer = {
+	...genericPointer,
+	validateAsync: ({id}, _, {loaders}) => loaders.node.load(id)
+		.then(() => null)
+		.catch(e => e.message),
+};
 
 export const person = combine({
 	name,

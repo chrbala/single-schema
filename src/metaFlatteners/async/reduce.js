@@ -17,8 +17,9 @@ export default ({reduce}: FlattenerType<*>) =>
 							.then(result => syncChildren[childName] = () => result)
 					);
 				} else
-					syncChildren[childName] = children[childName];
+					syncChildren[childName] = undefined;
 			}
+
 			const done = () => resolve(
 				reduce(syncChildren)(context)(objInput, ...rest)
 			);

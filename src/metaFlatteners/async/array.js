@@ -8,5 +8,5 @@ export default ({array}: FlattenerType<*>) =>
 			child
 				? Promise.all(data.map(datum => child(datum, ...rest)))
 					.then(_data => array(f => f)(context)(flatteners)(_data, ...rest))
-				: array(child)(context)(flatteners)(data, ...rest)
+				: Promise.resolve(array(child)(context)(flatteners)(data, ...rest))
 		;
