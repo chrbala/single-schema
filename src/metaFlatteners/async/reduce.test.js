@@ -3,6 +3,7 @@
 import createCombineReducers from '../../createCombineReducers';
 import Async from './';
 import Validator from '../../flatteners/validator';
+import { EXTRA_KEY_TEXT } from '../../flatteners/validator/strings';
 
 const combineReducers = createCombineReducers({
 	validate: Async(Validator()),
@@ -39,6 +40,18 @@ it('async positive test', async () => {
 	});
 	const expected = {
 		key2: IS_STRING_ERROR,
+	};
+	expect(actual).toEqual(expected);
+});
+
+it('async unexpected key', async () => {
+	const actual = await validate({
+		key1: 'hello',
+		key2: 'hi',
+		extra: 'something',
+	});
+	const expected = {
+		extra: EXTRA_KEY_TEXT,
 	};
 	expect(actual).toEqual(expected);
 });

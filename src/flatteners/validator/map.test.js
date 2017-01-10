@@ -4,7 +4,7 @@ import { createMap } from '../../operators';
 import { EXPECTED_OBJECT } from './strings';
 import Validator from './';
 
-const array = createMap({
+const map = createMap({
 	validate: Validator(),
 });
 
@@ -15,7 +15,7 @@ const isString = {
 		: IS_STRING_ERROR,
 };
 
-const { validate } = array(isString);
+const { validate } = map(isString);
 
 it('Object pass', () => {
 	const actual = validate({key: '123'});
@@ -33,6 +33,17 @@ it('Object datum fail', () => {
 	const actual = validate({key: 123});
 	const expected = {
 		key: IS_STRING_ERROR,
+	};
+	expect(actual).toEqual(expected);
+});
+
+it('Object mixed pass/fail', () => {
+	const actual = validate({
+		key1: '123',
+		key2: 123,
+	});
+	const expected = {
+		key2: IS_STRING_ERROR,
 	};
 	expect(actual).toEqual(expected);
 });

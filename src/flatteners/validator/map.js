@@ -2,6 +2,7 @@
 
 import { freeze, mapObj } from '../../util/micro';
 import { EXPECTED_OBJECT } from './strings';
+import { clean } from './shared';
 
 export default (validate: ?(data: *) => mixed) => () => () => (data: *) => {
 	if (!validate)
@@ -17,5 +18,5 @@ export default (validate: ?(data: *) => mixed) => () => () => (data: *) => {
 			hasErrors = true;
 		return error;
 	});
-	return hasErrors ? freeze(errors) : null;
+	return hasErrors ? freeze(clean(errors)) : null;
 };

@@ -1,10 +1,10 @@
 // @flow
 
-import { createArray } from '../../operators';
+import { createMaybe } from '../../operators';
 import Async from './';
 import Validator from '../../flatteners/validator';
 
-const array = createArray({
+const maybe = createMaybe({
 	validate: Async(Validator()),
 });
 
@@ -18,16 +18,22 @@ const isStringAsync = {
 	),
 };
 
-const { validate } = array(isStringAsync);
+const { validate } = maybe(isStringAsync);
 
-it('Array pass', async () => {
-	const actual = await validate(['hello', 'whatever']);
+it('Maybe pass', async () => {
+	const actual = await validate('hello');
 	const expected = null;
 	expect(actual).toEqual(expected);
 });
 
-it('Array fail', async () => {
-	const actual = await validate([123, 'hello']);
-	const expected = [IS_STRING_ERROR, null];
+it('Maybe fail', async () => {
+	const actual = await validate(123);
+	const expected = IS_STRING_ERROR;
+	expect(actual).toEqual(expected);
+});
+
+it('Maybe null param', async () => {
+	const actual = await validate(null);
+	const expected = null;
 	expect(actual).toEqual(expected);
 });

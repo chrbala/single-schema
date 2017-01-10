@@ -1,10 +1,10 @@
 // @flow
 
-import { createArray } from '../../operators';
+import { createMap } from '../../operators';
 import Async from './';
 import Validator from '../../flatteners/validator';
 
-const array = createArray({
+const map = createMap({
 	validate: Async(Validator()),
 });
 
@@ -18,16 +18,24 @@ const isStringAsync = {
 	),
 };
 
-const { validate } = array(isStringAsync);
+const { validate } = map(isStringAsync);
 
-it('Array pass', async () => {
-	const actual = await validate(['hello', 'whatever']);
+it('Map pass', async () => {
+	const actual = await validate({
+		key1: 'hello', 
+		key2: 'whatever',
+	});
 	const expected = null;
 	expect(actual).toEqual(expected);
 });
 
-it('Array fail', async () => {
-	const actual = await validate([123, 'hello']);
-	const expected = [IS_STRING_ERROR, null];
+it('Map fail', async () => {
+	const actual = await validate({
+		key1: 123, 
+		key2: 'hello',
+	});
+	const expected = {
+		key1: IS_STRING_ERROR,
+	};
 	expect(actual).toEqual(expected);
 });
