@@ -10,17 +10,14 @@ It should be apparent from this file that this is a work in progress. Don't expe
 * Flatteners govern how operators act on reducers
 
 # TODO
-* Write operators: or, exact/permissive
-* Better cross-flattener use (?)
 * Actual docs
-* Metadata annotations (name, description, etc)
+* Async state support
+  * Add another function in reducers to allow state that exists before children are registered
+
+# Possible features
+* Write operators: or, subset
 * Arbitrary data path comparisons for validation
   * key1 OR key2 must exist
   * key1 AND key2 must exist
   * key1 XOR key2 must exist
-* Figure out if there is a good way to share input/output graphql schemas
-* Add another function in reducers to allow state that exists before children are registered
-* Async support for state
-
-# Candidates for cross-flattener use
-* use validate to determine which reducer to pick with an OR operator
+* Better caching on validator/coercer
