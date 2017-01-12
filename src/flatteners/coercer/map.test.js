@@ -13,7 +13,7 @@ const string = {
 
 const { coerce } = map(string);
 
-it('Coerce existing array', () => {
+it('Coerce existing map', () => {
 	const actual = coerce({
 		key: 123,
 	});
@@ -23,7 +23,7 @@ it('Coerce existing array', () => {
 	expect(actual).toEqual(expected);
 });
 
-it('Coerce non-array', () => {
+it('Coerce non-map', () => {
 	const actual = coerce(undefined);
 	const expected = {};
 	expect(actual).toEqual(expected);

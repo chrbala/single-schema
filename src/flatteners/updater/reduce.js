@@ -26,7 +26,7 @@ const reduce: ReducerType<*> = (children: AllReducerType) => () =>
 
 			const childStore = children[key] 
 				? children[key]
-				: reduce({})({})
+				: reduce({})({reduce})
 			;
 
 			return childStore({
