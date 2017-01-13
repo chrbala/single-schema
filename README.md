@@ -4,17 +4,7 @@ single-schema is a library that allows you to describe the shape of your data, t
 
 
 ### Word of warning
-This library is a work in progress and the various portions have different levels of API stability. The way the schema is described will likely stay the same, but the rest of the API is subject to change.
-
-There is reasonbly good test coverage, but I imagine there are bugs that I haven't hit yet. In particular, there are likely parts that *work* but would be more useful with alternate logic.
-
-Because of the current unstability, minor releases in this package before it hits 1.0 will have breaking changes that will likely require changes to run without errors. Minor could be changes as significant as moving files or changing exports.
-
-Patch fixes should still run without changes, but may change the logic in such a way that it breaks your code anyway. An example of this would be changing the way a module handles the difference between ``{key: undefined}``, ``{key: null}``, and ``{}``.
-
-The upside of this situation is that I'm more likely to consider breaking changes if they make sense to merge in. In any case, I recommend that you use the exact version of this library in your package.json.
-
-*Also, it's fairly likely there are minor mistakes in the docs here at this point. File an issue if you find something that seems off!*
+This library is unstable. I highly recommend that you **use the exact version of this library** in your package.json. See the versioning and compatibility section below for details.
 
 ## When would I need to describe complex data shapes?
 * Creating browser inputs to send to your server
@@ -122,6 +112,12 @@ export {
 };
 ```
 
+## Complete use case examples
+There are some fairly complete use-case examples in the examples folder:
+
+* examples/react is a simple react example that uses Proptype and Updater
+* examples/full-stack is a thorough example that uses all of the modules. It includes relay and graphql, so you'd probably want to be familiar with those before reading through it.
+
 ## Taxonomy
 Reducers: dictate the structure of the schema - leaf nodes are reducers as well  
 Operators: act on 1 or more reducers, returning a single reducer  
@@ -152,11 +148,17 @@ Note that most of the examples for the modules are fairly flat, but the schemas 
 
 ## Meta-modules
 
-Right now there is only one meta-module: [Async](src/metaFlatteners/async/README.md)
+Right now there is only one meta-module: [Async](src/metaFlatteners/async/README.md), which adds asynchronous leaf resolution.
 
-## Complete use case examples
-There are some fairly complete use-case examples in the examples folder:
+## Versioning and compatibility
+This library is a work in progress and the various portions have different levels of API stability. The way the schema is described will likely stay the same, but the rest of the API is subject to change.
 
-* examples/react is a simple react example that uses Proptype and Updater
-* examples/full-stack is a thorough example that uses all of the modules. It includes relay and graphql, so you'd probably want to be familiar with those before reading through it.
+There is reasonbly good test coverage, but I imagine there are bugs that I haven't hit yet. In particular, there are likely parts that *work* but would be more useful with alternate logic.
 
+Because of the current unstability, minor releases in this package before it hits 1.0 will have breaking changes that will likely require changes to run without errors. Minor could be changes as significant as moving files or changing exports.
+
+Patch fixes should still run without changes, but may change the logic in such a way that it breaks your code anyway. An example of this would be changing the way a module handles the difference between ``{key: undefined}``, ``{key: null}``, and ``{}``.
+
+The upside of this situation is that I'm more likely to consider breaking changes if they make sense to merge in. In any case, I recommend that you use the exact version of this library in your package.json.
+
+*Also, it's fairly likely there are minor mistakes in the docs here at this point. File an issue if you find something that seems off!*
