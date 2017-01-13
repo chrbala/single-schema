@@ -6,11 +6,6 @@ single-schema is a library that allows you to describe the shape of your data, t
 ### Word of warning
 This library is unstable. I highly recommend that you **use the exact version of this library** in your package.json. See the versioning and compatibility section below for details.
 
-## When would I need to describe complex data shapes?
-* Creating browser inputs to send to your server
-* Validating leaf nodes (e.g. text inputs) in the browser
-* Validating endpoint inputs on the server
-
 ## What's it look like?
 
 ### Creating the schema
@@ -113,8 +108,13 @@ export {
 ```
 
 ## Complete use case examples
-There are some fairly complete use-case examples in the examples folder:
 
+##### You'd want to use this library...
+* when creating browser inputs to send to your server
+* when validating leaf nodes (e.g. text inputs) in the browser
+* when validating endpoint inputs on the server
+
+##### The examples folder shows this library in a more complete context
 * examples/react is a simple react example that uses Proptype and Updater
 * examples/full-stack is a thorough example that uses all of the modules. It includes relay and graphql, so you'd probably want to be familiar with those before reading through it.
 
