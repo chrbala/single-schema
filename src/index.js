@@ -5,7 +5,7 @@ import type {
 } from './shared/types';
 
 import createCombineReducers from './createCombineReducers';
-import { createArray, createAnd, createMaybe, createMap } from 'src/operators';
+import { createArray, createAnd, createMaybe, createMap } from './operators';
 
 export default (flatteners: AllFlattenerType<*>) => ({
 	combine: createCombineReducers(flatteners),
