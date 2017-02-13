@@ -3,13 +3,13 @@
 import { createMap } from '../../operators';
 import Shaper from './';
 
-const array = createMap({
+const map = createMap({
 	shape: Shaper(),
 });
 
-const { shape } = array({});
+const { shape } = map({});
 
-it('Coerce existing array', () => {
+it('Coerce existing map', () => {
 	const actual = shape();
 	const expected = {};
 	expect(actual).toEqual(expected);
