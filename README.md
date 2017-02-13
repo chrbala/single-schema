@@ -2,6 +2,16 @@
 
 single-schema is a library that allows you to describe the shape of your data, then use the data shape in various ways via plugins. It's designed primarily for complex data shapes with a deep hierarchy.
 
+## Why?
+
+This began as a validation library that optimized for a small, easy to remember API, customization of primitive type validation, and simplicity of schema composition. As this library progressed, I realized that my schema had to stay in sync in a number of other uses. My schema had to match the objects that held state in the browser. It also had to match the schema I used on the server. To help with synchronizing the schema across various use cases, I developed a modular system that would allow the schema to be used for more than just validation.
+
+So today, the main goals of this library are:  
+
+* Small, easy to remember API
+* Customization of primitive types
+* Simplicity of schema composition
+* Modularity
 
 ### Word of warning
 This library is unstable. I highly recommend that you **use the exact version of this library** in your package.json. See the versioning and compatibility section below for details.
@@ -117,6 +127,9 @@ export {
 ##### The examples folder shows this library in a more complete context
 * examples/react is a simple react example that uses Proptype and Updater
 * examples/full-stack is a thorough example that uses all of the modules. It includes relay and graphql, so you'd probably want to be familiar with those before reading through it.
+
+##### Running the examples
+You can run the examples with ``npm install``, then ``npm run storybook``
 
 ## Taxonomy
 Reducers: dictate the structure of the schema - leaf nodes are reducers as well  
