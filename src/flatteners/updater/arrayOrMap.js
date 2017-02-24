@@ -2,6 +2,7 @@
 
 import { freeze, isFrozen } from '../../util/micro';
 import reduce from './reduce';
+import Flattener from './';
 
 export const normalizeArray = (value: *, mutates: boolean) =>
 	Array.isArray(value) 
@@ -49,7 +50,7 @@ export default (kind: AllowedType) => (scope: *) =>
 		const childScope = {getState, subscribe};
 		return child
 			? child(childScope)
-			: reduce({})({})(childScope)
+			: reduce({})(Flattener())(childScope)
 		;
 	}
 ;

@@ -7,7 +7,7 @@ type OptionsType = {
 };
 export default ({cache: doesCache}: OptionsType) => {
 	let lastInput = {};
-	let lastOutput = null;
+	let lastOutput = {};
 	const cache = {};
 	let initial = true;
 

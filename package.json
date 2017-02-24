@@ -8,8 +8,8 @@
     "flow": "flow",
     "test": "NODE_PATH=./ GRAPHQL_PATH=./examples/full-stack/graphql/graphqlSchema.entry GRAPHQL_SCHEMA_CACHE_TTL=1000 jest",
     "validate": "npm run lint && npm run flow && npm run test",
+    "build": "GRAPHQL_PATH=./examples/full-stack/graphql/graphqlSchema.entry babel src --ignore test.js --out-dir lib",
     "build-flow": "cp -r src lib && renamer --regex --find '.js$' --replace '.js.flow' 'lib/**/*'",
-    "build": "GRAPHQL_PATH=./examples/full-stack/graphql/graphqlSchema.entry babel src --out-dir lib",
     "prepublish": "rm -rf lib && npm run build-flow && npm run build",
     "storybook": "NODE_PATH=./ GRAPHQL_PATH=./examples/full-stack/graphql/graphqlSchema.entry GRAPHQL_SCHEMA_CACHE_TTL=1000 start-storybook -p 9010",
     "storybook-integ": "NODE_PATH=./ STORYBOOK_INTEGRATION=true GRAPHQL_URL=http://localhost:4000/graphql GRAPHQL_SCHEMA_CACHE_TTL=1000 start-storybook -p 9011",
@@ -22,6 +22,7 @@
     "app-module-path": "^2.1.0",
     "babel-cli": "^6.18.0",
     "babel-core": "^6.18.2",
+    "babel-plugin-fetch-relay-schema": "0.1.2",
     "babel-plugin-syntax-flow": "^6.18.0",
     "babel-plugin-transform-flow-strip-types": "^6.18.0",
     "babel-polyfill": "^6.16.0",
@@ -40,15 +41,17 @@
     "jest": "^18.1.0",
     "nodemon": "^1.11.0",
     "react": "^15.4.0",
+    "react-addons-test-utils": "^15.4.1",
     "react-dom": "^15.4.0",
     "react-relay": "^0.10.0",
     "react-scripts": "^0.7.0",
     "relay-local-schema": "^0.5.5",
-    "renamer": "^0.6.1",
-    "babel-plugin-fetch-relay-schema": "0.1.2",
-    "react-addons-test-utils": "^15.4.1"
+    "renamer": "^0.6.1"
   },
   "optionalDependencies": {
     "graphql": "<1.0.0"
+  },
+  "dependencies": {
+    "babel-jest": "^19.0.0"
   }
 }

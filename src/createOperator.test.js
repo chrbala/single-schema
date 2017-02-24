@@ -2,17 +2,12 @@
 
 import createOperator from './createOperator';
 
-(() => {
-	const warn = console.warn;
-	// $FlowFixMe
-	afterEach(() => console.warn = warn);
-})();
-
 it('Can create an operator', () => {
 	const VALUE = 'VALUE';
 	const operator = createOperator('operator')({
 		flattener: {
 			operator: () => () => () => () => VALUE,
+			reduce: () => () => () => () => null,
 		},
 	});
 	const { flattener } = operator();
@@ -29,8 +24,8 @@ it('Can create an operator with multiple reducers', () => {
 	const operator = createOperator('operator')({
 		flattener: {
 			operator: (...reducers) => () => () => () =>
-				expect(reducers).toEqual([reduce, reduce, reduce])
-			,
+				expect(reducers).toEqual([reduce, reduce, reduce]),
+			reduce: () => () => () => () => null,
 		},
 	});
 	const { flattener } = operator(reducer, reducer, reducer);
@@ -46,8 +41,8 @@ it('Operators are provided reducer context', () => {
 	const operator = createOperator('operator')({
 		flattener: {
 			operator: () => (...context) => () => () =>
-				expect(context).toEqual([reducer, reducer])
-			,
+				expect(context).toEqual([reducer, reducer]),
+			reduce: () => () => () => () => null,
 		},
 	});
 	const { flattener } = operator(reducer, reducer);
