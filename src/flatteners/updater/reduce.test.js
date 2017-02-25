@@ -107,6 +107,42 @@ it('Can set deep keys', () => {
 	update('key')('deep').set('hello');
 });
 
+it('Subscribe includes path and value', () => {
+	expect.assertions(2);
+
+	const { createUpdate } = combineReducers({
+		key: combineReducers({
+			deep: null,
+		}),
+	});
+
+	const getState = () => ({});
+	const subscribe = (_, path, value) => {
+		expect(path).toEqual(['key', 'deep']);
+		expect(value).toEqual('hello');
+	};
+	const update = createUpdate({getState, subscribe});
+	update('key')('deep').set('hello');
+});
+
+it('Path and value can be in a mid-level of the state', () => {
+	expect.assertions(2);
+
+	const { createUpdate } = combineReducers({
+		key: combineReducers({
+			deep: null,
+		}),
+	});
+
+	const getState = () => ({});
+	const subscribe = (_, path, value) => {
+		expect(path).toEqual(['key']);
+		expect(value).toEqual({deep: 'hello'});
+	};
+	const update = createUpdate({getState, subscribe});
+	update('key').set({deep: 'hello'});
+});
+
 it('Setting deep keys immutably updates objects', () => {
 	expect.assertions(1);
 

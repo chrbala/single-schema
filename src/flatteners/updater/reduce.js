@@ -17,8 +17,12 @@ const reduce: ReducerType<*> = (children: AllReducerType) => () =>
 				: scopedState[key]
 			;
 		};
-		const subscribe = key => data => 
-			scopedSubscribe(freeze({...scopedGetstate(), [key]: data}));
+		const subscribe = key => (data, path = [], value = data) => 
+			scopedSubscribe(
+				freeze({...scopedGetstate(), [key]: data}), 
+				[key, ...path], 
+				value,
+			);
 
 		const getChild = (key: string) => {
 			if (!(key in children))

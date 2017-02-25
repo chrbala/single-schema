@@ -13,7 +13,7 @@ const flatteners = {
 const combineReducers = createCombineReducers(flatteners);
 const array = createArray(flatteners);
 
-(() => {
+describe('shallow tests', () => {
 	const { createUpdate } = array({});
 
 	it('Can set the current value of the array', () => {
@@ -33,6 +33,24 @@ const array = createArray(flatteners);
 
 		const getState = () => [];
 		const subscribe = actual => expect(actual).toEqual(['hello']);
+		const update = createUpdate({getState, subscribe});
+		update.push('hello');
+	});
+
+	it('Can get the value from an array change', () => {
+		expect.assertions(1);
+
+		const getState = () => [];
+		const subscribe = (_1, _2, value) => expect(value).toEqual(['hello']);
+		const update = createUpdate({getState, subscribe});
+		update.push('hello');
+	});
+
+	it('Can get the path from a zero depth change', () => {
+		expect.assertions(1);
+
+		const getState = () => [];
+		const subscribe = (_1, path) => expect(path).toEqual([]);
 		const update = createUpdate({getState, subscribe});
 		update.push('hello');
 	});
@@ -95,25 +113,45 @@ const array = createArray(flatteners);
 		const update = createUpdate({getState, subscribe});
 		update(1).set('newValue');
 	});
-})();
+});
 
-it('Can use get to set deep keys in an array', () => {
-	expect.assertions(1);
-
+describe('deep tests', () => {
 	const { createUpdate } = array(
 		combineReducers({
 			key: null,
 		})
 	);
-	
-	const getState = () => [{key: 'value1'}, {key: 'value2'}];
-	const expected = [
-		{key: 'value1'},
-		{key: 'newValue'},
-	];
-	const subscribe = actual => expect(actual).toEqual(expected);
-	const update = createUpdate({getState, subscribe});
-	update(1)('key').set('newValue');
+
+	it('Can use get to set deep keys in an array', () => {
+		expect.assertions(1);
+		
+		const getState = () => [{key: 'value1'}, {key: 'value2'}];
+		const expected = [
+			{key: 'value1'},
+			{key: 'newValue'},
+		];
+		const subscribe = actual => expect(actual).toEqual(expected);
+		const update = createUpdate({getState, subscribe});
+		update(1)('key').set('newValue');
+	});
+
+	it('Deep path works', () => {
+		expect.assertions(1);
+		
+		const getState = () => [];
+		const subscribe = (_, path) => expect(path).toEqual([1, 'key']);
+		const update = createUpdate({getState, subscribe});
+		update(1)('key').set('newValue');
+	});
+
+	it('Deep value works', () => {
+		expect.assertions(1);
+		
+		const getState = () => [];
+		const subscribe = (_1, _2, value) => expect(value).toEqual('newValue');
+		const update = createUpdate({getState, subscribe});
+		update(1)('key').set('newValue');
+	});
 });
 
 it('Push the default shape with no args', () => {

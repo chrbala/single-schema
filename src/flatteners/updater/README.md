@@ -1,6 +1,19 @@
 # Updater
 
-The updater helps update state immutably. When in development, the returned state tree will be frozen with Object.freeze.
+The updater helps update state immutably. When in development, the returned state tree will be frozen with Object.freeze. Updater returns a function that takes an object of the following shape:
+
+```javascript  
+type CreateUpdateParamType {  
+	getState: () => StateType,
+	subscribe: (
+		state: StateType, 
+		path: Array<string>, 
+		value: ValueType,
+	) => void, 
+}
+```
+
+Where StateType is an object that matches the schema type. subscribe is a callback where the first argument is a the existing shape with a change applied to it. ValueType is the change applied to the state, and the path is a series of keys that show where the change took place.
 
 ## Setup
 ```javascript

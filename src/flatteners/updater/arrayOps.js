@@ -18,7 +18,7 @@ const arrayOp = (operation: AnyFnType, {mutates, useShape}: OptionType = {}) =>
 
 			const safeState = normalizeArray(getState(), mutates);
 			const out = operation.apply(safeState, selectedArgs);
-			subscribe(freeze(safeState));
+			subscribe(freeze(safeState), [], safeState);
 			return out;
 		}
 	;

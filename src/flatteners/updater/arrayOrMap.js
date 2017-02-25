@@ -30,7 +30,7 @@ const normalize = (value: *, mutates: boolean, kind) =>
 	;
 
 export default (kind: AllowedType) => (scope: *) => 
-	(index: number) => {
+	(key: number | string) => {
 		const {
 			subscribe: scopedSubscribe, 
 			getState: scopedGetstate, 
@@ -39,12 +39,16 @@ export default (kind: AllowedType) => (scope: *) =>
 
 		const getState = () => {
 			const state = normalize(scopedGetstate(), false, kind);
-			return state[index];
+			// This is expected. At worst this will return undefined.
+			// $FlowFixMe
+			return state[key];
 		};
-		const subscribe = data => {
+		const subscribe = (data, path = [], value = data) => {
 			const safeState = normalize(scopedGetstate(), true, kind);
-			safeState[index] = data;
-			scopedSubscribe(freeze(safeState));
+			// This is expected. Type checking happens here at runtime.
+			// $FlowFixMe
+			safeState[key] = data;
+			scopedSubscribe(freeze(safeState), [key, ...path], value);
 		};
 		
 		const childScope = {getState, subscribe};
