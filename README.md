@@ -152,6 +152,8 @@ single-schama ships with 6 modules. Ultimately, I'd like to have a public API fo
 
 Note that most of the examples for the modules are fairly flat, but the schemas can have arbitrary depth. See the complete use cases for more complex examples.
 
+**Note**: if you're viewing this on NPM, you may need to switch to the [repository](https://github.com/chrbala/single-schema) to open these links, since NPM doesn't seem to handle relative links to docs.
+
 * [Coercer](src/flatteners/coercer/README.md): Attemts to transform invalid data to data compliant with the schema
 * [Validator](src/flatteners/validator/README.md): Checks if data is compliant with the schema
 * [Graphql](src/flatteners/graphql/README.md): Creates a graphql schema
