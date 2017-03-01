@@ -13,7 +13,7 @@
     "test": "NODE_PATH=./ GRAPHQL_PATH=./examples/full-stack/graphql/graphqlSchema.entry GRAPHQL_SCHEMA_CACHE_TTL=1000 jest",
     "validate": "npm run lint && npm run flow && npm run test",
     "build": "GRAPHQL_PATH=./examples/full-stack/graphql/graphqlSchema.entry babel src --ignore test.js --out-dir lib",
-    "build-flow": "cp -r src lib && renamer --regex --find '.js$' --replace '.js.flow' 'lib/**/*'",
+    "build-flow": "rsync -av --exclude='**/*.test.js' src/ lib && renamer --regex --find '.js$' --replace '.js.flow' 'lib/**/*'",
     "prepublish": "rm -rf lib && npm run build-flow && npm run build",
     "storybook": "NODE_PATH=./ GRAPHQL_PATH=./examples/full-stack/graphql/graphqlSchema.entry GRAPHQL_SCHEMA_CACHE_TTL=1000 start-storybook -p 9010",
     "storybook-integ": "NODE_PATH=./ STORYBOOK_INTEGRATION=true GRAPHQL_URL=http://localhost:4000/graphql GRAPHQL_SCHEMA_CACHE_TTL=1000 start-storybook -p 9011",
