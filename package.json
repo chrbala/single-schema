@@ -22,6 +22,7 @@
     "app-module-path": "^2.1.0",
     "babel-cli": "^6.18.0",
     "babel-core": "^6.18.2",
+    "babel-jest": "^19.0.0",
     "babel-plugin-fetch-relay-schema": "0.1.2",
     "babel-plugin-syntax-flow": "^6.18.0",
     "babel-plugin-transform-flow-strip-types": "^6.18.0",
@@ -50,8 +51,5 @@
   },
   "optionalDependencies": {
     "graphql": "<1.0.0"
-  },
-  "dependencies": {
-    "babel-jest": "^19.0.0"
   }
 }
