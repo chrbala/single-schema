@@ -4,8 +4,8 @@ The Validator determines if the data provided is compliant with the schema. It w
 
 ## Setup
 ```javascript
-import create from 'single-schema';
-import Validator from 'single-schema/flatteners/validate';
+import create from 'single-schema/lib';
+import Validator from 'single-schema/lib/flatteners/validate';
 
 const flatteners = {
 	validate: Validator(),

@@ -4,8 +4,8 @@ The Shaper creates a shape that reflects the schema.
 
 ## Setup
 ```javascript
-import create from 'single-schema';
-import Shaper from 'single-schema/flatteners/shaper';
+import create from 'single-schema/lib';
+import Shaper from 'single-schema/lib/flatteners/shaper';
 
 const flatteners = {
 	shape: Shaper(),

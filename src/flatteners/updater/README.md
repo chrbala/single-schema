@@ -17,8 +17,8 @@ Where StateType is an object that matches the schema type. subscribe is a callba
 
 ## Setup
 ```javascript
-import create from 'single-schema';
-import Updater from 'single-schema/flatteners/updater';
+import create from 'single-schema/lib';
+import Updater from 'single-schema/lib/flatteners/updater';
 
 const flatteners = {
 	createUpdate: Updater(),

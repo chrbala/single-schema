@@ -6,9 +6,9 @@ Async applies to the Validator to make it work asynchronously. It was designed t
 
 ## Setup
 ```javascript
-import create from 'single-schema';
-import Validator from 'single-schema/flatteners/validate';
-import Async from 'single-schema/metaFlatteners/async';
+import create from 'single-schema/lib';
+import Validator from 'single-schema/lib/flatteners/validate';
+import Async from 'single-schema/lib/metaFlatteners/async';
 
 const flatteners = {
 	validate: Async(Validator()),

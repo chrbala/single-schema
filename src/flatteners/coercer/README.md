@@ -4,8 +4,8 @@ The Coercer attempts to transform invalid data to data compliant with the schema
 
 ## Setup
 ```javascript
-import create from 'single-schema';
-import Coercer from 'single-schema/flatteners/coercer';
+import create from 'single-schema/lib';
+import Coercer from 'single-schema/lib/flatteners/coercer';
 
 const flatteners = {
 	coercer: Coercer(),

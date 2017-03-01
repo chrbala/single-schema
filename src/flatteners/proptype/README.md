@@ -6,9 +6,9 @@ Proptype depends on a Validator module set to the ``validate`` key.
 
 ## Setup
 ```javascript
-import create from 'single-schema';
-import Validator from 'single-schema/flatteners/validate';
-import Proptype from 'single-schema/flatteners/proptype';
+import create from 'single-schema/lib';
+import Validator from 'single-schema/lib/flatteners/validate';
+import Proptype from 'single-schema/lib/flatteners/proptype';
 
 const flatteners = {
 	validate: Validator(),

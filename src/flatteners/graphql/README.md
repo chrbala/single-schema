@@ -10,8 +10,8 @@ This API is a bit of a trial and is subject to change. I'm also interested in he
 
 ## Setup
 ```javascript
-import create from 'single-schema';
-import GraphqlModule, { createStore } from 'single-schema/flatteners/graphql';
+import create from 'single-schema/lib';
+import GraphqlModule, { createStore } from 'single-schema/lib/flatteners/graphql';
 
 import * as graphql from 'graphql';
 

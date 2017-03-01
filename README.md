@@ -98,8 +98,8 @@ single-schema is modular, so we need to set it up with the modules we're using.
 
 import create from 'single-schema';
 
-import Coercer from 'single-schema/flatteners/coercer';
-import Validator from 'single-schema/flatteners/validator';
+import Coercer from 'single-schema/lib/flatteners/coercer';
+import Validator from 'single-schema/lib/flatteners/validator';
 
 const flatteners = {
 	validate: Validator(),
