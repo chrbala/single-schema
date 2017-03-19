@@ -8,16 +8,16 @@ import maybe from './maybe';
 import type { FlattenerType } from '../../shared/types';
 
 type OptionsType = {
-	leafNode?: *,
+  leafNode?: *,
 };
 
 type ShaperType = (options: *) => FlattenerType<*>;
 
 const Shaper: ShaperType = (options: OptionsType = {}) => ({
-	reduce: reduce(options),
-	array,
-	map,
-	maybe,
+  reduce: reduce(options),
+  array,
+  map,
+  maybe,
 });
 
 export default Shaper;

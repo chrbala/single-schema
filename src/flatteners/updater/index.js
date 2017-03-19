@@ -10,10 +10,10 @@ import type { FlattenerType } from '../../shared/types';
 type UpdaterType = () => FlattenerType<*>;
 
 const Updater: UpdaterType = () => ({
-	reduce,
-	array,
-	map,
-	maybe,
+  reduce,
+  array,
+  map,
+  maybe,
 });
 
 export default Updater;

@@ -4,20 +4,20 @@ import { freeze, mapObj } from '../../util/micro';
 import { EXPECTED_OBJECT } from './strings';
 import { clean } from './shared';
 
-export default (validate: ?(data: *) => mixed) => () => () => 
-	(data: *, options: *, context: *) => {
-		if (!validate)
-			return null;
+export default (validate: ?(data: *) => mixed) =>
+  () =>
+    () =>
+      (data: *, options: *, context: *) => {
+        if (!validate) return null;
 
-		if (!data || data.constructor !== {}.constructor)
-			return EXPECTED_OBJECT;
+        if (!data || data.constructor !== {}.constructor)
+          return EXPECTED_OBJECT;
 
-		let hasErrors = false;
-		const errors = mapObj(data, datum => {
-			const error = validate && validate(datum, options, context);
-			if (error)
-				hasErrors = true;
-			return error;
-		});
-		return hasErrors ? freeze(clean(errors)) : null;
-	};
+        let hasErrors = false;
+        const errors = mapObj(data, datum => {
+          const error = validate && validate(datum, options, context);
+          if (error) hasErrors = true;
+          return error;
+        });
+        return hasErrors ? freeze(clean(errors)) : null;
+      };

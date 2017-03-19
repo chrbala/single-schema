@@ -7,9 +7,9 @@ import maybe from './maybe';
 import type { InitialConfigType } from './types';
 
 const GraphQLFlattener = (config: InitialConfigType) => ({
-	reduce: reduce(config),
-	array: array(config),
-	maybe: maybe(config),
+  reduce: reduce(config),
+  array: array(config),
+  maybe: maybe(config),
 });
 
 export default GraphQLFlattener;

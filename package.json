@@ -8,10 +8,11 @@
     "url": "https://github.com/chrbala/single-schema"
   },
   "scripts": {
-    "lint": "eslint src --fix",
+    "lint": "eslint src",
     "flow": "flow",
     "test": "NODE_PATH=./ GRAPHQL_PATH=./examples/full-stack/graphql/graphqlSchema.entry GRAPHQL_SCHEMA_CACHE_TTL=1000 jest",
     "validate": "npm run lint && npm run flow && npm run test",
+    "format": "prettier-eslint --write 'src/**/*.js'",
     "build": "GRAPHQL_PATH=./examples/full-stack/graphql/graphqlSchema.entry babel src --ignore test.js --out-dir lib",
     "build-flow": "rsync -av --exclude='**/*.test.js' src/ lib && renamer --regex --find '.js$' --replace '.js.flow' 'lib/**/*'",
     "prepublish": "rm -rf lib && npm run build-flow && npm run build",
@@ -45,6 +46,7 @@
     "graphql": "<1.0.0",
     "jest": "^19.0.2",
     "nodemon": "^1.11.0",
+    "prettier-eslint-cli": "^3.1.2",
     "react": "^15.4.0",
     "react-addons-test-utils": "^15.4.1",
     "react-dom": "^15.4.0",

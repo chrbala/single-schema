@@ -2,12 +2,13 @@
 
 import { freeze } from '../../util/micro';
 
-export default (coerce: ?(data: *) => mixed) => () => () => (data: *) => {
-	if (!coerce)
-		return data;
+export default (coerce: ?(data: *) => mixed) =>
+  () =>
+    () =>
+      (data: *) => {
+        if (!coerce) return data;
 
-	if (!data)
-		return freeze([]);
+        if (!data) return freeze([]);
 
-	return freeze(Array.prototype.map.call(data, coerce));
-};
+        return freeze(Array.prototype.map.call(data, coerce));
+      };

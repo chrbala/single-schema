@@ -8,23 +8,23 @@ import GraphQLFlattener from './';
 import createStore from './createStore';
 
 it('Base test', () => {
-	const combineReducers = createCombineReducers({
-		graphql: GraphQLFlattener({
-			graphql: graphqlLib,
-			store: createStore(),
-		}),
-	});
+  const combineReducers = createCombineReducers({
+    graphql: GraphQLFlattener({
+      graphql: graphqlLib,
+      store: createStore(),
+    }),
+  });
 
-	const string = {
-		graphql: () => GraphQLString,
-	};
+  const string = {
+    graphql: () => GraphQLString,
+  };
 
-	const { graphql } = combineReducers({
-		key: string,
-	});
+  const { graphql } = combineReducers({
+    key: string,
+  });
 
-	const actual = graphql().getChildren().key();
-	const expected = GraphQLString;
+  const actual = graphql().getChildren().key();
+  const expected = GraphQLString;
 
-	expect(actual).toBe(expected);
+  expect(actual).toBe(expected);
 });

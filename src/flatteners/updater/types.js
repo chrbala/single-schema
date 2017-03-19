@@ -1,6 +1,6 @@
 // @flow
 
 export type ScopeType = {
-	subscribe: (newState: *) => mixed,
-	getState: () => {},
+  subscribe: (newState: *) => mixed,
+  getState: () => {},
 };

@@ -10,12 +10,12 @@ import type { FlattenerType } from '../../shared/types';
 
 type CoerceType = (options: *) => FlattenerType<*>;
 
-const Coerce: CoerceType = ({cache}: {cache: boolean} = {}) => ({
-	reduce: reduce({cache}),
-	array,
-	map,
-	and,
-	maybe,
+const Coerce: CoerceType = ({ cache }: { cache: boolean } = {}) => ({
+  reduce: reduce({ cache }),
+  array,
+  map,
+  and,
+  maybe,
 });
 
 export default Coerce;

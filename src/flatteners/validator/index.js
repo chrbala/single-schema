@@ -11,13 +11,12 @@ import type { OptionsType } from './reduce';
 
 type ValidatorType = (options: *) => FlattenerType<*>;
 
-const Validator: ValidatorType = 
-	({cache = false}: OptionsType = {}) => ({
-		reduce: reduce({cache}),
-		array,
-		map,
-		and,
-		maybe,
-	});
+const Validator: ValidatorType = ({ cache = false }: OptionsType = {}) => ({
+  reduce: reduce({ cache }),
+  array,
+  map,
+  and,
+  maybe,
+});
 
 export default Validator;

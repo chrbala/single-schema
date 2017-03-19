@@ -1,2 +1,5 @@
 const createLinter = require('chrbala-linter');
-module.exports = createLinter({modules: ['eslint', 'flow', 'react']});
+const l = createLinter({modules: ['eslint', 'flow', 'react']});
+delete l.rules.indent;
+l.rules['object-curly-spacing'] = [2, 'always'];
+module.exports = l;
